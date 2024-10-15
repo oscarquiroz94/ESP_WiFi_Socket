@@ -472,7 +472,18 @@ void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t leng
       
       }else if(comando == "getinit"){
         Serial.print("GETINIT");Serial.print('\0');
-      }
+      }else if(comando == "reset")
+    {
+        Serial.print("RESET");Serial.print('\0');
+
+    }else if(comando == "fcstart")
+    {
+        Serial.print("FCSTART");Serial.print('\0');
+
+    }else if(comando == "oncharge")
+    {
+        Serial.print("ONCHARGE");Serial.print('\0');
+    }
       break;
     }
     // For everything else: do nothing
