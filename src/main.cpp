@@ -54,6 +54,7 @@ struct valoresOperativos{
   int16_t porcent_Sopl = 60;
   int16_t RoR;
   int16_t deltaETBT;
+  uint8_t canalwifi = 1;
 }vaOP;
 
 struct valoresControl{
@@ -168,34 +169,53 @@ void checkSerial(){
     crearSocket(false);
     memset(comandoFromAtmega_c, 0, 50);
 
-  }else if(comandoFromAtmega_c[0] == 'S' && comandoFromAtmega_c[1] == ','){
+  }
+  if(comandoFromAtmega_c[0] == 'S' && comandoFromAtmega_c[1] == ','){
     //S,Roaster,Roaster2021*,
-    int i = 2;
-    int k = 0;
-    int flag = 0;
+    // int i = 2;
+    // int k = 0;
+    // int flag = 0;
+    // memset(ssid_s, 0, 50);
+    // memset(pass_s, 0, 50);
+    // while(true){
+    //   if(comandoFromAtmega_c[i] == ','){
+    //     i++;
+    //     flag++;
+    //     while(true){
+    //       if(comandoFromAtmega_c[i] == ','){
+    //         flag++;
+    //         break;
+    //       }
+    //       if(k > 48 || i > 48)break;
+    //       pass_s[k] = comandoFromAtmega_c[i];
+    //       k++;
+    //       i++;
+    //     }
+    //     break;
+    //   }
+    //   ssid_s[i-2] = comandoFromAtmega_c[i];
+    //   i++;
+    //   if(i > 48)break;
+    // }
+    // if(flag==2)crearSocket(true);
+    // memset(comandoFromAtmega_c, 0, 50);
+
+    //S,Roaster,Roaster2021*,5,
     memset(ssid_s, 0, 50);
     memset(pass_s, 0, 50);
-    while(true){
-      if(comandoFromAtmega_c[i] == ','){
-        i++;
-        flag++;
-        while(true){
-          if(comandoFromAtmega_c[i] == ','){
-            flag++;
-            break;
-          }
-          if(k > 48 || i > 48)break;
-          pass_s[k] = comandoFromAtmega_c[i];
-          k++;
-          i++;
-        }
-        break;
-      }
-      ssid_s[i-2] = comandoFromAtmega_c[i];
-      i++;
-      if(i > 48)break;
-    }
-    if(flag==2)crearSocket(true);
+
+    char *lista = strtok(comandoFromAtmega_c,",");
+
+    lista = strtok(NULL,",");
+    strcpy(ssid_s, String(lista).c_str()); 
+
+    lista = strtok(NULL,",");
+    strcpy(pass_s, String(lista).c_str());
+
+    lista = strtok(NULL,",");
+    vaOP.canalwifi = (uint8_t)(String(lista).toInt());
+
+    crearSocket(true);
     memset(comandoFromAtmega_c, 0, 50);
 
   }else if(comandoFromAtmega_c[0] == 'W' && comandoFromAtmega_c[1] == ','){
@@ -293,7 +313,7 @@ void crearSocket(bool type){
   redclaveOK = 0;
   WiFi.mode(WIFI_AP);
   checkNetwork(); // Mantiene o cambia nombre de red NO REPETIDO 
-  if(type) success = WiFi.softAP(ssid_s, pass_s);  //devuelve bool, si ya esta conectado --> return
+  if(type) success = WiFi.softAP(ssid_s, pass_s, vaOP.canalwifi);  //devuelve bool, si ya esta conectado --> return
   else WiFi.softAP(ssid, pass);
   server.begin();
   webSocket.begin();
