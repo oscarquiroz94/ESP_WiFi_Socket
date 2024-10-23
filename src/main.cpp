@@ -7,7 +7,7 @@
 #include <ModbusIP_ESP8266.h>
 #include <WebSocketsServer.h>
 #include <ArduinoJson.h>
-
+#include "Version.h"
 
 
 const int HREG_BT = 100;
@@ -55,6 +55,7 @@ struct valoresOperativos{
   int16_t RoR;
   int16_t deltaETBT;
   uint8_t canalwifi = 1;
+  uint32_t versionESP = 0;
 }vaOP;
 
 struct valoresControl{
@@ -62,6 +63,8 @@ struct valoresControl{
   int16_t tambor;
   int16_t quemador;
 }vaCO;
+
+bool send_version_once = false;
 
 
 void checkSerial();
@@ -74,40 +77,56 @@ void checkNetwork();
 
 
 void setup() {
-  Serial.begin(115200);
-  Serial.setTimeout(100);
+    Serial.begin(115200);
+    Serial.setTimeout(100);
 
-  
-  ts = millis();
-  statusModbus = false;
+    vaOP.versionESP = (completeVersion[0] - 48) * 10000000L +
+                        (completeVersion[1] - 48) * 1000000L +
+                        (completeVersion[2] - 48) * 100000L +
+                        (completeVersion[3] - 48) * 10000L +
+                        (completeVersion[4] - 48) * 1000L +
+                        (completeVersion[5] - 48) * 100L +
+                        (completeVersion[6] - 48) * 10L +
+                        (completeVersion[7] - 48) * 1L;
+
+
+    ts = millis();
+    statusModbus = false;
 }
 
 void loop() {
-  //uint32_t t1 = micros();
-  checkSerial();
-  webSocket.loop();
+    //uint32_t t1 = micros();
+    checkSerial();
+    webSocket.loop();
 
-  if(statusDelayConexion){
-    onDelayConexion();
-  }
-  if(statusModbus){
-    
-    mb.task();
-    
-    mb.Hreg(HREG_BT, vaOP.temp_BT);
-    mb.Hreg(HREG_ET, vaOP.temp_ET);
-    mb.Hreg(HREG_ROR, vaOP.RoR);
-    mb.Hreg(HREG_QUEM, vaOP.porcent_Quem);
-    mb.Hreg(HREG_TAMB, vaOP.porcent_Tamb);
-    mb.Hreg(HREG_SOPL, vaOP.porcent_Sopl);
-    
-    if (millis() > ts + 2000) {
-       ts = millis();
-       checkStatusWiFi();
+    if(statusDelayConexion){
+        onDelayConexion();
     }
-  }
-  delay(10);
-  //Serial.println(micros()-t1);
+    if(statusModbus){
+        
+        mb.task();
+        
+        mb.Hreg(HREG_BT, vaOP.temp_BT);
+        mb.Hreg(HREG_ET, vaOP.temp_ET);
+        mb.Hreg(HREG_ROR, vaOP.RoR);
+        mb.Hreg(HREG_QUEM, vaOP.porcent_Quem);
+        mb.Hreg(HREG_TAMB, vaOP.porcent_Tamb);
+        mb.Hreg(HREG_SOPL, vaOP.porcent_Sopl);
+        
+        if (millis() > ts + 2000) {
+        ts = millis();
+        checkStatusWiFi();
+        }
+    }
+    delay(10);
+
+    if(!send_version_once)
+    {
+        Serial.print("ESPV,");Serial.print(vaOP.versionESP);Serial.print('\0');
+        send_version_once = true;
+    }
+
+    //Serial.println(micros()-t1);
 }
 
 void checkStatusWiFi(){
@@ -143,7 +162,7 @@ void checkSerial(){
     String output;
     serializeJson(doc3, output);
     webSocket.sendTXT(0, output);
-    Serial.print("Json 1: ");Serial.println(output);
+    //Serial.print("Json 1: ");Serial.println(output);
     //Serial.print("startRoasting");Serial.print('\0');
     memset(comandoFromAtmega_c, 0, 50);
   }
@@ -152,7 +171,7 @@ void checkSerial(){
     String output;
     serializeJson(doc4, output);
     webSocket.sendTXT(0, output);
-    Serial.print("Json 2: ");Serial.println(output);
+    //Serial.print("Json 2: ");Serial.println(output);
     //Serial.print("endRoasting");Serial.print('\0');
     memset(comandoFromAtmega_c, 0, 50);
   }
@@ -162,7 +181,7 @@ void checkSerial(){
     String output;
     serializeJson(doc5, output);
     webSocket.sendTXT(0, output);
-    Serial.print("Json 3: ");Serial.println(output);
+    //Serial.print("Json 3: ");Serial.println(output);
     memset(comandoFromAtmega_c, 0, 50);
   }
   if(comandoFromAtmega_c[0] == 'S' && comandoFromAtmega_c[1] == 'O' && comandoFromAtmega_c[2] == 'C' && comandoFromAtmega_c[3] == 'K' && comandoFromAtmega_c[4] == 'E' && comandoFromAtmega_c[5] == 'T'){
@@ -171,35 +190,6 @@ void checkSerial(){
 
   }
   if(comandoFromAtmega_c[0] == 'S' && comandoFromAtmega_c[1] == ','){
-    //S,Roaster,Roaster2021*,
-    // int i = 2;
-    // int k = 0;
-    // int flag = 0;
-    // memset(ssid_s, 0, 50);
-    // memset(pass_s, 0, 50);
-    // while(true){
-    //   if(comandoFromAtmega_c[i] == ','){
-    //     i++;
-    //     flag++;
-    //     while(true){
-    //       if(comandoFromAtmega_c[i] == ','){
-    //         flag++;
-    //         break;
-    //       }
-    //       if(k > 48 || i > 48)break;
-    //       pass_s[k] = comandoFromAtmega_c[i];
-    //       k++;
-    //       i++;
-    //     }
-    //     break;
-    //   }
-    //   ssid_s[i-2] = comandoFromAtmega_c[i];
-    //   i++;
-    //   if(i > 48)break;
-    // }
-    // if(flag==2)crearSocket(true);
-    // memset(comandoFromAtmega_c, 0, 50);
-
     //S,Roaster,Roaster2021*,5,
     memset(ssid_s, 0, 50);
     memset(pass_s, 0, 50);
@@ -420,12 +410,12 @@ void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t leng
     case WStype_TEXT:
     {
       char* datas = (char*)payload;
-      Serial.print("request: ");Serial.println(datas);
+      //Serial.print("request: ");Serial.println(datas);
 
       // Deserialize the JSON document
       DeserializationError error = deserializeJson(doc, datas);
       if (error) {
-        Serial.print("ERRORJSON");Serial.print('\0');
+        //Serial.print("ERRORJSON");Serial.print('\0');
       }
 
       long Messageid;
@@ -438,28 +428,28 @@ void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t leng
       if (doc.containsKey("id")) doc2["id"] = Messageid;
       //if (doc.containsKey("messageID")) doc2["messageID"] = Messageid;
 
-      // doc2["data"]["aire"] = vaOP.temp_ET;
-      // doc2["data"]["grano"] = vaOP.temp_BT;
-      // doc2["data"]["ror"] = vaOP.RoR;
-      // doc2["data"]["quemador"] = vaOP.porcent_Quem;
-      // doc2["data"]["soplador"] = vaOP.porcent_Sopl;
-      // doc2["data"]["tambor"] = vaOP.porcent_Tamb;
-      // doc2["data"]["delta"] = vaOP.deltaETBT;
+      doc2["data"]["aire"] = vaOP.temp_ET;
+      doc2["data"]["grano"] = vaOP.temp_BT;
+      doc2["data"]["ror"] = vaOP.RoR;
+      doc2["data"]["quemador"] = vaOP.porcent_Quem;
+      doc2["data"]["soplador"] = vaOP.porcent_Sopl;
+      doc2["data"]["tambor"] = vaOP.porcent_Tamb;
+      doc2["data"]["delta"] = vaOP.deltaETBT;
 
-      doc2["data"]["aire"] = random(0,1500);
-      doc2["data"]["grano"] = random(0,1500);
-      doc2["data"]["ror"] = random(0,20);
-      doc2["data"]["quemador"] = random(0,100);
-      doc2["data"]["soplador"] = random(0,100);
-      doc2["data"]["tambor"] = random(0,100);
-      doc2["data"]["delta"] = random(0,1);
+    //   doc2["data"]["aire"] = random(0,1500);
+    //   doc2["data"]["grano"] = random(0,1500);
+    //   doc2["data"]["ror"] = random(0,20);
+    //   doc2["data"]["quemador"] = random(0,100);
+    //   doc2["data"]["soplador"] = random(0,100);
+    //   doc2["data"]["tambor"] = random(0,100);
+    //   doc2["data"]["delta"] = random(0,1);
       
 
       if (comando == "getData") {
         String output;
         serializeJson(doc2, output);
-        Serial.print(" -> response: ");Serial.println(output);
-        Serial.println();
+        //Serial.print(" -> response: ");Serial.println(output);
+        //Serial.println();
 
         webSocket.sendTXT(num, output);
         //*****Serial.print('G');Serial.print('E');Serial.print('T');Serial.print('\0'); //Avisar de solicitud de datos
@@ -473,6 +463,8 @@ void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t leng
         Serial.print("PARAM,");Serial.print(vaCO.aire);Serial.print(',');Serial.print(vaCO.tambor);Serial.print(',');Serial.print(vaCO.quemador);Serial.print(',');Serial.print('\0');
       
       }else if(comando == "startRoasting"){
+        Serial.print("ONCHARGE");Serial.print('\0');
+        delay(5);
         Serial.print("SOCARG");Serial.print('\0');
 
       }else if(comando == "endRoasting"){
@@ -503,7 +495,12 @@ void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t leng
     }else if(comando == "oncharge")
     {
         Serial.print("ONCHARGE");Serial.print('\0');
+        delay(5);
+        Serial.print("SOCARG");Serial.print('\0');
+        
     }
+
+        
       break;
     }
     // For everything else: do nothing
