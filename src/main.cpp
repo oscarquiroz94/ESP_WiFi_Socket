@@ -32,11 +32,12 @@ long tiempo;
 bool flatWifiOFF = false;
 bool flatSocketOFF = false;
 bool redclaveOK = false;
+uint8_t sendVersionAmount = 0;
 
 StaticJsonDocument<200> doc;
 StaticJsonDocument<200> doc2;
-StaticJsonDocument<40> doc3;
-StaticJsonDocument<40> doc4;
+StaticJsonDocument<30> doc3;
+StaticJsonDocument<30> doc4;
 StaticJsonDocument<200> doc5;
 WiFiServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(8080);
@@ -125,15 +126,20 @@ void loop()
 	}
 	delay(10);
 	
-	//* SAFE: ocurrs 10 millis after handler every artisan message
-	if (millis() - tenvio > 10000)
+	
+	if (sendVersionAmount < 3)
 	{
-		Serial.print("ESPV,");
-		Serial.print(vaOP.versionESP);
-		Serial.print(",");
-		Serial.print('\0');
-		tenvio = millis();
+		if (millis() - tenvio > 3000)
+		{
+			Serial.print("ESPV,");
+			Serial.print(vaOP.versionESP);
+			Serial.print(",");
+			Serial.print('\0');
+			tenvio = millis();
+			sendVersionAmount++;
+		}
 	}
+	
 
 	// Serial.println(micros()-t1);
 }
@@ -348,6 +354,7 @@ void crearSocket(bool type)
 	WiFi.mode(WIFI_OFF);
 	redclaveOK = 0;
 	WiFi.mode(WIFI_AP);
+	WiFi.setSleep(false);
 	checkNetwork(); // Mantiene o cambia nombre de red NO REPETIDO
 	if (type)
 		success = WiFi.softAP(ssid_s, pass_s, vaOP.canalwifi); // devuelve bool, si ya esta conectado --> return
@@ -580,12 +587,13 @@ void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t lengt
 			Serial.print(vaCO.tedvalue);
 			Serial.print(',');
 			Serial.print('\0');
+			delay(30);
 		}
 		// else if (comando == "startRoasting")
 		// {
 		// 	Serial.print("ONCHARGE");
 		// 	Serial.print('\0');
-		// 	delay(5);
+		// 	delay(30);
 		// 	Serial.print("SOCARG");
 		// 	Serial.print('\0');
 		// }
@@ -593,47 +601,55 @@ void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t lengt
 		{
 			Serial.print("SODROP");
 			Serial.print('\0');
+			delay(30);
 		}
 		else if (comando == "ready")
 		{
 			Serial.print("SREADY");
 			Serial.print('\0');
+			delay(30);
 		}
 		else if (comando == "noready")
 		{
 			Serial.print("SNOREA");
 			Serial.print('\0');
+			delay(30);
 		}
 		else if (comando == "identify")
 		{
 			Serial.print("IDENTIFY");
 			Serial.print('\0');
+			delay(30);
 		}
 		else if (comando == "noidentify")
 		{
 			Serial.print("NOIDENTIFY");
 			Serial.print('\0');
+			delay(30);
 		}
 		else if (comando == "getinit")
 		{
 			Serial.print("GETINIT");
 			Serial.print('\0');
+			delay(30);
 		}
 		else if (comando == "reset")
 		{
 			Serial.print("RESET");
 			Serial.print('\0');
+			delay(30);
 		}
 		else if (comando == "fcstart")
 		{
 			Serial.print("FCSTART");
 			Serial.print('\0');
+			delay(30);
 		}
 		else if (comando == "oncharge")
 		{
 			Serial.print("ONCHARGE");
 			Serial.print('\0');
-			// delay(5);
+			delay(30);
 			// Serial.print("SOCARG");
 			// Serial.print('\0');
 		}
@@ -641,11 +657,13 @@ void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t lengt
 		{
 			Serial.print("ONTED");
 			Serial.print('\0');
+			delay(30);
 		}
 		else if (comando == "offted")
 		{
 			Serial.print("OFFTED");
 			Serial.print('\0');
+			delay(30);
 		}
 
 		break;
