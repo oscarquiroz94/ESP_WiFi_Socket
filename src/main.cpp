@@ -6,6 +6,9 @@
 #include <WebSocketsServer.h>
 #include <ArduinoJson.h>
 #include "Version.h"
+#include "WebsocketClientHandler.hpp"
+#include "ArtisanClient.hpp"
+#include "AudioCrackClient.hpp"
 
 const int HREG_BT = 100;
 const int HREG_ET = 101;
@@ -42,6 +45,8 @@ StaticJsonDocument<200> doc5;
 WiFiServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(8080);
 ModbusIP mb;
+
+WebsocketClientHandler clientHandler(webSocket);
 
 struct valoresOperativos
 {
@@ -139,6 +144,8 @@ void loop()
 			sendVersionAmount++;
 		}
 	}
+
+	
 	
 
 	// Serial.println(micros()-t1);
@@ -365,7 +372,24 @@ void crearSocket(bool type)
 	if (success && server.isRunning() && webSocket.isRunning())
 	{
 		flatSocketOFF = false;
-		webSocket.onEvent(onWebSocketEvent);
+		//webSocket.onEvent(onWebSocketEvent);
+		{
+			static ArtisanClient artisanClient;
+			static AudioCrackClient audioCrackClient;
+			clientHandler.registerWebsocketClient(artisanClient);
+			clientHandler.registerWebsocketClient(audioCrackClient);
+			artisanClient.addFunctionToCommand("getData", [](uint8_t num) {
+				String output;
+				JsonDocument doc;
+				doc["data"]["aire"] = random(0,1500);
+				serializeJson(doc, output);
+				webSocket.sendTXT(num, output);
+			});
+
+			webSocket.onEvent([&](uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
+				clientHandler.onWebSocketEvent(num, type, payload, length);
+			});
+		}
 		IPAddress IP = WiFi.softAPIP();
 		Serial.print('\0');
 		Serial.print('C');
@@ -381,6 +405,8 @@ void crearSocket(bool type)
 		Serial.print(ssid_s);
 		Serial.print(",");
 		Serial.print(pass_s);
+		//Serial.print("CH,");
+		//Serial.print(vaOP.canalwifi);
 		Serial.print('\0');
 		Serial.flush();
 	}
@@ -495,7 +521,6 @@ void onModbusOverWifi()
 
 void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 {
-
 	switch (type)
 	{
 

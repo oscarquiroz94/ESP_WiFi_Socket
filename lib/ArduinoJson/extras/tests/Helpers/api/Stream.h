@@ -1,5 +1,5 @@
-// ArduinoJson - arduinojson.org
-// Copyright Benoit Blanchon 2014-2020
+// ArduinoJson - https://arduinojson.org
+// Copyright © 2014-2025, Benoit BLANCHON
 // MIT License
 
 #pragma once
@@ -10,5 +10,5 @@ class Stream  // : public Print
  public:
   virtual ~Stream() {}
   virtual int read() = 0;
-  virtual size_t readBytes(char *buffer, size_t length) = 0;
+  virtual size_t readBytes(char* buffer, size_t length) = 0;
 };

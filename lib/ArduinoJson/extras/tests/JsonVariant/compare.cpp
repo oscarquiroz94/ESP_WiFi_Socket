@@ -1,5 +1,5 @@
-// ArduinoJson - arduinojson.org
-// Copyright Benoit Blanchon 2014-2020
+// ArduinoJson - https://arduinojson.org
+// Copyright © 2014-2025, Benoit BLANCHON
 // MIT License
 
 #include <ArduinoJson.h>
@@ -9,8 +9,8 @@
 // Here, we're just filling the holes
 
 TEST_CASE("Compare JsonVariant with value") {
-  StaticJsonDocument<256> doc;
-  JsonVariant a = doc.addElement();
+  JsonDocument doc;
+  JsonVariant a = doc.add<JsonVariant>();
 
   SECTION("null vs (char*)0") {
     char* b = 0;
@@ -37,9 +37,9 @@ TEST_CASE("Compare JsonVariant with value") {
 }
 
 TEST_CASE("Compare JsonVariant with JsonVariant") {
-  StaticJsonDocument<256> doc;
-  JsonVariant a = doc.addElement();
-  JsonVariant b = doc.addElement();
+  JsonDocument doc;
+  JsonVariant a = doc.add<JsonVariant>();
+  JsonVariant b = doc.add<JsonVariant>();
 
   SECTION("'abc' vs 'abc'") {
     a.set("abc");
@@ -113,6 +113,42 @@ TEST_CASE("Compare JsonVariant with JsonVariant") {
     CHECK_FALSE(a == b);
   }
 
+  SECTION("MsgPackBinary('abc') vs MsgPackBinary('abc')") {
+    a.set(MsgPackBinary("abc", 4));
+    b.set(MsgPackBinary("abc", 4));
+
+    CHECK(a == b);
+    CHECK(a <= b);
+    CHECK(a >= b);
+    CHECK_FALSE(a != b);
+    CHECK_FALSE(a < b);
+    CHECK_FALSE(a > b);
+  }
+
+  SECTION("MsgPackBinary('abc') vs MsgPackBinary('bcd')") {
+    a.set(MsgPackBinary("abc", 4));
+    b.set(MsgPackBinary("bcd", 4));
+
+    CHECK(a != b);
+    CHECK(a < b);
+    CHECK(a <= b);
+    CHECK_FALSE(a == b);
+    CHECK_FALSE(a > b);
+    CHECK_FALSE(a >= b);
+  }
+
+  SECTION("MsgPackBinary('bcd') vs MsgPackBinary('abc')") {
+    a.set(MsgPackBinary("bcd", 4));
+    b.set(MsgPackBinary("abc", 4));
+
+    CHECK(a != b);
+    CHECK(a > b);
+    CHECK(a >= b);
+    CHECK_FALSE(a < b);
+    CHECK_FALSE(a <= b);
+    CHECK_FALSE(a == b);
+  }
+
   SECTION("false vs true") {
     a.set(false);
     b.set(true);
@@ -149,6 +185,18 @@ TEST_CASE("Compare JsonVariant with JsonVariant") {
   SECTION("42 vs 42") {
     a.set(42);
     b.set(42);
+
+    CHECK(a == b);
+    CHECK(a <= b);
+    CHECK(a >= b);
+    CHECK_FALSE(a != b);
+    CHECK_FALSE(a < b);
+    CHECK_FALSE(a > b);
+  }
+
+  SECTION("42 vs 42U") {
+    a.set(42);
+    b.set(42U);
 
     CHECK(a == b);
     CHECK(a <= b);
@@ -228,6 +276,30 @@ TEST_CASE("Compare JsonVariant with JsonVariant") {
     CHECK_FALSE(a < b);
     CHECK_FALSE(a <= b);
     CHECK_FALSE(a == b);
+  }
+
+  SECTION("42U vs 42U") {
+    a.set(42U);
+    b.set(42U);
+
+    CHECK(a == b);
+    CHECK(a <= b);
+    CHECK(a >= b);
+    CHECK_FALSE(a != b);
+    CHECK_FALSE(a < b);
+    CHECK_FALSE(a > b);
+  }
+
+  SECTION("42U vs 42") {
+    a.set(42U);
+    b.set(42);
+
+    CHECK(a == b);
+    CHECK(a <= b);
+    CHECK(a >= b);
+    CHECK_FALSE(a != b);
+    CHECK_FALSE(a < b);
+    CHECK_FALSE(a > b);
   }
 
   SECTION("[1] vs [1]") {

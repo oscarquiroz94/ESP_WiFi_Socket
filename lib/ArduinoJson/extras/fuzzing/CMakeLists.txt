@@ -1,6 +1,9 @@
-# ArduinoJson - arduinojson.org
-# Copyright Benoit Blanchon 2014-2020
+# ArduinoJson - https://arduinojson.org
+# Copyright © 2014-2025, Benoit BLANCHON
 # MIT License
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
 	add_compile_options(-D_CRT_SECURE_NO_WARNINGS)
@@ -22,11 +25,8 @@ target_link_libraries(json_reproducer
 	ArduinoJson
 )
 
-# Infer path of llvm-symbolizer from the path of clang
-string(REPLACE "clang++" "llvm-symbolizer" LLVM_SYMBOLIZER ${CMAKE_CXX_COMPILER})
-
-macro(add_fuzzer name mode)	
-	set(FUZZER "${name}_${mode}_fuzzer")
+macro(add_fuzzer name)
+	set(FUZZER "${name}_fuzzer")
 	set(CORPUS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${name}_corpus")
 	set(SEED_CORPUS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${name}_seed_corpus")
 	add_executable("${FUZZER}"
@@ -36,42 +36,32 @@ macro(add_fuzzer name mode)
 		ArduinoJson
 	)
 	set_target_properties("${FUZZER}"
-		PROPERTIES 
-			COMPILE_FLAGS  
-				"-fprofile-instr-generate -fcoverage-mapping -fsanitize=${mode},fuzzer -fno-sanitize-recover=all"
-			LINK_FLAGS
-				"-fprofile-instr-generate -fcoverage-mapping -fsanitize=${mode},fuzzer -fno-sanitize-recover=all"
+		PROPERTIES
+			COMPILE_FLAGS "-fprofile-instr-generate -fcoverage-mapping -fsanitize=fuzzer -fno-sanitize-recover=all"
+			LINK_FLAGS "-fprofile-instr-generate -fcoverage-mapping -fsanitize=fuzzer -fno-sanitize-recover=all"
 	)
 
 	add_test(
-		NAME
-			"${FUZZER}"
-		COMMAND
-			"${FUZZER}" "${CORPUS_DIR}" "${SEED_CORPUS_DIR}" -max_total_time=5 -timeout=1
+		NAME "${FUZZER}"
+		COMMAND "${FUZZER}" "${CORPUS_DIR}" "${SEED_CORPUS_DIR}" -max_total_time=5 -timeout=1
 	)
 
 	set_tests_properties("${FUZZER}"
 		PROPERTIES
-			ENVIRONMENT
-				ASAN_SYMBOLIZER_PATH=${LLVM_SYMBOLIZER}
-			ENVIRONMENT
-				LLVM_SYMBOLIZER_PATH=${LLVM_SYMBOLIZER}
-			ENVIRONMENT
-				MSAN_SYMBOLIZER_PATH=${LLVM_SYMBOLIZER}
-			ENVIRONMENT
-				UBSAN_SYMBOLIZER_PATH=${LLVM_SYMBOLIZER}
+		LABELS "Fuzzing"
 	)
 endmacro()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 6)
-	add_fuzzer(json address)
-	add_fuzzer(json undefined)
-	add_fuzzer(msgpack address)
-	add_fuzzer(msgpack undefined)
-endif()
+# Needs Clang 6+ to compile
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 6)
+	if(DEFINED ENV{GITHUB_ACTIONS} AND CMAKE_CXX_COMPILER_VERSION MATCHES "^11\\.")
+		# Clang 11 fails on GitHub Actions with the following error:
+		# > ERROR: UndefinedBehaviorSanitizer failed to allocate 0x0 (0) bytes of SetAlternateSignalStack (error code: 22)
+		# > Sanitizer CHECK failed: /build/llvm-toolchain-11-mnvtwk/llvm-toolchain-11-11.1.0/compiler-rt/lib/sanitizer_common/sanitizer_common.cpp:54 ((0 && "unable to mmap")) != (0) (0, 0)
+		message(WARNING "Fuzzing is disabled on GitHub Actions to workaround a bug in Clang 11")
+		return()
+	endif()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7)
-	# We're getting false positive with Clang 6
-	add_fuzzer(json memory)
-	add_fuzzer(msgpack memory)
+	add_fuzzer(json)
+	add_fuzzer(msgpack)
 endif()
