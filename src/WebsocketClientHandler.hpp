@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Arduino.h>
-#include <iostream>
+#include "ESPadapter.hpp"
 #include <WebSocketsServer.h>
 #include "GeneralClient.hpp"
 #include "ArtisanClient.hpp"
@@ -14,8 +13,8 @@ class WebsocketClientHandler
         void registerWebsocketClient(GeneralClient& client)
         {
             websocketClients.push_back(&client);
-            Serial.print("Client registered: ");
-            Serial.println(client.getName().c_str());
+            ESPadapter::serial_print("Client registered: ");
+            ESPadapter::serial_println(client.getName().c_str());
         }
 
         void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
@@ -28,16 +27,16 @@ class WebsocketClientHandler
                 case WStype_DISCONNECTED:
                 {
                     //No way to know which client disconnected
-                    Serial.println("Disconnected");
+                    ESPadapter::serial_println("Disconnected");
                     break;
                 }  
 
                 // New client has connected
                 case WStype_CONNECTED:
                 {
-                    Serial.print("New client connected: ");
+                    ESPadapter::serial_print("New client connected: ");
                     IPAddress ip = webSocket.remoteIP(num);
-                    Serial.println(ip.toString());
+                    ESPadapter::serial_println(ip.toString());
                     break;
                 }
 
@@ -69,6 +68,3 @@ class WebsocketClientHandler
         WebSocketsServer& webSocket;
         std::vector<GeneralClient*> websocketClients;   
 };
-
-// WebSocketsServer& WebsocketClientHandler::webSocket;
-// std::vector<GeneralClient*> WebsocketClientHandler::websocketClients;

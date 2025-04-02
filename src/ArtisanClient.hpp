@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Arduino.h>
+#include "ESPadapter.hpp"
+
 #include <ArduinoJson.h>
 #include "GeneralClient.hpp"
+#include <functional>
 #include <map>
 
 class ArtisanClient : public GeneralClient
@@ -13,10 +15,12 @@ class ArtisanClient : public GeneralClient
 
         void processEvent(uint8_t num, const char *payload, size_t length) override
         { 
-            Serial.print("request processed in artisan: ");Serial.println(payload);
+            ESPadapter::serial_print("request processed in artisan: ");
+            ESPadapter::serial_println(payload);
 
             JsonDocument doc;
             DeserializationError err = deserializeJson(doc, payload);
+
             switch (err.code()) {
                 case DeserializationError::Ok:
                     break;
@@ -31,13 +35,16 @@ class ArtisanClient : public GeneralClient
                     break;
             }
 
-            int16_t idMaquina = -1;
+            int16_t machineId = -1;
             if (doc["roasterID"].is<int16_t>()) 
-                idMaquina = doc["roasterID"];
-            if (!doc["roasterID"].is<int16_t>() && idMaquina == -1) 
+                machineId = doc["roasterID"];
+            if (!doc["roasterID"].is<int16_t>() && machineId == -1) 
                 return; //! No es un mensaje de Artisan
 
-            Serial.print("Artisan, ID Maquina: "); Serial.println(idMaquina);
+            ESPadapter::serial_print("Artisan, ID Maquina: ");
+            ESPadapter::serial_println(machineId);
+
+            //------------------
 
             std::string comando = "";
             if (doc["command"].is<std::string>()) comando = doc["command"].as<std::string>();
@@ -46,18 +53,20 @@ class ArtisanClient : public GeneralClient
             {
                 if (comando == it->first)
                 {
-                    it->second(num);
+                    it->second(num, doc);
                     break;
                 }
             }
         }
 
-        void addFunctionToCommand(std::string key, std::function<void(uint8_t num)> func)
+        void addFunctionToCommand
+        (   std::string key, 
+            std::function<void(uint8_t num, JsonDocument& doc)> func)
         {
             map2func[key] = func;
         }
 
     private:
-        std::map<std::string, std::function<void(uint8_t num)>> map2func;
+        std::map<std::string, std::function<void(uint8_t num, JsonDocument& doc)>> map2func;
 };
 

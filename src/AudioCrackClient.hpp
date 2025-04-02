@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Arduino.h>
+#include <ArduinoJson.h>
 #include "GeneralClient.hpp"
 
 class AudioCrackClient : public GeneralClient
