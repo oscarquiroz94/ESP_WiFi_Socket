@@ -4,6 +4,11 @@
 
 #ifdef DEPLOY
 #include <Arduino.h>
+#else
+#include <stdint.h>
+#include <iostream>
+#include <cstring>
+#include <windows.h>
 #endif
 
 class ESPadapter
@@ -39,19 +44,6 @@ class ESPadapter
 		Serial.print(text);
 #else
 		std::cout << text;
-#endif
-	}
-
-	//---------------------
-
-	static inline void serial_print(const __FlashStringHelper *text)
-	{
-#ifdef DEPLOY
-		Serial.print(text);
-#else
-		char buffer[100];
-		strncpy(buffer, (const char *)text, 100);
-		std::cout << buffer;
 #endif
 	}
 
@@ -97,19 +89,6 @@ class ESPadapter
 		Serial.println(value, precision);
 #else
 		std::cout << value << std::endl;
-#endif
-	}
-
-	//---------------------
-
-	static inline void serial_println(const __FlashStringHelper *text)
-	{
-#ifdef DEPLOY
-		Serial.println(text);
-#else
-		char buffer[100];
-		strncpy(buffer, (const char *)text, 100);
-		std::cout << buffer << std::endl;
 #endif
 	}
 

@@ -25,13 +25,13 @@ class ArtisanClient : public GeneralClient
                 case DeserializationError::Ok:
                     break;
                 case DeserializationError::InvalidInput:
-                    Serial.println(F("Invalid input!"));
+                    ESPadapter::serial_println("Invalid input!");
                     break;
                 case DeserializationError::NoMemory:
-                    Serial.println(F("Not enough memory"));
+                    ESPadapter::serial_println("Not enough memory");
                     break;
                 default:
-                    Serial.println(F("Deserialization failed"));
+                    ESPadapter::serial_println("Deserialization failed");
                     break;
             }
 

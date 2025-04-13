@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ArduinoJson.h>
+#include "ESPadapter.hpp"
 #include "GeneralClient.hpp"
 
 class AudioCrackClient : public GeneralClient
@@ -11,7 +12,8 @@ class AudioCrackClient : public GeneralClient
 
         void processEvent(uint8_t num, const char* payload, size_t length) override
         {
-            Serial.print("request processed in audiocrack: ");Serial.println(payload);
+            ESPadapter::serial_print("request processed in audiocrack: ");
+            ESPadapter::serial_println(payload);
 
             JsonDocument doc;
             DeserializationError err = deserializeJson(doc, payload);
@@ -19,13 +21,13 @@ class AudioCrackClient : public GeneralClient
                 case DeserializationError::Ok:
                     break;
                 case DeserializationError::InvalidInput:
-                    Serial.println(F("Invalid input!"));
+                    ESPadapter::serial_println("Invalid input!");
                     break;
                 case DeserializationError::NoMemory:
-                    Serial.println(F("Not enough memory"));
+                    ESPadapter::serial_println("Not enough memory");
                     break;
                 default:
-                    Serial.println(F("Deserialization failed"));
+                    ESPadapter::serial_println("Deserialization failed");
                     break;
             }
             
@@ -35,6 +37,6 @@ class AudioCrackClient : public GeneralClient
             if (!doc["clientID"].is<int16_t>() && clientId == -1) 
                 return; //! No es un mensaje conocido
 
-            Serial.print("AudioCrack, ID Maquina: "); Serial.println(clientId);
+            ESPadapter::serial_print("AudioCrack, ID Maquina: "); ESPadapter::serial_println(clientId);
         }
 };

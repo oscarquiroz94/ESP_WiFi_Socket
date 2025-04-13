@@ -2,11 +2,7 @@
 
 #ifdef TEST
 #include <iostream>
+#include "AudioCrackClient.hpp"
 
-int main()
-{
-    std::cout << "Inicio test" << std::endl;
-    return 0;
-}
 
 #endif
