@@ -1,8 +1,2 @@
-#include "Compiletype.hpp"
-
-#ifdef TEST
-#include <iostream>
-#include "AudioCrackClient.hpp"
-
-
-#endif
+#define BOOST_TEST_MODULE "UNIT TESTING ESP WEBSOCKET"
+#include <boost/test/included/unit_test.hpp>

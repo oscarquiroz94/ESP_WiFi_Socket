@@ -8,12 +8,42 @@
 #include <stdint.h>
 #include <iostream>
 #include <cstring>
+#include <chrono>
+#include <thread>
 #include <windows.h>
+#include <string>
+#endif
+
+
+#ifndef DEPLOY
+class String
+{
+	public:
+		String(const char* str) : str_(str) {}
+		const char* c_str() const { return str_.c_str(); }
+		int toInt() const { return std::stoi(str_); }
+	private:
+		std::string str_;
+};
 #endif
 
 class ESPadapter
 {
     public:
+
+	static inline void serial_begin(uint16_t baudRate)
+	{
+#ifdef DEPLOY
+		Serial.begin(baudRate);
+#endif
+	}
+
+	static inline void serial_timeout(uint16_t timeout)
+	{
+#ifdef DEPLOY
+		Serial.setTimeout(timeout);
+#endif
+	}
 
     static inline void serial_print(double num, uint16_t precision)
 	{
@@ -118,6 +148,17 @@ class ESPadapter
 	{
 #ifdef DEPLOY
 		Serial.flush();
+#endif
+	}
+
+	//************************************/
+
+	static inline void retardo(const uint16_t t)
+	{
+#ifdef DEPLOY
+		delay(t);
+#else
+		std::this_thread::sleep_until(std::chrono::system_clock::now() + std::chrono::milliseconds(t));
 #endif
 	}
 };

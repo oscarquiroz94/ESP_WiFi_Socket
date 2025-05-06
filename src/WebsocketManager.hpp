@@ -1,8 +1,10 @@
 #pragma once
 
-#include <WebSocketsServer.h>
-#include <WiFi.h>
+#include "Compiletype.hpp"
 #include "CrossSectionalData.hpp"
+#include "WebSocketsServerAdapter.hpp"
+
+extern WiFiClass WiFi;
 
 class WebsocketManager
 {
@@ -20,8 +22,7 @@ class WebsocketManager
 
             if (success && webSocket.isRunning())
             {
-                Serial.println("Websocket running");
+                ESPadapter::serial_println("Websocket running");
             }
         }
 };
-

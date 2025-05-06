@@ -5,6 +5,7 @@
 #ifdef DEPLOY
 #include "Manager.hpp"
 #include "Version.h"
+#include "SerialPort.hpp"
 
 Manager manager;
 uint8_t sendVersionAmount = 0;
@@ -29,7 +30,7 @@ void setup()
 
 void loop()
 {
-    PuertoSerial puerto(115200);
+    SerialPort puerto(115200);
 
     
     //manager.run();
