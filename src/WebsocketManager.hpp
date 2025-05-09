@@ -9,7 +9,7 @@ extern WiFiClass WiFi;
 class WebsocketManager
 {
     public:
-        static void buildWebSocket(WebSocketsServer& webSocket, CrossSectionalData& data)
+        static bool buildWebSocket(WebSocketsServer& webSocket, CrossSectionalData& data)
         {
             bool success = false;
             WiFi.mode(WIFI_OFF);
@@ -23,6 +23,14 @@ class WebsocketManager
             if (success && webSocket.isRunning())
             {
                 ESPadapter::serial_println("Websocket running");
+
+                String ssid = "SSID: " + String(data.ssidSocket);
+                String ip = "IP: " + WiFi.softAPIP().toString();
+                String channel = "Channel: " + String(WiFi.channel());
+                ESPadapter::serial_println(ssid);
+                ESPadapter::serial_println(ip);
+                ESPadapter::serial_println(channel);
             }
+            return success && webSocket.isRunning();
         }
 };

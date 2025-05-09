@@ -31,7 +31,7 @@ class ESPadapter
 {
     public:
 
-	static inline void serial_begin(uint16_t baudRate)
+	static inline void serial_begin(unsigned long baudRate)
 	{
 #ifdef DEPLOY
 		Serial.begin(baudRate);
@@ -45,7 +45,7 @@ class ESPadapter
 #endif
 	}
 
-    static inline void serial_print(double num, uint16_t precision)
+    static inline void serial_print(double num, uint16_t precision = 2)
 	{
 #ifdef DEPLOY
 		Serial.print(num, precision);
@@ -159,6 +159,17 @@ class ESPadapter
 		delay(t);
 #else
 		std::this_thread::sleep_until(std::chrono::system_clock::now() + std::chrono::milliseconds(t));
+#endif
+	}
+
+	static inline unsigned long milliseconds()
+	{
+#ifdef DEPLOY
+		return millis();
+#else
+		auto duration = std::chrono::system_clock::now().time_since_epoch();
+		auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+		return millis;
 #endif
 	}
 };

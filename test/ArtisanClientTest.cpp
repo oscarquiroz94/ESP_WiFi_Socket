@@ -2,15 +2,13 @@
 #ifdef TEST
 
 #include "ArtisanClient.hpp"
-
 #include <boost/test/unit_test.hpp>
-
-const char* JSONPAYLOAD_1 = R"({"roasterID": 1, "command": "setControlParams", "params": {"aire": 100, "tambor": 80, "quemador": 60, "soplador": 50}})";
-const char* JSONPAYLOAD_2 = R"({"roasterID": 1, "command": "getData"})";
 
 
 BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_SETPARAMS)
 {
+    const char* JSONPAYLOAD_1 = R"({"roasterID": 1, "command": "setControlParams", "params": {"aire": 100, "tambor": 80, "quemador": 60, "soplador": 50}})";
+
     ArtisanClient artisanClient;
     bool callbackCalled = false;
 
@@ -32,6 +30,8 @@ BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_SETPARAMS)
 // Cases for single command are cover here 
 BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_2_when_EVENTWB_then_GETDATA)
 {
+    const char* JSONPAYLOAD_2 = R"({"roasterID": 1, "command": "getData"})";
+
     ArtisanClient artisanClient;
     bool callbackCalled = false;
 

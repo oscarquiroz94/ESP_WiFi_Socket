@@ -8,45 +8,27 @@
 #include "SerialPort.hpp"
 
 Manager manager;
-uint8_t sendVersionAmount = 0;
-uint32_t t_sendversion;
+
 uint32_t versionESP = 0;
 
 void setup()
 {
-    // manager.initialize();
+    manager.initialize();
 
-    // versionESP = (completeVersion[0] - 48) * 10000000L +
-    //             (completeVersion[1] - 48) * 1000000L +
-    //             (completeVersion[2] - 48) * 100000L +
-    //             (completeVersion[3] - 48) * 10000L +
-    //             (completeVersion[4] - 48) * 1000L +
-    //             (completeVersion[5] - 48) * 100L +
-    //             (completeVersion[6] - 48) * 10L +
-    //             (completeVersion[7] - 48) * 1L;
-
-    // t_sendversion = millis();
+    versionESP = (completeVersion[0] - 48) * 10000000L +
+                 (completeVersion[1] - 48) * 1000000L +
+                 (completeVersion[2] - 48) * 100000L +
+                 (completeVersion[3] - 48) * 10000L +
+                 (completeVersion[4] - 48) * 1000L +
+                 (completeVersion[5] - 48) * 100L +
+                 (completeVersion[6] - 48) * 10L +
+                 (completeVersion[7] - 48) * 1L;
 }
 
 void loop()
-{
-    SerialPort puerto(115200);
-
-    
-    //manager.run();
-
-    // if (sendVersionAmount < 3)
-	// {
-	// 	if (millis() - t_sendversion > 3000)
-	// 	{
-	// 		Serial.print("ESPV,");
-	// 		Serial.print(versionESP);
-	// 		Serial.print(",");
-	// 		Serial.print('\0');
-	// 		t_sendversion = millis();
-	// 		sendVersionAmount++;
-	// 	}
-	// }
+{   
+    manager.run();
+    manager.sendInitializationData(versionESP);
 }
 
 #endif

@@ -12,6 +12,9 @@ class SerialPort
         void openPort();
         void listen();
         void processEvent();
+
+        template<class T> void sendRawData(const T data);
+
         void addFunctionToCommand
             (const char* key, std::function<void(const char*)> func);
         
@@ -20,10 +23,16 @@ class SerialPort
         bool compare(const char *cadena, const char *subcadena);
 
     private:
-        int baudRate;
+        unsigned long baudRate;
         
         std::map<const char*, std::function<void(const char*)>> map2func;
         
         int length(const char *cadena);
         bool compareEqual(const char *cadena, const char *subcadena);
 };
+
+template<class T>
+void SerialPort::sendRawData(const T data)
+{
+    ESPadapter::serial_print(data);
+}
