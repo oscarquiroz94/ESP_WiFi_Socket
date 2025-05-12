@@ -2,9 +2,6 @@
 
 void AudioCrackClient::processEvent(uint8_t num, const char* payload, size_t length)
 {
-    ESPadapter::serial_print("request processed in audiocrack: ");
-    ESPadapter::serial_println(payload);
-
     JsonDocument doc;
     DeserializationError err = deserializeJson(doc, payload);
     switch (err.code()) {
@@ -21,11 +18,11 @@ void AudioCrackClient::processEvent(uint8_t num, const char* payload, size_t len
             break;
     }
     
-    int16_t clientId = -1;
-    if (doc["clientID"].is<int16_t>()) 
-        clientId = doc["clientID"];
-    if (!doc["clientID"].is<int16_t>() && clientId == -1) 
+    if (doc["clientID"].is<int8_t>()) 
+        this->id = doc["clientID"];
+    if (!doc["clientID"].is<int8_t>() && this->id == -1) 
         return; //! No es un mensaje conocido
 
-    ESPadapter::serial_print("AudioCrack, ID Maquina: "); ESPadapter::serial_println(clientId);
+    ESPadapter::serial_print("FROM-AUDIOCRACK: "); 
+    ESPadapter::serial_println(payload);
 }

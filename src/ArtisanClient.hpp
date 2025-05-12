@@ -12,7 +12,10 @@ class ArtisanClient : public GeneralClient
     public:
         ArtisanClient() = default;
 
-        std::string getName () const override {return "artisan";}
+        int8_t getId () const override {return id;}
+        void setId(int8_t val) override {id = val;}
+
+        std::string getName() const final {return "artisan";}
 
         void processEvent
             (uint8_t num, const char *payload, size_t length) override;

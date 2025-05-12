@@ -2,9 +2,6 @@
 
 void ArtisanClient::processEvent(uint8_t num, const char *payload, size_t length)
 { 
-    ESPadapter::serial_print("request processed in artisan: ");
-    ESPadapter::serial_println(payload);
-
     JsonDocument doc;
     DeserializationError err = deserializeJson(doc, payload);
 
@@ -22,14 +19,13 @@ void ArtisanClient::processEvent(uint8_t num, const char *payload, size_t length
             break;
     }
 
-    int16_t machineId = -1;
-    if (doc["roasterID"].is<int16_t>()) 
-        machineId = doc["roasterID"];
-    if (!doc["roasterID"].is<int16_t>() && machineId == -1) 
+    if (doc["roasterID"].is<int8_t>()) 
+        this->id = doc["roasterID"];
+    if (!doc["roasterID"].is<int8_t>() && this->id == -1) 
         return; //! No es un mensaje de Artisan
 
-    ESPadapter::serial_print("Artisan, ID Maquina: ");
-    ESPadapter::serial_println(machineId);
+    // ESPadapter::serial_print("FROM-ARTISAN: ");
+    // ESPadapter::serial_println(payload);
 
     //------------------
 

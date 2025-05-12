@@ -24,9 +24,15 @@ class WebsocketManager
             {
                 ESPadapter::serial_println("Websocket running");
 
-                String ssid = "SSID: " + String(data.ssidSocket);
-                String ip = "IP: " + WiFi.softAPIP().toString();
-                String channel = "Channel: " + String(WiFi.channel());
+#ifdef DEPLOY
+                String ssid = String("SSID: ") + String(data.ssidSocket);
+                String ip = String("IP: ") + WiFi.softAPIP().toString();
+                String channel = String("Channel: ") + String(WiFi.channel());
+#else
+                std::string ssid = std::string("SSID: ") + std::string(data.ssidSocket);
+                std::string ip = std::string("IP: ") + std::string("192.168.4.1");
+                std::string channel = std::string("Channel: ") + std::to_string(data.canalwifi);
+#endif
                 ESPadapter::serial_println(ssid);
                 ESPadapter::serial_println(ip);
                 ESPadapter::serial_println(channel);

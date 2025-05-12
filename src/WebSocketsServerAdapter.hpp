@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Compiletype.hpp"
+#include "ESPadapter.hpp"
 
 #ifdef DEPLOY
 #include <WebSocketsServer.h>
@@ -27,7 +28,7 @@ typedef enum {
 class IPAddress
 {
     public:
-        std::string toString() {return "";}
+        String toString() {return "192.168.4.1";}
 };
 
 class WiFiClass
@@ -36,6 +37,9 @@ class WiFiClass
         void mode(int mode) {}
         void setSleep(bool sleep) {}
         bool softAP(const char* ssid, const char* password, int channel) { return true; }
+        IPAddress softAPIP() {}
+        std::string toString() {return "192.168.4.1";}
+        int channel() {return 1;}
         void begin() {}
         void end() {}
         bool isRunning() { return true; }
@@ -49,6 +53,8 @@ class WebSocketsServer
         bool isRunning() { return true; }
         void close() {}
         void loop() {}
+        void sendTXT(uint8_t num, JsonDocument& doc) {}
+        void onEvent() {}
         IPAddress remoteIP(uint8_t num) { return IPAddress(); }
 };
 
