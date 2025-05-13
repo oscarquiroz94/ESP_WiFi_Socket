@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ArduinoJson.h>
 #include "ESPadapter.hpp"
 #include "GeneralClient.hpp"
 
@@ -8,8 +7,7 @@ class AudioCrackClient : public GeneralClient
 {
     public:
 
-        int8_t getId () const override {return id;}
-        void setId(int8_t val) override {id = val;}
+        int8_t getClientId () const override {return 0;}
 
         std::string getName() const final {return "audiocrack";}
 

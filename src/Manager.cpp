@@ -35,7 +35,7 @@ void Manager::registerSerialPortHandler()
     serialport.addFunctionToCommand("MCA", [&](const char* comand){
         String output;
         JsonDocument outdoc;
-        int8_t idArtisan = artisanClient.getId();
+        int8_t idArtisan = artisanClient.getClientId();
 
         outdoc["pushMessage"] = "startRoasting";
         serializeJson(outdoc, output);
@@ -46,7 +46,7 @@ void Manager::registerSerialPortHandler()
     serialport.addFunctionToCommand("MDR", [&](const char* comand){
         String output;
         JsonDocument outdoc;
-        int8_t idArtisan = artisanClient.getId();
+        int8_t idArtisan = artisanClient.getClientId();
 
         outdoc["pushMessage"] = "endRoasting";
         serializeJson(outdoc, output);
@@ -57,7 +57,7 @@ void Manager::registerSerialPortHandler()
     serialport.addFunctionToCommand("MFC", [&](const char* comand){
         String output;
         JsonDocument outdoc;
-        int8_t idArtisan = artisanClient.getId();
+        int8_t idArtisan = artisanClient.getClientId();
 
         outdoc["pushMessage"] = "addEvent";
 		outdoc["data"]["event"] = "firstCrackBeginningEvent";

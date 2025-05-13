@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ESPadapter.hpp"
-#include <ArduinoJson.h>
 #include "GeneralClient.hpp"
+#include "IClientMessage.hpp"
 #include <functional>
 #include <map>
 
@@ -10,10 +10,9 @@
 class ArtisanClient : public GeneralClient
 {
     public:
-        ArtisanClient() = default;
+        ArtisanClient(IClientMessage* msg) : message(msg) {}
 
-        int8_t getId () const override {return id;}
-        void setId(int8_t val) override {id = val;}
+        int8_t getClientId () const override {return message->getClientId();}
 
         std::string getName() const final {return "artisan";}
 
@@ -27,6 +26,7 @@ class ArtisanClient : public GeneralClient
         virtual ~ArtisanClient() = default;
 
     private:
+        IClientMessage* message;
         std::map<std::string, std::function<void(uint8_t num, JsonDocument& doc)>> map2func;
 };
 

@@ -4,6 +4,7 @@
 
 #ifdef DEPLOY
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #else
 #include <stdint.h>
 #include <iostream>

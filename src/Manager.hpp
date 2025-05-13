@@ -8,6 +8,7 @@
 #include "CrossSectionalData.hpp"
 #include "ArtisanClient.hpp"
 #include "AudioCrackClient.hpp"
+#include "ArtisanMessage.hpp"
 
 /*
 * @brief Class Manager
@@ -15,7 +16,7 @@
 * This class is the monolithic process of the application. 
 * It register the serial port and websocket handlers, and manages the
 * communication between the different components of the application.
-* @note This class is designed to work with the ESP32 platform.
+* Therefore, could have many changes in the future.
 */
 class Manager
 {
@@ -24,7 +25,8 @@ class Manager
         Manager() : 
             serialport(115200), 
             webSocket(8080), 
-            clientHandler(webSocket){}
+            clientHandler(webSocket),
+            artisanClient(&artisanMsg) {}
 
         void initialize();
 
@@ -37,6 +39,8 @@ class Manager
         SerialPort serialport;
         WebSocketsServer webSocket;
 
+        ArtisanMessage artisanMsg;
+        
         WebsocketClientHandler clientHandler;
         ArtisanClient artisanClient;
         AudioCrackClient audioCrackClient;
