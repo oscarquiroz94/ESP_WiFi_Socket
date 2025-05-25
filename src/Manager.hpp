@@ -36,6 +36,7 @@ class Manager
 
     private:
         CrossSectionalData applicationdata;
+        CrossSectionalDataEEPROM eepromdata;
         SerialPort serialport;
         WebSocketsServer webSocket;
 
@@ -50,4 +51,6 @@ class Manager
 
         void registerSerialPortHandler();
         void registerWebSocketHandler();
+        void registerArtisan();
+        void registerAudioCrack();
 };

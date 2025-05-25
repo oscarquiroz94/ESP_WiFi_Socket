@@ -1,38 +1,79 @@
 #include "Manager.hpp"
 #include "ESPadapter.hpp"
+#include "PairingManager.hpp"
+#include <EEPROM.h>
 
 
 void Manager::initialize()
 {
     serialport.openPort();
+    EEPROM.begin(100);
+
+    // eepromdata.clientNames.push_back("audiocrack");
+    // eepromdata.clientNames.push_back("artisan");
+    // eepromdata.save();
+    eepromdata.read();
+
+    while(true);
+
+    PairingManager peer;
+    peer.setupInitialPairing(webSocket, eepromdata);
+    
     registerSerialPortHandler();
     registerWebSocketHandler();
+
+    webSocket.onEvent([&](uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
+        clientHandler.onWebSocketEvent(num, type, payload, length);
+    });
+
+}
+
+void Manager::run()
+{
+    webSocket.loop();
+
+    serialport.listen();
+    serialport.processEvent();
+}
+
+void Manager::sendInitializationData(const uint32_t version)
+{
+    if (ESPadapter::milliseconds() - t_sendversion > 3000 &&
+        sendVersionAmount < 3)
+    {
+        serialport.sendRawData("ESPV,");
+        serialport.sendRawData(version);
+        serialport.sendRawData(",");
+        serialport.sendRawData('\0');
+        t_sendversion = ESPadapter::milliseconds();
+        sendVersionAmount++;
+    }
 }
 
 void Manager::registerSerialPortHandler()
 {
-    serialport.addFunctionToCommand("S,", [&](const char* comand) { 
+    serialport.addFunctionToMainCommand("S,", [&](const char* comand) { 
         //Limpiar valores anteriores
-        memset(applicationdata.ssidSocket, 0, 50);
-        memset(applicationdata.passSocket, 0, 50);
+        memset(eepromdata.ssidSocket, 0, 50);
+        memset(eepromdata.passSocket, 0, 50);
 
         char* cpycommand = (char*)comand;
         char *lista = strtok(cpycommand, ",");
 
         lista = strtok(NULL, ",");
-        if (lista != NULL) strcpy(applicationdata.ssidSocket, String(lista).c_str());
+        if (lista != NULL) strcpy(eepromdata.ssidSocket, String(lista).c_str());
 
         lista = strtok(NULL, ",");
-        if (lista != NULL) strcpy(applicationdata.passSocket, String(lista).c_str());
+        if (lista != NULL) strcpy(eepromdata.passSocket, String(lista).c_str());
 
         lista = strtok(NULL, ",");
-        if (lista != NULL) applicationdata.canalwifi = (uint8_t)(String(lista).toInt());
+        if (lista != NULL) eepromdata.canalwifi = (uint8_t)(String(lista).toInt());
 
-        WebsocketManager::buildWebSocket(webSocket, applicationdata); 
+        WebsocketManager::buildWebSocket(webSocket, eepromdata); 
     });
 
     // TODO: AGREGAR A TESTING
-    serialport.addFunctionToCommand("MCA", [&](const char* comand){
+    serialport.addFunctionToMainCommand("MCA", [&](const char* comand){
         String output;
         JsonDocument outdoc;
         int8_t idArtisan = artisanClient.getClientId();
@@ -43,7 +84,7 @@ void Manager::registerSerialPortHandler()
     });
 
     // TODO: AGREGAR A TESTING
-    serialport.addFunctionToCommand("MDR", [&](const char* comand){
+    serialport.addFunctionToMainCommand("MDR", [&](const char* comand){
         String output;
         JsonDocument outdoc;
         int8_t idArtisan = artisanClient.getClientId();
@@ -54,7 +95,7 @@ void Manager::registerSerialPortHandler()
     });
 
     // TODO: AGREGAR A TESTING
-    serialport.addFunctionToCommand("MFC", [&](const char* comand){
+    serialport.addFunctionToMainCommand("MFC", [&](const char* comand){
         String output;
         JsonDocument outdoc;
         int8_t idArtisan = artisanClient.getClientId();
@@ -67,7 +108,7 @@ void Manager::registerSerialPortHandler()
 
     // TODO: AGREGAR A TESTING
     // IN,230,160,1500,2000,200,600,200 --> ET, BT, Q, T, S, ROR, delta
-    serialport.addFunctionToCommand("IN,", [&](const char* comand) { 
+    serialport.addFunctionToMainCommand("IN,", [&](const char* comand) { 
         char* cpycommand = (char*)comand;
         char *lista = strtok(cpycommand, ",");
 
@@ -96,10 +137,19 @@ void Manager::registerSerialPortHandler()
 
 void Manager::registerWebSocketHandler()
 {
-    clientHandler.registerWebsocketClient(artisanClient);
-    clientHandler.registerWebsocketClient(audioCrackClient);
+    // Registrar Artisan siempre
+    registerArtisan();
 
-    artisanClient.addFunctionToCommand("getData", [&](uint8_t num, JsonDocument& doc) {
+    if (std::find(eepromdata.clientNames.begin(), eepromdata.clientNames.end(), "audiocrack") 
+        != eepromdata.clientNames.end()) 
+        registerAudioCrack();
+}
+
+void Manager::registerArtisan()
+{
+    clientHandler.registerWebsocketClient(artisanClient);
+
+    artisanClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
         String output;
         JsonDocument outdoc;
         outdoc["id"] = doc["id"];
@@ -116,7 +166,7 @@ void Manager::registerWebSocketHandler()
         // ESPadapter::serial_println(output);
     });
 
-    artisanClient.addFunctionToCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
         if (doc["params"]["aire"].is<int16_t>()) 
             applicationdata.aire = (int16_t)doc["params"]["aire"];
 
@@ -137,73 +187,61 @@ void Manager::registerWebSocketHandler()
         ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToCommand("endRoasting", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("endRoasting", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("SODROP");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToCommand("ready", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("ready", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("SREADY");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToCommand("noready", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("noready", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("SNOREA");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToCommand("identify", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("identify", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("IDENTIFY");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToCommand("noidentify", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("noidentify", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("NOIDENTIFY");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToCommand("getinit", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("getinit", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("GETINIT");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToCommand("reset", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("reset", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("RESET");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToCommand("fcstart", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("fcstart", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("FCSTART");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToCommand("oncharge", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("oncharge", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("ONCHARGE");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToCommand("onted", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("onted", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("ONTED");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToCommand("offted", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("offted", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("OFFTED");ESPadapter::serial_print('\0');
     });
-
-    webSocket.onEvent([&](uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
-        clientHandler.onWebSocketEvent(num, type, payload, length);
-    });
 }
 
-void Manager::run()
+void Manager::registerAudioCrack()
 {
-    webSocket.loop();
+    clientHandler.registerWebsocketClient(audioCrackClient);
 
-    serialport.listen();
-    serialport.processEvent();
-}
-
-void Manager::sendInitializationData(const uint32_t version)
-{
-    if (ESPadapter::milliseconds() - t_sendversion > 3000 &&
-        sendVersionAmount < 3)
-    {
-        serialport.sendRawData("ESPV,");
-        serialport.sendRawData(version);
-        serialport.sendRawData(",");
-        serialport.sendRawData('\0');
-        t_sendversion = ESPadapter::milliseconds();
-        sendVersionAmount++;
-    }
+    // audioCrackClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
+    //     String output;
+    //     JsonDocument outdoc;
+    //     outdoc["id"] = doc["id"];
+    //     outdoc["data"]["event"] = "firstCrackBeginningEvent";
+    //     serializeJson(outdoc, output);
+    //     webSocket.sendTXT(num, output);
+    // });
 }

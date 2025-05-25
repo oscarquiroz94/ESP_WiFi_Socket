@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(given_COMMANDPORT_1_when_EVENTSERIAL_then_SET_SSID_PASS_CHA
     
     bool callbackCalled = false;
 
-    serialport.addFunctionToCommand("S,", [&](const char* comand) { 
+    serialport.addFunctionToMainCommand("S,", [&](const char* comand) { 
         callbackCalled = true;
 
         //Limpiar valores anteriores

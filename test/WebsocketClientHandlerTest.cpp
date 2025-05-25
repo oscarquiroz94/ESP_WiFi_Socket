@@ -22,12 +22,12 @@ BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_WSTYPE_TEXT)
     clientHandler.registerWebsocketClient(audioCrackClient);
 
     bool artisanCallbackCalled = false;
-    artisanClient.addFunctionToCommand("getData", [&](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
         artisanCallbackCalled = true;
     });
 
     // bool audioCallbackCalled = false;
-    // audioCrackClient.addFunctionToCommand(JSONPAYLOAD_1, [&](uint8_t num, JsonDocument& doc) {
+    // audioCrackClient.addFunctionToMainCommand(JSONPAYLOAD_1, [&](uint8_t num, JsonDocument& doc) {
     //     audioCallbackCalled = true;
     // });
 

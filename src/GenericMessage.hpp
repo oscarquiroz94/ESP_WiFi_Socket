@@ -1,21 +1,17 @@
-#pragma once
-
-#include "Compiletype.hpp"
-#include "ESPadapter.hpp"
 #include "IClientMessage.hpp"
 
-class ArtisanMessage : public IClientMessage
+class GenericMessage : public IClientMessage
 {
-    public:        
+    public:
+        GenericMessage() = default;
 
         int8_t getClientId() const override {return id;}
-
+        
         bool getDocument(JsonDocument& doc, const char* data) override
         {
             parsePayload(doc, data);
             return isValid(doc);
         }
-
         std::string getMainCommand(JsonDocument& doc) override
         {
             if (!isValid(doc)) return "";
@@ -24,22 +20,10 @@ class ArtisanMessage : public IClientMessage
                 return doc["command"].as<std::string>();
             else return "";
         }
-
+    
     private:
-
         bool isValid(JsonDocument& doc) override
         {
-            bool isvalid = false;
-            if (doc["roasterID"].is<int8_t>()) 
-            {
-                this->id = doc["roasterID"];
-                isvalid = true;
-                // ESPadapter::serial_print("FROM-ARTISAN: ");
-                // ESPadapter::serial_println(payload);
-            }
-            else if (!doc["roasterID"].is<int8_t>() && this->id == -1) 
-                isvalid = false;
-
-            return isvalid;
+            return doc["deviceID"].is<int8_t>();
         }
 };

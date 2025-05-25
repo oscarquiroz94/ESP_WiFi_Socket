@@ -32,6 +32,25 @@ class ESPadapter
 {
     public:
 
+	static inline void print_null(std::string nameclass, const char* function)
+	{
+		Serial.print(nameclass.c_str());
+		Serial.print("::");
+		Serial.print(function);
+		Serial.println(" - NULL");
+	}
+
+	static inline unsigned long millisec()
+	{
+#ifdef DEPLOY
+		return millis();
+#else
+		auto duration = std::chrono::system_clock::now().time_since_epoch();
+		auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+		return millis;
+#endif
+	}
+
 	static inline void serial_begin(unsigned long baudRate)
 	{
 #ifdef DEPLOY

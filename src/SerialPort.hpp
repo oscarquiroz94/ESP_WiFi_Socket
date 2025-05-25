@@ -15,7 +15,7 @@ class SerialPort
 
         template<class T> void sendRawData(const T data);
 
-        void addFunctionToCommand
+        void addFunctionToMainCommand
             (const char* key, std::function<void(const char*)> func);
         
     protected:

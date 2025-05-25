@@ -1,7 +1,7 @@
 #include "WebsocketClientHandler.hpp"
 
 void WebsocketClientHandler::registerWebsocketClient
-    (GeneralClient& client)
+    (IGeneralClient& client)
 {
     websocketClients.push_back(&client);
     ESPadapter::serial_print("Client registered: ");
@@ -39,7 +39,8 @@ void WebsocketClientHandler::onWebSocketEvent
             
             for (auto& client : websocketClients)
             {
-                client->processEvent(num, payloadconst, length);
+                if (nullptr != client)
+                    client->processEvent(num, payloadconst, length);
             }
             
             break;

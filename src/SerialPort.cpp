@@ -8,7 +8,7 @@ void SerialPort::openPort()
     ESPadapter::serial_timeout(100);
 }
 
-void SerialPort::addFunctionToCommand
+void SerialPort::addFunctionToMainCommand
     (const char* key, std::function<void(const char*)> func)
 {
     map2func[key] = func;

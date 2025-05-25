@@ -2,7 +2,7 @@
 
 #include "ESPadapter.hpp"
 #include "WebSocketsServerAdapter.hpp"
-#include "GeneralClient.hpp"
+#include "IGeneralClient.hpp"
 #include "ArtisanClient.hpp"
 
 class WebsocketClientHandler
@@ -10,11 +10,11 @@ class WebsocketClientHandler
     public:
         WebsocketClientHandler(WebSocketsServer& ws) : webSocket(ws) {}
 
-        void registerWebsocketClient(GeneralClient& client);
+        void registerWebsocketClient(IGeneralClient& client);
 
         void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
 
     private:
         WebSocketsServer& webSocket;
-        std::vector<GeneralClient*> websocketClients;   
+        std::vector<IGeneralClient*> websocketClients;   
 };
