@@ -380,7 +380,7 @@
 // 			clientHandler.registerWebsocketClient(artisanClient);
 // 			clientHandler.registerWebsocketClient(audioCrackClient);
 
-// 			artisanClient.addFunctionToCommand("getData", [](uint8_t num, JsonDocument& doc) {
+// 			artisanClient.addFunctionToMainCommand("getData", [](uint8_t num, JsonDocument& doc) {
 // 				String output;
 // 				JsonDocument outdoc;
 // 				outdoc["id"] = doc["id"];
@@ -395,7 +395,7 @@
 // 				webSocket.sendTXT(num, output);
 // 			});
 
-// 			artisanClient.addFunctionToCommand("setControlParams", [](uint8_t num, JsonDocument& doc) {
+// 			artisanClient.addFunctionToMainCommand("setControlParams", [](uint8_t num, JsonDocument& doc) {
 // 				vaCO.aire = (int16_t)doc["params"]["aire"];
 // 				vaCO.tambor = (int16_t)doc["params"]["tambor"];
 // 				vaCO.quemador = (int16_t)doc["params"]["quemador"];
@@ -406,47 +406,47 @@
 // 				Serial.print(vaCO.tedvalue);Serial.print(',');Serial.print('\0');
 // 			});
 
-// 			artisanClient.addFunctionToCommand("endRoasting", [](uint8_t num, JsonDocument& doc) {
+// 			artisanClient.addFunctionToMainCommand("endRoasting", [](uint8_t num, JsonDocument& doc) {
 // 				Serial.print("SODROP");Serial.print('\0');
 // 			});
 
-// 			artisanClient.addFunctionToCommand("ready", [](uint8_t num, JsonDocument& doc) {
+// 			artisanClient.addFunctionToMainCommand("ready", [](uint8_t num, JsonDocument& doc) {
 // 				Serial.print("SREADY");Serial.print('\0');
 // 			});
 
-// 			artisanClient.addFunctionToCommand("noready", [](uint8_t num, JsonDocument& doc) {
+// 			artisanClient.addFunctionToMainCommand("noready", [](uint8_t num, JsonDocument& doc) {
 // 				Serial.print("SNOREA");Serial.print('\0');
 // 			});
 
-// 			artisanClient.addFunctionToCommand("identify", [](uint8_t num, JsonDocument& doc) {
+// 			artisanClient.addFunctionToMainCommand("identify", [](uint8_t num, JsonDocument& doc) {
 // 				Serial.print("IDENTIFY");Serial.print('\0');
 // 			});
 
-// 			artisanClient.addFunctionToCommand("noidentify", [](uint8_t num, JsonDocument& doc) {
+// 			artisanClient.addFunctionToMainCommand("noidentify", [](uint8_t num, JsonDocument& doc) {
 // 				Serial.print("NOIDENTIFY");Serial.print('\0');
 // 			});
 
-// 			artisanClient.addFunctionToCommand("getinit", [](uint8_t num, JsonDocument& doc) {
+// 			artisanClient.addFunctionToMainCommand("getinit", [](uint8_t num, JsonDocument& doc) {
 // 				Serial.print("GETINIT");Serial.print('\0');
 // 			});
 
-// 			artisanClient.addFunctionToCommand("reset", [](uint8_t num, JsonDocument& doc) {
+// 			artisanClient.addFunctionToMainCommand("reset", [](uint8_t num, JsonDocument& doc) {
 // 				Serial.print("RESET");Serial.print('\0');
 // 			});
 
-// 			artisanClient.addFunctionToCommand("fcstart", [](uint8_t num, JsonDocument& doc) {
+// 			artisanClient.addFunctionToMainCommand("fcstart", [](uint8_t num, JsonDocument& doc) {
 // 				Serial.print("FCSTART");Serial.print('\0');
 // 			});
 
-// 			artisanClient.addFunctionToCommand("oncharge", [](uint8_t num, JsonDocument& doc) {
+// 			artisanClient.addFunctionToMainCommand("oncharge", [](uint8_t num, JsonDocument& doc) {
 // 				Serial.print("ONCHARGE");Serial.print('\0');
 // 			});
 
-// 			artisanClient.addFunctionToCommand("onted", [](uint8_t num, JsonDocument& doc) {
+// 			artisanClient.addFunctionToMainCommand("onted", [](uint8_t num, JsonDocument& doc) {
 // 				Serial.print("ONTED");Serial.print('\0');
 // 			});
 
-// 			artisanClient.addFunctionToCommand("offted", [](uint8_t num, JsonDocument& doc) {
+// 			artisanClient.addFunctionToMainCommand("offted", [](uint8_t num, JsonDocument& doc) {
 // 				Serial.print("OFFTED");Serial.print('\0');
 // 			});
 

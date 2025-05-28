@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ESPadapter.hpp"
-#include "GeneralClient.hpp"
-#include "IClientMessage.hpp"
+#include "utilities/ESPadapter.hpp"
+#include "IGeneralClient.hpp"
+#include "messages/IClientMessage.hpp"
 #include <functional>
 #include <map>
 
 
-class ArtisanClient : public GeneralClient
+class ArtisanClient : public IGeneralClient
 {
     public:
         ArtisanClient(IClientMessage* msg) : message(msg) {}
@@ -19,9 +19,9 @@ class ArtisanClient : public GeneralClient
         void processEvent
             (uint8_t num, const char *payload, size_t length) override;
 
-        void addFunctionToCommand
+        void addFunctionToMainCommand
             (std::string key, 
-             std::function<void(uint8_t num, JsonDocument& doc)> func);
+             std::function<void(uint8_t num, JsonDocument& doc)> func) override;
 
         virtual ~ArtisanClient() = default;
 

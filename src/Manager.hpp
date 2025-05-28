@@ -2,13 +2,13 @@
 
 #include "compiletype.hpp"
 
-#include "SerialPort.hpp"
-#include "WebsocketManager.hpp"
-#include "WebsocketClientHandler.hpp"
+#include "serial/SerialPort.hpp"
+#include "websocket/WebsocketManager.hpp"
+#include "websocket/WebsocketClientHandler.hpp"
 #include "CrossSectionalData.hpp"
-#include "ArtisanClient.hpp"
-#include "AudioCrackClient.hpp"
-#include "ArtisanMessage.hpp"
+#include "clients/ArtisanClient.hpp"
+#include "clients/AudioCrackClient.hpp"
+#include "messages/ArtisanMessage.hpp"
 
 /*
 * @brief Class Manager
@@ -36,6 +36,7 @@ class Manager
 
     private:
         CrossSectionalData applicationdata;
+        CrossSectionalDataEEPROM eepromdata;
         SerialPort serialport;
         WebSocketsServer webSocket;
 
@@ -50,4 +51,6 @@ class Manager
 
         void registerSerialPortHandler();
         void registerWebSocketHandler();
+        void registerArtisan();
+        void registerAudioCrack();
 };
