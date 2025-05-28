@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Compiletype.hpp"
-#include "ESPadapter.hpp"
+#include "utilities/ESPadapter.hpp"
 
 #ifdef DEPLOY
 #include <WebSocketsServer.h>

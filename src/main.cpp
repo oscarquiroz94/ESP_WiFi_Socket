@@ -1,11 +1,11 @@
 #include "Compiletype.hpp"
 
-#include "ESPadapter.hpp"
+#include "utilities/ESPadapter.hpp"
 
 #ifdef DEPLOY
 #include "Manager.hpp"
-#include "Version.h"
-#include "SerialPort.hpp"
+#include "utilities/Version.h"
+#include "serial/SerialPort.hpp"
 
 Manager manager;
 

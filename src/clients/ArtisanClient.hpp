@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ESPadapter.hpp"
+#include "utilities/ESPadapter.hpp"
 #include "IGeneralClient.hpp"
-#include "IClientMessage.hpp"
+#include "messages/IClientMessage.hpp"
 #include <functional>
 #include <map>
 

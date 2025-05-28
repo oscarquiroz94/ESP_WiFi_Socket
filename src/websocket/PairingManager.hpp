@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Compiletype.hpp"
-#include "ESPadapter.hpp"
+#include "utilities/ESPadapter.hpp"
 #include "CrossSectionalData.hpp"
-#include "WebsocketManager.hpp"
+#include "websocket/WebsocketManager.hpp"
 #include "WebSocketsServer.h"
-#include "GenericClient.hpp"
-#include "GenericMessage.hpp"
-#include "WebsocketClientHandler.hpp"
+#include "clients/GenericClient.hpp"
+#include "messages/GenericMessage.hpp"
+#include "websocket/WebsocketClientHandler.hpp"
 
 /*
 * @brief Class PairingManager

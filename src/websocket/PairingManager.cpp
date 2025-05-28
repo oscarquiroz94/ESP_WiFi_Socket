@@ -1,5 +1,5 @@
 #include "PairingManager.hpp"
-#include "Temporizador.hpp"
+#include "utilities/Temporizador.hpp"
 
 void PairingManager::setupInitialPairing
 (WebSocketsServer& webSocket, CrossSectionalDataEEPROM& data)

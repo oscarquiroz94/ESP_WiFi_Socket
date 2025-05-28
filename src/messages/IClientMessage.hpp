@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Compiletype.hpp"
-#include "ESPadapter.hpp"
+#include "utilities/ESPadapter.hpp"
 #include "ArduinoJson.hpp"
 
 class IClientMessage

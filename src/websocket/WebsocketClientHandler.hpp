@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ESPadapter.hpp"
-#include "WebSocketsServerAdapter.hpp"
-#include "IGeneralClient.hpp"
-#include "ArtisanClient.hpp"
+#include "utilities/ESPadapter.hpp"
+#include "websocket/WebSocketsServerAdapter.hpp"
+#include "clients/IGeneralClient.hpp"
+#include "clients/ArtisanClient.hpp"
 
 class WebsocketClientHandler
 {

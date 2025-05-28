@@ -1,6 +1,6 @@
 #include "Manager.hpp"
-#include "ESPadapter.hpp"
-#include "PairingManager.hpp"
+#include "utilities/ESPadapter.hpp"
+#include "websocket/PairingManager.hpp"
 #include <EEPROM.h>
 
 
@@ -8,13 +8,6 @@ void Manager::initialize()
 {
     serialport.openPort();
     EEPROM.begin(100);
-
-    // eepromdata.clientNames.push_back("audiocrack");
-    // eepromdata.clientNames.push_back("artisan");
-    // eepromdata.save();
-    eepromdata.read();
-
-    while(true);
 
     PairingManager peer;
     peer.setupInitialPairing(webSocket, eepromdata);
@@ -152,7 +145,6 @@ void Manager::registerArtisan()
     artisanClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
         String output;
         JsonDocument outdoc;
-        outdoc["id"] = doc["id"];
         outdoc["data"]["aire"] = applicationdata.tempET;
         outdoc["data"]["grano"] = applicationdata.tempBT;
         outdoc["data"]["ror"] = applicationdata.RoR;
@@ -234,7 +226,7 @@ void Manager::registerArtisan()
 
 void Manager::registerAudioCrack()
 {
-    clientHandler.registerWebsocketClient(audioCrackClient);
+    //clientHandler.registerWebsocketClient(audioCrackClient);
 
     // audioCrackClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
     //     String output;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ESPadapter.hpp"
+#include "utilities/ESPadapter.hpp"
 #include <Preferences.h>
 #include <vector>
 #include <array>
@@ -42,8 +42,7 @@ struct CrossSectionalDataEEPROM
         std::string concatNames = "";
         for (std::vector<std::string>::iterator it = clientNames.begin(); it != clientNames.end(); ++it) 
         {
-            concatNames += *it;
-            concatNames += ",";
+            concatNames += *it + ",";
         }
         preferences.putString("clientNames", concatNames.c_str());
 
@@ -65,30 +64,6 @@ struct CrossSectionalDataEEPROM
         preferences.getString("clientNames", _clientNames, sizeof(_clientNames));
         preferences.end();
 
-        // strcpy(_ssidSocket, EEPROM.readString(address).c_str());
-        // address += (int)sizeof(_ssidSocket);
-
-        // strcpy(_passSocket, EEPROM.readString(address).c_str());
-        // address += (int)sizeof(_passSocket);
-
-        // _canalwifi = EEPROM.readUChar(address);
-        // address += (int)sizeof(_canalwifi);
-
-
-        // //Read client names
-        // char charname[20];
-        // while (strcmp(charname, "") != 0)
-        // {
-        //     //clientNames.push_back(charname);
-        //     strcpy(charname, EEPROM.readString(address).c_str());
-            
-        //     if (EEPROM.readString(address).length() > 0)
-        //     {
-        //         //clientNames.push_back(charname);
-        //     }
-        //     address += (int)sizeof(charname);
-        // }
-
         ESPadapter::serial_print(F("SSID: "));
         ESPadapter::serial_println(_ssidSocket);
         ESPadapter::serial_print(F("Pass: "));
@@ -105,7 +80,6 @@ struct CrossSectionalDataEEPROM
             {
                 ESPadapter::serial_print(token);
                 ESPadapter::serial_print(F(","));
-                // Si quieres agregarlos al vector:
                 // clientNames.push_back(std::string(token));
             }
             token = strtok(nullptr, ",");

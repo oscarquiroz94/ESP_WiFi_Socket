@@ -1,5 +1,5 @@
 #include "IGeneralClient.hpp"
-#include "IClientMessage.hpp"
+#include "messages/IClientMessage.hpp"
 #include <functional>
 #include <map>
 
