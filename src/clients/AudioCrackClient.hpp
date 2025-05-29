@@ -19,7 +19,7 @@ class AudioCrackClient : public IGeneralClient
 
         void addFunctionToMainCommand
             (std::string key, 
-             std::function<void(uint8_t num, WrapperJson::JsonDocument& doc)> func) override
+             std::function<void(uint8_t num, JsonDocument& doc)> func) override
         {
             //ESPadapter::serial_println("Audiocrack: Not implemented yet");
         }

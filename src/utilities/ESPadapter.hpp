@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Compiletype.hpp"
+#include <ArduinoJson.h>
 
 #ifdef DEPLOY
 #include <Arduino.h>
@@ -16,21 +17,23 @@
 
 
 #ifndef DEPLOY
-class String
-{
-	public:
-		String() : str_("") {}
-		String(const char* str) : str_(str) {}
-		const char* c_str() const { return str_.c_str(); }
-		int toInt() const { return std::stoi(str_); }
-	private:
-		std::string str_;
-};
+using String = std::string;
 #endif
 
 class ESPadapter
 {
     public:
+
+	static inline long str2int(const char *txt)
+	{
+#ifdef DEPLOY
+		if (txt != nullptr) return String(txt).toInt();
+		else return 0;
+#else
+		if (txt != nullptr) return std::stoi(txt);
+		else return 0;
+#endif
+	}
 
 	static inline void print_null(std::string nameclass, const char* function)
 	{

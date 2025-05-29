@@ -24,7 +24,7 @@ void PairingManager::setupInitialPairing
     WebsocketClientHandler clientHandler(webSocket);
     clientHandler.registerWebsocketClient(genericClient);
 
-    genericClient.addFunctionToMainCommand("attach", [&](uint8_t num, WrapperJson::JsonDocument& doc) {
+    genericClient.addFunctionToMainCommand("attach", [&](uint8_t num, JsonDocument& doc) {
         //int8_t id = doc["deviceId"];
         std::string name = doc["deviceName"];
         

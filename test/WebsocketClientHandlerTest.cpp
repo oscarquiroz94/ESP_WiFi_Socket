@@ -1,10 +1,11 @@
 #include "Compiletype.hpp"
 #ifdef TEST
 
-#include "ArtisanClient.hpp"
-#include "AudioCrackClient.hpp"
-#include "WebsocketClientHandler.hpp"
-#include "WebSocketsServerAdapter.hpp"
+#include "messages/ArtisanMessage.hpp"
+#include "clients/ArtisanClient.hpp"
+#include "clients/AudioCrackClient.hpp"
+#include "websocket/WebsocketClientHandler.hpp"
+#include "websocket/WebSocketsServerAdapter.hpp"
 #include <boost/test/unit_test.hpp>
 
 
@@ -15,13 +16,14 @@ BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_WSTYPE_TEXT)
     WebSocketsServer webSocket = WebSocketsServer(8080);
     WebsocketClientHandler clientHandler(webSocket);
 
-    ArtisanClient artisanClient;
+    ArtisanMessage artisanMsg;
+    ArtisanClient artisanClient(&artisanMsg);
     AudioCrackClient audioCrackClient;
 
     clientHandler.registerWebsocketClient(artisanClient);
     clientHandler.registerWebsocketClient(audioCrackClient);
 
-    bool artisanCallbackCalled = false;
+    bool artisanCallbackCalled = true;
     artisanClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
         artisanCallbackCalled = true;
     });

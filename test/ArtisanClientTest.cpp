@@ -1,7 +1,8 @@
 #include "Compiletype.hpp"
 #ifdef TEST
 
-#include "ArtisanClient.hpp"
+#include "messages/ArtisanMessage.hpp"
+#include "clients/ArtisanClient.hpp"
 #include <boost/test/unit_test.hpp>
 
 // TODO: JSONPAYLOAD_2 = {"command":"setControlParams","params":{"quemador":63},"id":26764,"roasterID":0}
@@ -10,7 +11,8 @@ BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_SETPARAMS)
 {
     const char* JSONPAYLOAD_1 = R"({"roasterID": 1, "command": "setControlParams", "params": {"aire": 100, "tambor": 80, "quemador": 60, "soplador": 50}})";
 
-    ArtisanClient artisanClient;
+    ArtisanMessage artisanMsg;
+    ArtisanClient artisanClient(&artisanMsg);
     bool callbackCalled = false;
 
     artisanClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
@@ -33,12 +35,13 @@ BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_2_when_EVENTWB_then_GETDATA)
 {
     const char* JSONPAYLOAD_2 = R"({"command":"getData","id":92295,"roasterID":0})";
 
-    ArtisanClient artisanClient;
+    ArtisanMessage artisanMsg;
+    ArtisanClient artisanClient(&artisanMsg);
     bool callbackCalled = false;
 
     artisanClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
         callbackCalled = true;
-        BOOST_CHECK(1 == doc["roasterID"]);
+        BOOST_CHECK(0 == doc["roasterID"]);
     });
 
     artisanClient.processEvent(128, JSONPAYLOAD_2, sizeof(JSONPAYLOAD_2));

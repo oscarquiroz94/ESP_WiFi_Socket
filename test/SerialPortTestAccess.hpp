@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SerialPort.hpp"
+#include "serial/SerialPort.hpp"
 
 class SerialPortTestAccess : public SerialPort
 {
@@ -13,8 +13,8 @@ class SerialPortTestAccess : public SerialPort
             strcpy(comandoFromAtmega, command);
         }
 
-        bool compare(const char *cadena, const char *subcadena)
+        bool compareEqual(const char *cadena, const char *subcadena)
         {
-            return SerialPort::compare(cadena, subcadena);
+            return SerialPort::compareEqual(cadena, subcadena);
         }
 };

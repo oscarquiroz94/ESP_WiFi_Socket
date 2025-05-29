@@ -7,12 +7,12 @@ class GenericMessage : public IClientMessage
 
         int8_t getClientId() const override {return id;}
         
-        bool getDocument(WrapperJson::JsonDocument& doc, const char* data) override
+        bool getDocument(JsonDocument& doc, const char* data) override
         {
             parsePayload(doc, data);
             return isValid(doc);
         }
-        std::string getMainCommand(WrapperJson::JsonDocument& doc) override
+        std::string getMainCommand(JsonDocument& doc) override
         {
             if (!isValid(doc)) return "";
 
@@ -22,7 +22,7 @@ class GenericMessage : public IClientMessage
         }
     
     private:
-        bool isValid(WrapperJson::JsonDocument& doc) override
+        bool isValid(JsonDocument& doc) override
         {
             return doc["deviceID"].is<int8_t>();
         }

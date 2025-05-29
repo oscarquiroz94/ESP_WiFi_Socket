@@ -2,7 +2,6 @@
 
 #include "Compiletype.hpp"
 #include "utilities/ESPadapter.hpp"
-#include  "utilities/WrapperJson.hpp"
 
 #ifdef DEPLOY
 #include <WebSocketsServer.h>
@@ -56,7 +55,7 @@ class WebSocketsServer
         bool isRunning() { return true; }
         void close() {}
         void loop() {}
-        void sendTXT(uint8_t num, WrapperJson::JsonDocument& doc) {}
+        void sendTXT(uint8_t num, JsonDocument& doc) {}
         void sendTXT(uint8_t num, String &doc) {}
         void onEvent(std::function<void(uint8_t num, WStype_t type, uint8_t *payload, size_t length)>) {}
         IPAddress remoteIP(uint8_t num) { return IPAddress(); }
