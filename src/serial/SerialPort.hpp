@@ -20,7 +20,7 @@ class SerialPort
         
     protected:
         static char comandoFromAtmega[50];
-        bool compare(const char *cadena, const char *subcadena);
+        
 
     private:
         unsigned long baudRate;
@@ -29,6 +29,9 @@ class SerialPort
         
         int length(const char *cadena);
         bool compareEqual(const char *cadena, const char *subcadena);
+        bool compare(const char *cadena, const char *subcadena);
+
+        friend class SerialPortTestAccess; // For testing purposes
 };
 
 template<class T>

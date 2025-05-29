@@ -2,6 +2,7 @@
 
 #include "Compiletype.hpp"
 #include "utilities/ESPadapter.hpp"
+#include "utilities/WrapperJson.hpp"
 #include "ArduinoJson.hpp"
 
 class IClientMessage
@@ -19,7 +20,7 @@ class IClientMessage
          * @return true if the payload is a valid document for the instance
          * @return false if the payload is not a valid document for the instance
          */
-        virtual bool getDocument(JsonDocument& doc, const char* data) = 0;
+        virtual bool getDocument(WrapperJson::JsonDocument &doc, const char *data) = 0;
 
         /**
          * @brief Get the Command object
@@ -27,7 +28,7 @@ class IClientMessage
          * @param doc JsonDocument already filled
          * @return std::string main command of the document
          */
-        virtual std::string getMainCommand(JsonDocument& doc) = 0;
+        virtual std::string getMainCommand(WrapperJson::JsonDocument &doc) = 0;
 
     protected:
         int8_t id = -1;
@@ -38,7 +39,7 @@ class IClientMessage
          * @param doc 
          * @return true in case is valid, false otherwise
          */
-        virtual bool isValid(JsonDocument& doc) = 0;
+        virtual bool isValid(WrapperJson::JsonDocument &doc) = 0;
 
         
         /**
@@ -46,18 +47,18 @@ class IClientMessage
          * @param doc Input and Output Json document
          * @param payload Input stream payload
          */  
-        void parsePayload(JsonDocument& doc, const char* payload)
+        void parsePayload(WrapperJson::JsonDocument &doc, const char *payload)
         {
-            DeserializationError err = deserializeJson(doc, payload);
+            WrapperJson::DeserializationError err = WrapperJson::deserializeJson(doc, payload);
             
             switch (err.code()) {
-                case DeserializationError::Ok:
+                case WrapperJson::DeserializationError::Ok:
                     ESPadapter::serial_println("Valid input!");
                     break;
-                case DeserializationError::InvalidInput:
+                case WrapperJson::DeserializationError::InvalidInput:
                     ESPadapter::serial_println("Invalid input!");
                     break;
-                case DeserializationError::NoMemory:
+                case WrapperJson::DeserializationError::NoMemory:
                     ESPadapter::serial_println("Not enough memory");
                     break;
                 default:

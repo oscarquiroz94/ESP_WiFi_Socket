@@ -4,7 +4,7 @@
 #include "utilities/ESPadapter.hpp"
 #include "CrossSectionalData.hpp"
 #include "websocket/WebsocketManager.hpp"
-#include "WebSocketsServer.h"
+#include "WebSocketsServerAdapter.hpp"
 #include "clients/GenericClient.hpp"
 #include "messages/GenericMessage.hpp"
 #include "websocket/WebsocketClientHandler.hpp"

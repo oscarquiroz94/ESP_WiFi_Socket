@@ -2,6 +2,7 @@
 
 #include "Compiletype.hpp"
 #include "utilities/ESPadapter.hpp"
+#include  "utilities/WrapperJson.hpp"
 
 #ifdef DEPLOY
 #include <WebSocketsServer.h>
@@ -10,6 +11,7 @@
 #include <stdint.h>
 #include <iostream>
 #include <cstring>
+#include <functional>
 
 typedef enum {
     WStype_ERROR,
@@ -37,12 +39,13 @@ class WiFiClass
         void mode(int mode) {}
         void setSleep(bool sleep) {}
         bool softAP(const char* ssid, const char* password, int channel) { return true; }
-        IPAddress softAPIP() {}
+        IPAddress softAPIP() {return IPAddress();}
         std::string toString() {return "192.168.4.1";}
         int channel() {return 1;}
         void begin() {}
         void end() {}
         bool isRunning() { return true; }
+        void softAPdisconnect(bool) {}
 };
 
 class WebSocketsServer
@@ -53,8 +56,9 @@ class WebSocketsServer
         bool isRunning() { return true; }
         void close() {}
         void loop() {}
-        void sendTXT(uint8_t num, JsonDocument& doc) {}
-        void onEvent() {}
+        void sendTXT(uint8_t num, WrapperJson::JsonDocument& doc) {}
+        void sendTXT(uint8_t num, String &doc) {}
+        void onEvent(std::function<void(uint8_t num, WStype_t type, uint8_t *payload, size_t length)>) {}
         IPAddress remoteIP(uint8_t num) { return IPAddress(); }
 };
 

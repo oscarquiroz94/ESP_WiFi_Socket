@@ -1,8 +1,9 @@
 #pragma once
 
 #include "utilities/ESPadapter.hpp"
-#include "IGeneralClient.hpp"
+#include "utilities/WrapperJson.hpp"
 #include "messages/IClientMessage.hpp"
+#include "IGeneralClient.hpp"
 #include <functional>
 #include <map>
 
@@ -21,12 +22,12 @@ class ArtisanClient : public IGeneralClient
 
         void addFunctionToMainCommand
             (std::string key, 
-             std::function<void(uint8_t num, JsonDocument& doc)> func) override;
+             std::function<void(uint8_t num, WrapperJson::JsonDocument& doc)> func) override;
 
         virtual ~ArtisanClient() = default;
 
     private:
         IClientMessage* message;
-        std::map<std::string, std::function<void(uint8_t num, JsonDocument& doc)>> map2func;
+        std::map<std::string, std::function<void(uint8_t num, WrapperJson::JsonDocument& doc)>> map2func;
 };
 

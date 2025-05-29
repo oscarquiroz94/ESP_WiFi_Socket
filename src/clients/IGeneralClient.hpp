@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utilities/ESPadapter.hpp"
+#include "utilities/WrapperJson.hpp"
 #include <functional>
 
 class IGeneralClient
@@ -13,7 +14,7 @@ class IGeneralClient
 
         virtual void addFunctionToMainCommand
             (std::string key, 
-             std::function<void(uint8_t num, JsonDocument& doc)> func) = 0;
+             std::function<void(uint8_t num, WrapperJson::JsonDocument& doc)> func) = 0;
 
         virtual int8_t getClientId () const = 0;
         virtual std::string getName() const = 0;

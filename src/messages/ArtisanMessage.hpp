@@ -10,13 +10,13 @@ class ArtisanMessage : public IClientMessage
 
         int8_t getClientId() const override {return id;}
 
-        bool getDocument(JsonDocument& doc, const char* data) override
+        bool getDocument(WrapperJson::JsonDocument& doc, const char* data) override
         {
             parsePayload(doc, data);
             return isValid(doc);
         }
 
-        std::string getMainCommand(JsonDocument& doc) override
+        std::string getMainCommand(WrapperJson::JsonDocument& doc) override
         {
             if (!isValid(doc)) return "";
 
@@ -27,7 +27,7 @@ class ArtisanMessage : public IClientMessage
 
     private:
 
-        bool isValid(JsonDocument& doc) override
+        bool isValid(WrapperJson::JsonDocument& doc) override
         {
             bool isvalid = false;
             if (doc["roasterID"].is<int8_t>()) 

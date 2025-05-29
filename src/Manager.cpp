@@ -1,13 +1,19 @@
 #include "Manager.hpp"
 #include "utilities/ESPadapter.hpp"
 #include "websocket/PairingManager.hpp"
+#include <algorithm>
+
+#ifdef DEPLOY
 #include <EEPROM.h>
+#endif
 
 
 void Manager::initialize()
 {
     serialport.openPort();
+#ifdef DEPLOY
     EEPROM.begin(100);
+#endif
 
     PairingManager peer;
     peer.setupInitialPairing(webSocket, eepromdata);
@@ -68,34 +74,34 @@ void Manager::registerSerialPortHandler()
     // TODO: AGREGAR A TESTING
     serialport.addFunctionToMainCommand("MCA", [&](const char* comand){
         String output;
-        JsonDocument outdoc;
+        WrapperJson::JsonDocument outdoc;
         int8_t idArtisan = artisanClient.getClientId();
 
         outdoc["pushMessage"] = "startRoasting";
-        serializeJson(outdoc, output);
+        WrapperJson::serializeJson(outdoc, output);
         webSocket.sendTXT(idArtisan, output);
     });
 
     // TODO: AGREGAR A TESTING
     serialport.addFunctionToMainCommand("MDR", [&](const char* comand){
         String output;
-        JsonDocument outdoc;
+        WrapperJson::JsonDocument outdoc;
         int8_t idArtisan = artisanClient.getClientId();
 
         outdoc["pushMessage"] = "endRoasting";
-        serializeJson(outdoc, output);
+        WrapperJson::serializeJson(outdoc, output);
         webSocket.sendTXT(idArtisan, output);
     });
 
     // TODO: AGREGAR A TESTING
     serialport.addFunctionToMainCommand("MFC", [&](const char* comand){
         String output;
-        JsonDocument outdoc;
+        WrapperJson::JsonDocument outdoc;
         int8_t idArtisan = artisanClient.getClientId();
 
         outdoc["pushMessage"] = "addEvent";
 		outdoc["data"]["event"] = "firstCrackBeginningEvent";
-        serializeJson(outdoc, output);
+        WrapperJson::serializeJson(outdoc, output);
         webSocket.sendTXT(idArtisan, output);
     });
 
@@ -142,9 +148,9 @@ void Manager::registerArtisan()
 {
     clientHandler.registerWebsocketClient(artisanClient);
 
-    artisanClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("getData", [&](uint8_t num, WrapperJson::JsonDocument& doc) {
         String output;
-        JsonDocument outdoc;
+        WrapperJson::JsonDocument outdoc;
         outdoc["data"]["aire"] = applicationdata.tempET;
         outdoc["data"]["grano"] = applicationdata.tempBT;
         outdoc["data"]["ror"] = applicationdata.RoR;
@@ -152,13 +158,13 @@ void Manager::registerArtisan()
         outdoc["data"]["soplador"] = applicationdata.porcentSopl;
         outdoc["data"]["tambor"] = applicationdata.porcentTamb;
         outdoc["data"]["delta"] = applicationdata.deltaETBT;
-        serializeJson(outdoc, output);
+        WrapperJson::serializeJson(outdoc, output);
         webSocket.sendTXT(num, output);
         // ESPadapter::serial_print("TO-ARTISAN: ");
         // ESPadapter::serial_println(output);
     });
 
-    artisanClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, WrapperJson::JsonDocument& doc) {
         if (doc["params"]["aire"].is<int16_t>()) 
             applicationdata.aire = (int16_t)doc["params"]["aire"];
 
@@ -179,47 +185,47 @@ void Manager::registerArtisan()
         ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("endRoasting", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("endRoasting", [](uint8_t num, WrapperJson::JsonDocument& doc) {
         ESPadapter::serial_print("SODROP");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("ready", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("ready", [](uint8_t num, WrapperJson::JsonDocument& doc) {
         ESPadapter::serial_print("SREADY");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("noready", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("noready", [](uint8_t num, WrapperJson::JsonDocument& doc) {
         ESPadapter::serial_print("SNOREA");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("identify", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("identify", [](uint8_t num, WrapperJson::JsonDocument& doc) {
         ESPadapter::serial_print("IDENTIFY");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("noidentify", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("noidentify", [](uint8_t num, WrapperJson::JsonDocument& doc) {
         ESPadapter::serial_print("NOIDENTIFY");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("getinit", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("getinit", [](uint8_t num, WrapperJson::JsonDocument& doc) {
         ESPadapter::serial_print("GETINIT");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("reset", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("reset", [](uint8_t num, WrapperJson::JsonDocument& doc) {
         ESPadapter::serial_print("RESET");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("fcstart", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("fcstart", [](uint8_t num, WrapperJson::JsonDocument& doc) {
         ESPadapter::serial_print("FCSTART");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("oncharge", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("oncharge", [](uint8_t num, WrapperJson::JsonDocument& doc) {
         ESPadapter::serial_print("ONCHARGE");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("onted", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("onted", [](uint8_t num, WrapperJson::JsonDocument& doc) {
         ESPadapter::serial_print("ONTED");ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("offted", [](uint8_t num, JsonDocument& doc) {
+    artisanClient.addFunctionToMainCommand("offted", [](uint8_t num, WrapperJson::JsonDocument& doc) {
         ESPadapter::serial_print("OFFTED");ESPadapter::serial_print('\0');
     });
 }
@@ -228,12 +234,12 @@ void Manager::registerAudioCrack()
 {
     //clientHandler.registerWebsocketClient(audioCrackClient);
 
-    // audioCrackClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
+    // audioCrackClient.addFunctionToMainCommand("getData", [&](uint8_t num, WrapperJson::JsonDocument& doc) {
     //     String output;
-    //     JsonDocument outdoc;
+    //     WrapperJson::JsonDocument outdoc;
     //     outdoc["id"] = doc["id"];
     //     outdoc["data"]["event"] = "firstCrackBeginningEvent";
-    //     serializeJson(outdoc, output);
+    //     WrapperJson::serializeJson(outdoc, output);
     //     webSocket.sendTXT(num, output);
     // });
 }

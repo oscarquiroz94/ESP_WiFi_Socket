@@ -1,9 +1,10 @@
 #include "ArtisanClient.hpp"
+#include "utilities/WrapperJson.hpp"
 #include "messages/ArtisanMessage.hpp"
 
 void ArtisanClient::processEvent(uint8_t num, const char *payload, size_t length)
 { 
-    JsonDocument doc;
+    WrapperJson::JsonDocument doc;
 
     // Si no es un documento de artisan, no se procesa
     if (!message->getDocument(doc, payload)) return;
@@ -20,7 +21,7 @@ void ArtisanClient::processEvent(uint8_t num, const char *payload, size_t length
 
 void ArtisanClient::addFunctionToMainCommand
 (   std::string key, 
-    std::function<void(uint8_t num, JsonDocument& doc)> func)
+    std::function<void(uint8_t num, WrapperJson::JsonDocument& doc)> func)
 {
     map2func[key] = func;
 }

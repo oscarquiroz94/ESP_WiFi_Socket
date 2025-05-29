@@ -4,7 +4,6 @@
 
 #ifdef DEPLOY
 #include <Arduino.h>
-#include <ArduinoJson.h>
 #else
 #include <stdint.h>
 #include <iostream>
@@ -20,6 +19,7 @@
 class String
 {
 	public:
+		String() : str_("") {}
 		String(const char* str) : str_(str) {}
 		const char* c_str() const { return str_.c_str(); }
 		int toInt() const { return std::stoi(str_); }
@@ -34,10 +34,14 @@ class ESPadapter
 
 	static inline void print_null(std::string nameclass, const char* function)
 	{
+#ifdef DEPLOY
 		Serial.print(nameclass.c_str());
 		Serial.print("::");
 		Serial.print(function);
 		Serial.println(" - NULL");
+#else
+		std::cout << nameclass << "::" << function << " - NULL" << std::endl;
+#endif
 	}
 
 	static inline unsigned long millisec()
@@ -128,6 +132,15 @@ class ESPadapter
 		Serial.println(text);
 #else
 		std::cout << text << std::endl;
+#endif
+	}
+
+	static inline void serial_println(const String &text)
+	{
+#ifdef DEPLOY
+		Serial.println(text);
+#else
+		std::cout << text.c_str() << std::endl;
 #endif
 	}
 

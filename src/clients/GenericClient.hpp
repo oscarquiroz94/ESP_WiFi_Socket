@@ -12,7 +12,7 @@ class GenericClient : public IGeneralClient
 
         void processEvent(uint8_t num, const char* payload, size_t length) override
         {
-            JsonDocument doc;
+            WrapperJson::JsonDocument doc;
 
             if (nullptr == message) {ESPadapter::print_null(CLASSNAME, __func__); return;}
 
@@ -30,7 +30,7 @@ class GenericClient : public IGeneralClient
 
         void addFunctionToMainCommand
             (std::string key, 
-             std::function<void(uint8_t num, JsonDocument& doc)> func) override
+             std::function<void(uint8_t num, WrapperJson::JsonDocument& doc)> func) override
         {
             map2func[key] = func;
         }
@@ -51,5 +51,5 @@ class GenericClient : public IGeneralClient
     private:
 
         IClientMessage* message = nullptr;
-        std::map<std::string, std::function<void(uint8_t num, JsonDocument& doc)>> map2func;
+        std::map<std::string, std::function<void(uint8_t num, WrapperJson::JsonDocument& doc)>> map2func;
 };
