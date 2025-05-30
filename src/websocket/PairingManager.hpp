@@ -19,17 +19,35 @@
 class PairingManager
 { 
     public:
-        PairingManager() = default;
+        PairingManager(WebSocketsServer& ws) : 
+            webSocket(ws),
+            genericClient(&genericMessage), 
+            clientHandler(ws) {}
 
-        void setupInitialPairing
-            (WebSocketsServer& webSocket,
-             CrossSectionalDataEEPROM& data);
-             
-
-        void setupNewCredentials()
-        {
-            //Enviarle a los clientes registrados la nueva configuracion
-        }
+        void executePairing
+            (CrossSectionalDataEEPROM& data);
 
         ~PairingManager() = default;
+             
+    private:
+        WebSocketsServer& webSocket;
+        GenericMessage genericMessage;
+        GenericClient  genericClient;
+        WebsocketClientHandler clientHandler;
+
+        void registerGenericClient
+            (WebSocketsServer& webSocket,
+             CrossSectionalDataEEPROM& data);
+
+        void searchingLoopForClients(WebSocketsServer& webSocket);
+
+        bool setupDefaultCredentials(WebSocketsServer& webSocket);
+
+        void setupUserCredentials
+            (WebSocketsServer& webSocket,
+             CrossSectionalDataEEPROM& data);
+
+        WebsocketClientHandler& getClientHandler() {return clientHandler;}
+
+        friend class PairingManagerAccess;
 };

@@ -15,8 +15,8 @@ void Manager::initialize()
     EEPROM.begin(100);
 #endif
 
-    PairingManager peer;
-    peer.setupInitialPairing(webSocket, eepromdata);
+    PairingManager peer(webSocket);
+    peer.executePairing(eepromdata);
     
     registerSerialPortHandler();
     registerWebSocketHandler();

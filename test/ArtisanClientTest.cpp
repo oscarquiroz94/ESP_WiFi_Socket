@@ -5,7 +5,6 @@
 #include "clients/ArtisanClient.hpp"
 #include <boost/test/unit_test.hpp>
 
-// TODO: JSONPAYLOAD_2 = {"command":"setControlParams","params":{"quemador":63},"id":26764,"roasterID":0}
 
 BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_SETPARAMS)
 {
