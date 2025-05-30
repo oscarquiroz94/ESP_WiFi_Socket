@@ -217,6 +217,11 @@ bool WebSocketsServer::sendTXT(uint8_t num, String & payload) {
     return sendTXT(num, (uint8_t *)payload.c_str(), payload.length());
 }
 
+bool WebSocketsServer::sendTXT(uint8_t num, std::string &payload)
+{
+    return sendTXT(num, (uint8_t *)payload.c_str(), payload.size());
+}
+
 /**
  * send text data to client all
  * @param payload uint8_t *

@@ -66,6 +66,7 @@ class WebSocketsServer : protected WebSockets {
     bool sendTXT(uint8_t num, char * payload, size_t length = 0, bool headerToPayload = false);
     bool sendTXT(uint8_t num, const char * payload, size_t length = 0);
     bool sendTXT(uint8_t num, String & payload);
+    bool sendTXT(uint8_t num, std::string & payload);
 
     bool broadcastTXT(uint8_t * payload, size_t length = 0, bool headerToPayload = false);
     bool broadcastTXT(const uint8_t * payload, size_t length = 0);

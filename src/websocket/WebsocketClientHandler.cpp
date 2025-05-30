@@ -4,8 +4,8 @@ void WebsocketClientHandler::registerWebsocketClient
     (IGeneralClient& client)
 {
     websocketClients.push_back(&client);
-    ESPadapter::serial_print("Client registered: ");
-    ESPadapter::serial_println(client.getName().c_str());
+    ESPadapter::debug_print("Client registered: ");
+    ESPadapter::debug_println(client.getName().c_str());
 }
 
 void WebsocketClientHandler::onWebSocketEvent
@@ -19,16 +19,16 @@ void WebsocketClientHandler::onWebSocketEvent
         case WStype_DISCONNECTED:
         {
             //No way to know which client disconnected
-            ESPadapter::serial_println("Disconnected");
+            ESPadapter::debug_println("Disconnected");
             break;
         }  
 
         // New client has connected
         case WStype_CONNECTED:
         {
-            ESPadapter::serial_print("New client connected: ");
+            ESPadapter::debug_print("New client connected: ");
             IPAddress ip = webSocket.remoteIP(num);
-            ESPadapter::serial_println(ip.toString());
+            ESPadapter::debug_println(ip.toString());
             break;
         }
 

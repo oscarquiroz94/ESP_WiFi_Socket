@@ -128,6 +128,18 @@ void Manager::registerSerialPortHandler()
 		lista = strtok(NULL, ",");
 		applicationdata.deltaETBT = ESPadapter::str2int(lista);;
     });
+
+    //------------- Debug purposes ----------------
+
+    serialport.addFunctionToMainCommand("LOG1", [&](const char* comand){
+        ESPadapter::serial_println("Debug traces enabled");
+        ESPadapter::trace_debug = true;
+    });
+
+    serialport.addFunctionToMainCommand("LOGNULL", [&](const char* comand){
+        ESPadapter::serial_println("All traces disabled");
+        ESPadapter::trace_debug = false;
+    });
 }
 
 void Manager::registerWebSocketHandler()
@@ -156,8 +168,8 @@ void Manager::registerArtisan()
         outdoc["data"]["delta"] = applicationdata.deltaETBT;
         serializeJson(outdoc, output);
         webSocket.sendTXT(num, output);
-        // ESPadapter::serial_print("TO-ARTISAN: ");
-        // ESPadapter::serial_println(output);
+        ESPadapter::debug_print("TO-ARTISAN: ");
+        ESPadapter::debug_println(output);
     });
 
     artisanClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
@@ -228,6 +240,7 @@ void Manager::registerArtisan()
 
 void Manager::registerAudioCrack()
 {
+    ESPadapter::debug_println("Registering AudioCrack client...");
     //clientHandler.registerWebsocketClient(audioCrackClient);
 
     // audioCrackClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {

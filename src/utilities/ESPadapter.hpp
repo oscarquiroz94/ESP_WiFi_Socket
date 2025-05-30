@@ -23,7 +23,8 @@ using String = std::string;
 class ESPadapter
 {
     public:
-
+	static bool trace_debug;
+	
 	static inline long str2int(const char *txt)
 	{
 #ifdef DEPLOY
@@ -38,12 +39,10 @@ class ESPadapter
 	static inline void print_null(std::string nameclass, const char* function)
 	{
 #ifdef DEPLOY
-		Serial.print(nameclass.c_str());
-		Serial.print("::");
-		Serial.print(function);
-		Serial.println(" - NULL");
+		std::string temp = nameclass + "::" + function + " - NULL\n";
+		if (trace_debug) Serial.print(temp.c_str());
 #else
-		std::cout << nameclass << "::" << function << " - NULL" << std::endl;
+		if (trace_debug) std::cout << nameclass << "::" << function << " - NULL" << std::endl;
 #endif
 	}
 
@@ -188,6 +187,46 @@ class ESPadapter
 	}
 
 	//************************************/
+
+	static inline void debug_println(std::string &text)
+	{
+#ifdef DEPLOY
+		if (trace_debug) Serial.println(text.c_str());
+#else
+		if (trace_debug) std::cout << text << std::endl;
+#endif
+	}
+
+	template <class TipodatoSerial>
+	static inline void debug_println(const TipodatoSerial text)
+	{
+#ifdef DEPLOY
+		if (trace_debug) Serial.println(text);
+#else
+		if (trace_debug) std::cout << text << std::endl;
+#endif
+	}
+
+	template <class TipodatoSerial>
+	static inline void debug_print(const TipodatoSerial text)
+	{
+#ifdef DEPLOY
+		if (trace_debug) Serial.print(text);
+#else
+		if (trace_debug) std::cout << text;
+#endif
+	}
+
+	static inline void debug_println()
+	{
+#ifdef DEPLOY
+		if (trace_debug) Serial.println();
+#else
+		if (trace_debug) std::cout << std::endl;
+#endif
+	}
+
+	//********************************** */
 
 	static inline void retardo(const uint16_t t)
 	{

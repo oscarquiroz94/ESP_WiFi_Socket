@@ -55,7 +55,7 @@ struct CrossSectionalDataEEPROM
 
         preferences.end();
 #endif
-        ESPadapter::serial_println("EEPROM: updated");
+        ESPadapter::debug_println("EEPROM: updated");
     }
 
     void read()
@@ -73,22 +73,21 @@ struct CrossSectionalDataEEPROM
         preferences.getString("clientNames", _clientNames, sizeof(_clientNames));
         preferences.end();
 
-        ESPadapter::serial_print("SSID: ");
-        ESPadapter::serial_println(_ssidSocket);
-        ESPadapter::serial_print("Pass: ");
-        ESPadapter::serial_println(_passSocket);
-        ESPadapter::serial_print("Canal wifi: ");
-        ESPadapter::serial_println(_canalwifi);
+        ESPadapter::debug_print("SSID: ");
+        ESPadapter::debug_println(_ssidSocket);
+        ESPadapter::debug_print("Pass: ");
+        ESPadapter::debug_println(_passSocket);
+        ESPadapter::debug_print("Canal wifi: ");
+        ESPadapter::debug_println(_canalwifi);
 
-
-        ESPadapter::serial_print("Client names: ");
+        ESPadapter::debug_print("Client names: ");
         char* token = strtok(_clientNames, ",");
         while (token != nullptr) 
         {
             if (strlen(token) > 0) 
             {
-                ESPadapter::serial_print(token);
-                ESPadapter::serial_print(F(","));
+                ESPadapter::debug_print(token);
+                ESPadapter::debug_print(F(","));
                 // clientNames.push_back(std::string(token));
             }
             token = strtok(nullptr, ",");
@@ -98,18 +97,18 @@ struct CrossSectionalDataEEPROM
 
     void print()
     {
-        ESPadapter::serial_println("===================================");
-        ESPadapter::serial_print("SSID: "); ESPadapter::serial_println(ssidSocket);
-        ESPadapter::serial_print("Pass: "); ESPadapter::serial_println(passSocket);
-        ESPadapter::serial_print("Canal wifi: "); ESPadapter::serial_println(canalwifi);
-        ESPadapter::serial_print("Client names: ");
+        ESPadapter::debug_println("===================================");
+        ESPadapter::debug_print("SSID: "); ESPadapter::debug_println(ssidSocket);
+        ESPadapter::debug_print("Pass: "); ESPadapter::debug_println(passSocket);
+        ESPadapter::debug_print("Canal wifi: "); ESPadapter::debug_println(canalwifi);
+        ESPadapter::debug_print("Client names: ");
         for (std::vector<std::string>::iterator it = clientNames.begin(); it != clientNames.end(); ++it) 
         {
             const char* name = it->c_str();
-            ESPadapter::serial_print(name);
-            ESPadapter::serial_print(",");
+            ESPadapter::debug_print(name);
+            ESPadapter::debug_print(",");
         }
-        ESPadapter::serial_println();
-        ESPadapter::serial_println("===================================");
+        ESPadapter::debug_println();
+        ESPadapter::debug_println("===================================");
     }
 };

@@ -52,16 +52,16 @@ class IClientMessage
             
             switch (err.code()) {
                 case DeserializationError::Ok:
-                    ESPadapter::serial_println("Valid input!");
+                    ESPadapter::debug_println("IClientmessage: Valid message!");
                     break;
                 case DeserializationError::InvalidInput:
-                    ESPadapter::serial_println("Invalid input!");
+                    ESPadapter::debug_println("IClientmessage: Invalid message!");
                     break;
                 case DeserializationError::NoMemory:
-                    ESPadapter::serial_println("Not enough memory");
+                    ESPadapter::debug_println("IClientmessage: Not enough memory");
                     break;
                 default:
-                    ESPadapter::serial_println("Deserialization failed");
+                    ESPadapter::debug_println("IClientmessage: Deserialization failed");
                     break;
             }
         }

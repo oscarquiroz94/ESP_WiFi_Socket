@@ -20,7 +20,7 @@ bool PairingManager::setupDefaultCredentials(WebSocketsServer& webSocket)
 
     // Conectarse a la red wifi con datos de fabrica
     CrossSectionalDataEEPROM temporaryData;
-    strcpy(temporaryData.ssidSocket,"ROASTER");
+    strcpy(temporaryData.ssidSocket,"PAIRING");
     strcpy(temporaryData.passSocket,"Clave123*");
     temporaryData.canalwifi = 1;
 
@@ -37,12 +37,18 @@ void PairingManager::registerGenericClient
     genericClient.addFunctionToMainCommand("attach", [&](uint8_t num, JsonDocument& doc) {
         //int8_t id = doc["deviceId"];
         std::string name = doc["deviceName"];
+
+        if (name.empty() || name == "null") 
+        {
+            ESPadapter::debug_println("PairingManager: deviceName is empty");
+            return;
+        }
         
         if (std::find(data.clientNames.begin(), data.clientNames.end(), name) == data.clientNames.end()) 
         {
             data.clientNames.push_back(name);
-            ESPadapter::serial_print("Client registered: ");
-            ESPadapter::serial_println(name.c_str());
+            ESPadapter::debug_print("Client registered: ");
+            ESPadapter::debug_println(name.c_str());
         }
     });
 }
@@ -57,11 +63,11 @@ void PairingManager::searchingLoopForClients (WebSocketsServer& webSocket)
         clientHandler.onWebSocketEvent(num, type, payload, length);
     });
 
-    ESPadapter::serial_println("buscando...");
+    ESPadapter::debug_println("PairingManager: buscando...");
     while (!t_search.tiempo(maxTimeSearch))
         webSocket.loop();
 
-    ESPadapter::serial_println("fin busqueda");
+    ESPadapter::debug_println("PairingManager: fin busqueda");
 }
 
 void PairingManager::setupUserCredentials
