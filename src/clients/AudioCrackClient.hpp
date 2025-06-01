@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utilities/ESPadapter.hpp"
+#include "adapters/ESPadapter.hpp"
 #include "IGeneralClient.hpp"
 
 class AudioCrackClient : public IGeneralClient

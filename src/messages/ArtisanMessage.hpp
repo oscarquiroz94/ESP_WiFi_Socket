@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Compiletype.hpp"
-#include "utilities/ESPadapter.hpp"
+#include "adapters/ESPadapter.hpp"
 #include "IClientMessage.hpp"
 
 class ArtisanMessage : public IClientMessage

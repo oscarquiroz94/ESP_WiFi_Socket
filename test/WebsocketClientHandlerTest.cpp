@@ -5,7 +5,7 @@
 #include "clients/ArtisanClient.hpp"
 #include "clients/AudioCrackClient.hpp"
 #include "websocket/WebsocketClientHandler.hpp"
-#include "websocket/WebSocketsServerAdapter.hpp"
+#include "adapters/WebSocketAdapter.hpp"
 #include <boost/test/unit_test.hpp>
 
 

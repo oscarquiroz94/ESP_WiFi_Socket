@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utilities/ESPadapter.hpp"
+#include "adapters/ESPadapter.hpp"
 #include "Compiletype.hpp"
 #include <vector>
 #include <array>
@@ -32,7 +32,7 @@ struct CrossSectionalDataEEPROM
     char ssidSocket[20] = "ROASTER";
     char passSocket[20] = "Clave123*";
     uint8_t canalwifi = 1;
-    std::vector<std::string> clientNames;
+    std::vector<std::string> clientNames; // it should not be here
 
 #ifdef DEPLOY
     Preferences preferences;
@@ -42,66 +42,72 @@ struct CrossSectionalDataEEPROM
     {
 #ifdef DEPLOY
         preferences.begin("config", false);
-        preferences.putString("ssidSocket", ssidSocket);
-        preferences.putString("passSocket", passSocket);
-        preferences.putUChar("canalwifi", canalwifi);
+
+        String oldSSID = preferences.getString("ssidSocket", "");
+        if (oldSSID != ssidSocket) preferences.putString("ssidSocket", ssidSocket);
+
+        String oldPass = preferences.getString("passSocket", "");
+        if (oldPass != passSocket) preferences.putString("passSocket", passSocket);
+
+        uint8_t oldCanalWifi = preferences.getUChar("canalwifi", 1);
+        if (oldCanalWifi != canalwifi) preferences.putUChar("canalwifi", canalwifi);
         
-        std::string concatNames = "";
-        for (std::vector<std::string>::iterator it = clientNames.begin(); it != clientNames.end(); ++it) 
-        {
-            concatNames += *it + ",";
-        }
-        preferences.putString("clientNames", concatNames.c_str());
+        // std::string concatNames = "";
+        // for (std::vector<std::string>::iterator it = clientNames.begin(); it != clientNames.end(); ++it) 
+        // {
+        //     concatNames += *it + ",";
+        // }
+        // preferences.putString("clientNames", concatNames.c_str());
 
         preferences.end();
 #endif
-        ESPadapter::debug_println("EEPROM: updated");
+        ESPadapter::debug_println("Preferences: updated");
     }
 
     void read()
     {
 #ifdef DEPLOY
-        char _ssidSocket[20];
-        char _passSocket[20];
-        char _clientNames[100];
-        uint8_t _canalwifi;
+        memset(ssidSocket, 0, sizeof(ssidSocket));
+        memset(passSocket, 0, sizeof(passSocket));
 
         preferences.begin("config", true);
-        preferences.getString("ssidSocket", _ssidSocket, sizeof(_ssidSocket));
-        preferences.getString("passSocket", _passSocket, sizeof(_passSocket));
-        _canalwifi = preferences.getUChar("canalwifi", 1);
-        preferences.getString("clientNames", _clientNames, sizeof(_clientNames));
+        preferences.getString("ssidSocket", ssidSocket, sizeof(ssidSocket));
+        preferences.getString("passSocket", passSocket, sizeof(passSocket));
+        canalwifi = preferences.getUChar("canalwifi", 1);
+        //preferences.getString("clientNames", _clientNames, sizeof(_clientNames));
         preferences.end();
 
-        ESPadapter::debug_print("SSID: ");
-        ESPadapter::debug_println(_ssidSocket);
-        ESPadapter::debug_print("Pass: ");
-        ESPadapter::debug_println(_passSocket);
-        ESPadapter::debug_print("Canal wifi: ");
-        ESPadapter::debug_println(_canalwifi);
+        print();
 
-        ESPadapter::debug_print("Client names: ");
-        char* token = strtok(_clientNames, ",");
-        while (token != nullptr) 
-        {
-            if (strlen(token) > 0) 
-            {
-                ESPadapter::debug_print(token);
-                ESPadapter::debug_print(F(","));
-                // clientNames.push_back(std::string(token));
-            }
-            token = strtok(nullptr, ",");
-        }
+        // ESPadapter::debug_print("SSID: ");
+        // ESPadapter::debug_println(ssidSocket);
+        // ESPadapter::debug_print("Pass: ");
+        // ESPadapter::debug_println(passSocket);
+        // ESPadapter::debug_print("Canal wifi: ");
+        // ESPadapter::debug_println(canalwifi);
+
+        // ESPadapter::debug_print("Client names: ");
+        // char* token = strtok(_clientNames, ",");
+        // while (token != nullptr) 
+        // {
+        //     if (strlen(token) > 0) 
+        //     {
+        //         ESPadapter::debug_print(token);
+        //         ESPadapter::debug_print(F(","));
+        //         // clientNames.push_back(std::string(token));
+        //     }
+        //     token = strtok(nullptr, ",");
+        // }
 #endif
     }
 
     void print()
     {
         ESPadapter::debug_println("===================================");
-        ESPadapter::debug_print("SSID: "); ESPadapter::debug_println(ssidSocket);
-        ESPadapter::debug_print("Pass: "); ESPadapter::debug_println(passSocket);
-        ESPadapter::debug_print("Canal wifi: "); ESPadapter::debug_println(canalwifi);
-        ESPadapter::debug_print("Client names: ");
+        ESPadapter::debug_print("Preference SSID: "); ESPadapter::debug_println(ssidSocket);
+        ESPadapter::debug_print("Preference Pass: "); ESPadapter::debug_println(passSocket);
+        ESPadapter::debug_print("Preference Canal wifi: "); ESPadapter::debug_println(canalwifi);
+        ESPadapter::debug_print("Preference Client names: ");
         for (std::vector<std::string>::iterator it = clientNames.begin(); it != clientNames.end(); ++it) 
         {
             const char* name = it->c_str();

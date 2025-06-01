@@ -1,7 +1,7 @@
 #pragma once
 
-#include "utilities/ESPadapter.hpp"
-#include "websocket/WebSocketsServerAdapter.hpp"
+#include "adapters/ESPadapter.hpp"
+#include "adapters/WebSocketAdapter.hpp"
 #include "clients/IGeneralClient.hpp"
 #include "clients/ArtisanClient.hpp"
 

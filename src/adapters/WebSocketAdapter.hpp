@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Compiletype.hpp"
-#include "utilities/ESPadapter.hpp"
+#include "adapters/ESPadapter.hpp"
 
 #ifdef DEPLOY
 #include <WebSocketsServer.h>
@@ -56,9 +56,19 @@ class WebSocketsServer
         void close() {}
         void loop() {}
         void sendTXT(uint8_t num, JsonDocument& doc) {}
-        void sendTXT(uint8_t num, String &doc) {}
+        void sendTXT(uint8_t num, String &stream) 
+        {
+            outputString = stream;
+            outputNum = num;
+        }
         void onEvent(std::function<void(uint8_t num, WStype_t type, uint8_t *payload, size_t length)>) {}
         IPAddress remoteIP(uint8_t num) { return IPAddress(); }
+        std::string getOutputString() const { return outputString; }
+        uint8_t getOutputNum() const { return outputNum; }
+
+    private:
+        std::string outputString = "";
+        uint8_t outputNum = 0;
 };
 
 

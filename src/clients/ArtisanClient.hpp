@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utilities/ESPadapter.hpp"
+#include "adapters/ESPadapter.hpp"
 #include "messages/IClientMessage.hpp"
 #include "IGeneralClient.hpp"
 #include <functional>

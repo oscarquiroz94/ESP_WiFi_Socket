@@ -3,19 +3,23 @@
 bool WebsocketManager::buildWebSocket
 (   WebSocketsServer& webSocket, CrossSectionalDataEEPROM& data)
 {
+    // Destroy any existing WebSocket connection
+    destroyWebSocket(webSocket);
+
     bool success = false;
     WiFi.mode(WIFI_OFF);
     WiFi.mode(WIFI_AP);
     WiFi.setSleep(false);
-    //checkNetwork();
+
+    // TODO : checkNetwork();
 
     success = WiFi.softAP(data.ssidSocket, data.passSocket, data.canalwifi);
     webSocket.begin();
 
     if (success && webSocket.isRunning())
     {
-        ESPadapter::debug_println("WiFi connected");
-        ESPadapter::debug_println("Websocket running");
+        ESPadapter::debug_println("WebsocketManager: WiFi connected");
+        ESPadapter::debug_println("WebsocketManager: Websocket running");
 
 #ifdef DEPLOY
         String ssid = String("SSID: ") + String(data.ssidSocket);
@@ -38,6 +42,6 @@ void WebsocketManager::destroyWebSocket(WebSocketsServer& webSocket)
     webSocket.close();
     WiFi.softAPdisconnect(true);
     WiFi.mode(WIFI_OFF);
-    ESPadapter::debug_println("Websocket closed");
-    ESPadapter::debug_println("WiFi disconnected");
+    ESPadapter::debug_println("WebsocketManager: Websocket closed");
+    ESPadapter::debug_println("WebsocketManager: WiFi disconnected");
 }

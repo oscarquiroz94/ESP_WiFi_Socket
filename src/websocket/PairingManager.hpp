@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Compiletype.hpp"
-#include "utilities/ESPadapter.hpp"
+#include "adapters/ESPadapter.hpp"
 #include "CrossSectionalData.hpp"
 #include "websocket/WebsocketManager.hpp"
-#include "WebSocketsServerAdapter.hpp"
+#include "adapters/WebSocketAdapter.hpp"
 #include "clients/GenericClient.hpp"
 #include "messages/GenericMessage.hpp"
 #include "websocket/WebsocketClientHandler.hpp"

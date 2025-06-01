@@ -3,7 +3,7 @@
 #include "Compiletype.hpp"
 #include "websocket/PairingManager.hpp"
 #include "CrossSectionalData.hpp"
-#include "websocket/WebSocketsServerAdapter.hpp"
+#include "adapters/WebSocketAdapter.hpp"
 
 class PairingManagerAccess
 {

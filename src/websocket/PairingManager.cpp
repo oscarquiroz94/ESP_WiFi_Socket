@@ -16,8 +16,6 @@ void PairingManager::executePairing
 
 bool PairingManager::setupDefaultCredentials(WebSocketsServer& webSocket)
 {
-    WebsocketManager::destroyWebSocket(webSocket);
-
     // Conectarse a la red wifi con datos de fabrica
     CrossSectionalDataEEPROM temporaryData;
     strcpy(temporaryData.ssidSocket,"PAIRING");
@@ -27,7 +25,6 @@ bool PairingManager::setupDefaultCredentials(WebSocketsServer& webSocket)
     return WebsocketManager::buildWebSocket(webSocket, temporaryData);
 }
 
-// TODO: testear esta funcion
 void PairingManager::registerGenericClient
     (WebSocketsServer& webSocket, 
      CrossSectionalDataEEPROM& data)
@@ -35,8 +32,18 @@ void PairingManager::registerGenericClient
     clientHandler.registerWebsocketClient(genericClient);
 
     genericClient.addFunctionToMainCommand("attach", [&](uint8_t num, JsonDocument& doc) {
-        //int8_t id = doc["deviceId"];
+        int8_t id = doc["deviceID"];
+        int8_t idClient = genericClient.getClientId();
+
         std::string name = doc["deviceName"];
+        
+        JsonDocument outdoc;
+        std::string output;
+        outdoc["deviceID"] = id;
+        outdoc["command"] = "newcredentials";
+        outdoc["parameters"]["ssid"] = data.ssidSocket;
+        outdoc["parameters"]["pass"] = data.passSocket;
+        outdoc["parameters"]["channel"] = data.canalwifi;
 
         if (name.empty() || name == "null") 
         {
@@ -49,6 +56,9 @@ void PairingManager::registerGenericClient
             data.clientNames.push_back(name);
             ESPadapter::debug_print("Client registered: ");
             ESPadapter::debug_println(name.c_str());
+
+            serializeJson(outdoc, output);
+            webSocket.sendTXT(idClient, output);
         }
     });
 }
@@ -65,7 +75,11 @@ void PairingManager::searchingLoopForClients (WebSocketsServer& webSocket)
 
     ESPadapter::debug_println("PairingManager: buscando...");
     while (!t_search.tiempo(maxTimeSearch))
+    {
         webSocket.loop();
+        ESPadapter::retardo(5);
+    }
+        
 
     ESPadapter::debug_println("PairingManager: fin busqueda");
 }
@@ -74,8 +88,6 @@ void PairingManager::setupUserCredentials
     (WebSocketsServer& webSocket, 
      CrossSectionalDataEEPROM& data)
 {
-    WebsocketManager::destroyWebSocket(webSocket);
-
     // Conectarse a la red wifi con datos definidos por usuario 
     WebsocketManager::buildWebSocket(webSocket, data);
 }

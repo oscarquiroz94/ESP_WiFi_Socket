@@ -2,7 +2,7 @@
 
 #include "Compiletype.hpp"
 #include "CrossSectionalData.hpp"
-#include "WebSocketsServerAdapter.hpp"
+#include "adapters/WebSocketAdapter.hpp"
 
 extern WiFiClass WiFi;
 

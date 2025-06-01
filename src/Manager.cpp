@@ -1,5 +1,5 @@
 #include "Manager.hpp"
-#include "utilities/ESPadapter.hpp"
+#include "adapters/ESPadapter.hpp"
 #include "websocket/PairingManager.hpp"
 #include <algorithm>
 
@@ -11,10 +11,10 @@
 void Manager::initialize()
 {
     serialport.openPort();
-#ifdef DEPLOY
-    EEPROM.begin(100);
-#endif
 
+    eepromdata.read();
+
+    //****** CONNECT THE ANTENNA TO THE ESP32 BEFORE THIS ******
     PairingManager peer(webSocket);
     peer.executePairing(eepromdata);
     
@@ -33,6 +33,8 @@ void Manager::run()
 
     serialport.listen();
     serialport.processEvent();
+
+    ESPadapter::retardo(5);
 }
 
 void Manager::sendInitializationData(const uint32_t version)
@@ -53,8 +55,8 @@ void Manager::registerSerialPortHandler()
 {
     serialport.addFunctionToMainCommand("S,", [&](const char* comand) { 
         //Limpiar valores anteriores
-        memset(eepromdata.ssidSocket, 0, 50);
-        memset(eepromdata.passSocket, 0, 50);
+        memset(eepromdata.ssidSocket, 0, sizeof(eepromdata.ssidSocket));
+        memset(eepromdata.passSocket, 0, sizeof(eepromdata.passSocket));
 
         char* cpycommand = (char*)comand;
         char *lista = strtok(cpycommand, ",");
@@ -68,7 +70,9 @@ void Manager::registerSerialPortHandler()
         lista = strtok(NULL, ",");
         eepromdata.canalwifi = (uint8_t)ESPadapter::str2int(lista);
 
-        WebsocketManager::buildWebSocket(webSocket, eepromdata); 
+        bool sucess = WebsocketManager::buildWebSocket(webSocket, eepromdata);
+        
+        if (sucess) eepromdata.save();
     });
 
     serialport.addFunctionToMainCommand("MCA", [&](const char* comand){
@@ -130,6 +134,11 @@ void Manager::registerSerialPortHandler()
     });
 
     //------------- Debug purposes ----------------
+
+    serialport.addFunctionToMainCommand("STOPWS", [&](const char* comand){
+        ESPadapter::serial_println("Stopping WebSocket server");
+        WebsocketManager::destroyWebSocket(webSocket);
+    });
 
     serialport.addFunctionToMainCommand("LOG1", [&](const char* comand){
         ESPadapter::serial_println("Debug traces enabled");
