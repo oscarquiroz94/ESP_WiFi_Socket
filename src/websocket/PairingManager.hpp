@@ -43,10 +43,6 @@ class PairingManager
 
         bool setupDefaultCredentials(WebSocketsServer& webSocket);
 
-        void setupUserCredentials
-            (WebSocketsServer& webSocket,
-             CrossSectionalDataEEPROM& data);
-
         WebsocketClientHandler& getClientHandler() {return clientHandler;}
 
         friend class PairingManagerAccess;

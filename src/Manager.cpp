@@ -1,6 +1,7 @@
 #include "Manager.hpp"
 #include "adapters/ESPadapter.hpp"
 #include "websocket/PairingManager.hpp"
+#include "utilities/CheckSSID.hpp"
 #include <algorithm>
 
 #ifdef DEPLOY
@@ -13,10 +14,6 @@ void Manager::initialize()
     serialport.openPort();
 
     eepromdata.read();
-
-    //****** CONNECT THE ANTENNA TO THE ESP32 BEFORE THIS ******
-    PairingManager peer(webSocket);
-    peer.executePairing(eepromdata);
     
     registerSerialPortHandler();
     registerWebSocketHandler();
@@ -69,6 +66,11 @@ void Manager::registerSerialPortHandler()
 
         lista = strtok(NULL, ",");
         eepromdata.canalwifi = (uint8_t)ESPadapter::str2int(lista);
+
+        PairingManager peer(webSocket);
+        peer.executePairing(eepromdata);
+
+        CheckSSID::validateSSID(eepromdata);
 
         bool sucess = WebsocketManager::buildWebSocket(webSocket, eepromdata);
         

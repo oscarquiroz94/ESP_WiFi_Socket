@@ -10,8 +10,6 @@ void PairingManager::executePairing
     registerGenericClient(webSocket, data);
 
     searchingLoopForClients(webSocket);
-    
-    setupUserCredentials(webSocket, data);
 }
 
 bool PairingManager::setupDefaultCredentials(WebSocketsServer& webSocket)
@@ -80,14 +78,5 @@ void PairingManager::searchingLoopForClients (WebSocketsServer& webSocket)
         ESPadapter::retardo(5);
     }
         
-
     ESPadapter::debug_println("PairingManager: fin busqueda");
-}
-
-void PairingManager::setupUserCredentials
-    (WebSocketsServer& webSocket, 
-     CrossSectionalDataEEPROM& data)
-{
-    // Conectarse a la red wifi con datos definidos por usuario 
-    WebsocketManager::buildWebSocket(webSocket, data);
 }
