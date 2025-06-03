@@ -45,6 +45,15 @@ class WiFiClass
         void end() {}
         bool isRunning() { return true; }
         void softAPdisconnect(bool) {}
+        int scanNetworks() { return 5; }
+        String SSID(int i) 
+        { 
+            if ( i == 0)      return "ROASTER";
+            else if ( i == 1) return "ROASTER_1";
+            else if ( i == 2) return "ROASTER_2";
+            else if ( i == 3) return "ROASTER12345ROASTER";
+            else return "Network"; 
+        }
 };
 
 class WebSocketsServer

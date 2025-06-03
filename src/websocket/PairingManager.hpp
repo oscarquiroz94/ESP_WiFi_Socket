@@ -27,6 +27,11 @@ class PairingManager
         void executePairing
             (CrossSectionalDataEEPROM& data);
 
+        void setMaxTimeSearch(uint32_t time) 
+        {
+            maxTimeSearch = time;
+        }
+
         ~PairingManager() = default;
              
     private:
@@ -34,6 +39,8 @@ class PairingManager
         GenericMessage genericMessage;
         GenericClient  genericClient;
         WebsocketClientHandler clientHandler;
+
+        uint32_t maxTimeSearch = 30L * 1000L; //seconds
 
         void registerGenericClient
             (WebSocketsServer& webSocket,

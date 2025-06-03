@@ -1,6 +1,5 @@
 #include "Manager.hpp"
 #include "adapters/ESPadapter.hpp"
-#include "websocket/PairingManager.hpp"
 #include "utilities/CheckSSID.hpp"
 #include <algorithm>
 
@@ -67,14 +66,33 @@ void Manager::registerSerialPortHandler()
         lista = strtok(NULL, ",");
         eepromdata.canalwifi = (uint8_t)ESPadapter::str2int(lista);
 
-        PairingManager peer(webSocket);
         peer.executePairing(eepromdata);
 
         CheckSSID::validateSSID(eepromdata);
 
         bool sucess = WebsocketManager::buildWebSocket(webSocket, eepromdata);
         
-        if (sucess) eepromdata.save();
+        if (sucess) 
+        {
+            eepromdata.save();
+
+            IPAddress IP = WiFi.softAPIP();
+
+            ESPadapter::serial_print("CSO"); // \0 included at the end
+
+            ESPadapter::serial_print(
+                std::string("IPS") + IP.toString() 
+                + std::string("CH") + std::to_string(eepromdata.canalwifi)
+            );
+
+            ESPadapter::serial_print(
+                std::string("SID,") + eepromdata.ssidSocket + ","
+                + eepromdata.passSocket + ","
+                + std::to_string(eepromdata.canalwifi)
+            );
+
+            ESPadapter::flush();
+        }
     });
 
     serialport.addFunctionToMainCommand("MCA", [&](const char* comand){

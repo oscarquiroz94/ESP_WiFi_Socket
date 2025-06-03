@@ -9,6 +9,7 @@
 #include "clients/ArtisanClient.hpp"
 #include "clients/AudioCrackClient.hpp"
 #include "messages/ArtisanMessage.hpp"
+#include "websocket/PairingManager.hpp"
 
 /*
 * @brief Class Manager
@@ -26,7 +27,8 @@ class Manager
             serialport(115200), 
             webSocket(8080), 
             clientHandler(webSocket),
-            artisanClient(&artisanMsg) {}
+            artisanClient(&artisanMsg),
+            peer(webSocket) {}
 
         void initialize();
 
@@ -39,6 +41,7 @@ class Manager
         CrossSectionalDataEEPROM eepromdata;
         SerialPort serialport;
         WebSocketsServer webSocket;
+        PairingManager peer;
 
         ArtisanMessage artisanMsg;
         
@@ -53,4 +56,6 @@ class Manager
         void registerWebSocketHandler();
         void registerArtisan();
         void registerAudioCrack();
+
+        friend class ManagerAccess;
 };

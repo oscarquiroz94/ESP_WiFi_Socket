@@ -24,6 +24,16 @@ class ESPadapter
 {
     public:
 	static bool trace_debug;
+	static std::string serialBuffer;
+
+	static inline void flush() 
+	{
+#ifdef DEPLOY
+		Serial.flush();	
+#else
+		std::cout.flush();
+#endif
+	}
 	
 	static inline long str2int(const char *txt)
 	{
@@ -77,6 +87,7 @@ class ESPadapter
 		Serial.print(num, precision);
 #else
 		std::cout << (uint16_t)num;
+		serialBuffer += num;
 #endif
 	}
 
@@ -88,6 +99,7 @@ class ESPadapter
 		Serial.print(num);
 #else
 		std::cout << (uint16_t)num;
+		serialBuffer += num;
 #endif
 	}
 
@@ -103,6 +115,26 @@ class ESPadapter
 #endif
 	}
 
+	static inline void serial_print(const char *text)
+	{
+#ifdef DEPLOY
+		Serial.print(text);
+#else
+		std::cout << text;
+		serialBuffer += text;
+#endif
+	}
+
+	static inline void serial_print(const std::string text)
+	{
+#ifdef DEPLOY
+		Serial.print(text);
+#else
+		std::cout << text;
+		serialBuffer += text;
+#endif
+	}
+
 	//----------------------
 
 	static inline void serial_println()
@@ -111,6 +143,7 @@ class ESPadapter
 		Serial.println();
 #else
 		std::cout << std::endl;
+		serialBuffer += "\n";
 #endif
 	}
 
@@ -122,6 +155,7 @@ class ESPadapter
 		Serial.println(num);
 #else
 		std::cout << (uint16_t)num << std::endl;
+		serialBuffer += num + "\n";
 #endif
 	}
 
@@ -143,6 +177,7 @@ class ESPadapter
 		Serial.println(text);
 #else
 		std::cout << text.c_str() << std::endl;
+		serialBuffer += text + "\n";
 #endif
 	}
 
@@ -154,6 +189,7 @@ class ESPadapter
 		Serial.println(value, precision);
 #else
 		std::cout << value << std::endl;
+		serialBuffer += std::to_string(value) + "\n";
 #endif
 	}
 
@@ -185,6 +221,17 @@ class ESPadapter
 		Serial.flush();
 #endif
 	}
+
+	static inline std::string getSerialOutput() 
+	{
+        return serialBuffer;
+    }
+
+	static inline void clearSerialOutput() 
+	{
+        serialBuffer = "";
+        serialBuffer.clear();
+    }
 
 	//************************************/
 

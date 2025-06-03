@@ -11,8 +11,6 @@ bool WebsocketManager::buildWebSocket
     WiFi.mode(WIFI_AP);
     WiFi.setSleep(false);
 
-    // TODO : checkNetwork();
-
     success = WiFi.softAP(data.ssidSocket, data.passSocket, data.canalwifi);
     webSocket.begin();
 
@@ -30,9 +28,9 @@ bool WebsocketManager::buildWebSocket
         std::string ip = std::string("IP: ") + std::string("192.168.4.1");
         std::string channel = std::string("Channel: ") + std::to_string(data.canalwifi);
 #endif
-        ESPadapter::serial_println(ssid);
-        ESPadapter::serial_println(ip);
-        ESPadapter::serial_println(channel);
+        ESPadapter::debug_println(ssid);
+        ESPadapter::debug_println(ip);
+        ESPadapter::debug_println(channel);
     }
     return success && webSocket.isRunning();
 }

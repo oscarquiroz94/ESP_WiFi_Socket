@@ -3,15 +3,29 @@
 #include "Compiletype.hpp"
 #include "adapters/ESPadapter.hpp"
 #include "CrossSectionalData.hpp"
+#include "adapters/WebSocketAdapter.hpp"
+
+extern WiFiClass WiFi;
 
 class CheckSSID
 {
     public:
         static void validateSSID(CrossSectionalDataEEPROM &eepromdata)
         {
-            ESPadapter::debug_print("Prev SSID: ");
-            ESPadapter::debug_println(eepromdata.ssidSocket);
+            uint16_t numNetworks = WiFi.scanNetworks();
 
+            for (int i = 0; i < numNetworks; i++)
+            {
+                String onNetworkSSID = WiFi.SSID(i);
+                String currentSSID(eepromdata.ssidSocket);
+
+                if (currentSSID == onNetworkSSID) assignAnotherSSID(eepromdata);
+            }
+        }
+
+    private:
+        static void assignAnotherSSID(CrossSectionalDataEEPROM &eepromdata)
+        {
             size_t length    = strlen(eepromdata.ssidSocket); 
             size_t maxLength = sizeof(eepromdata.ssidSocket);
 
@@ -30,12 +44,8 @@ class CheckSSID
                 eepromdata.ssidSocket[length - 1] = '0' + newIdentifier;
             }
             else strcat(eepromdata.ssidSocket, "_1");
-
-            ESPadapter::debug_print("New  SSID: ");
-            ESPadapter::debug_println(eepromdata.ssidSocket);
         }
 
-    private:
         static bool isNumericChar(const char c)
         {
             return (c >= '0' && c <= '9');

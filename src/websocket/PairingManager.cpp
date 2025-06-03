@@ -65,7 +65,6 @@ void PairingManager::registerGenericClient
 void PairingManager::searchingLoopForClients (WebSocketsServer& webSocket)
 {
     Temporizador t_search(false, true);
-    uint32_t maxTimeSearch = 60L * 1000L; //seconds
 
     webSocket.onEvent([&](uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
         clientHandler.onWebSocketEvent(num, type, payload, length);
