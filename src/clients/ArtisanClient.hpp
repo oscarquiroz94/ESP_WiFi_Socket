@@ -1,10 +1,13 @@
 #pragma once
 
-#include "adapters/ESPadapter.hpp"
-#include "messages/IClientMessage.hpp"
-#include "IGeneralClient.hpp"
 #include <functional>
 #include <map>
+#include "adapters/ESPadapter.hpp"
+#include "adapters/WebSocketAdapter.hpp"
+#include "messages/IClientMessage.hpp"
+#include "messages/IOutputMessage.hpp"
+#include "IGeneralClient.hpp"
+
 
 
 class ArtisanClient : public IGeneralClient
@@ -22,6 +25,8 @@ class ArtisanClient : public IGeneralClient
         void addFunctionToMainCommand
             (std::string key, 
              std::function<void(uint8_t num, JsonDocument& doc)> func) override;
+
+        void sendEvent(WebSocketsServer &ws, IOutputMessage* msg) override;
 
         virtual ~ArtisanClient() = default;
 

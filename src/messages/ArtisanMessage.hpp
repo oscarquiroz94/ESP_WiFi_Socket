@@ -2,7 +2,9 @@
 
 #include "Compiletype.hpp"
 #include "adapters/ESPadapter.hpp"
+#include "adapters/WebSocketAdapter.hpp"
 #include "IClientMessage.hpp"
+#include "IOutputMessage.hpp"
 
 class ArtisanMessage : public IClientMessage
 {
@@ -10,36 +12,25 @@ class ArtisanMessage : public IClientMessage
 
         int8_t getClientId() const override {return id;}
 
-        bool getDocument(JsonDocument& doc, const char* data) override
-        {
-            parsePayload(doc, data);
-            return isValid(doc);
-        }
+        bool getDocument(JsonDocument& doc, const char* data) override;
 
-        std::string getMainCommand(JsonDocument& doc) override
-        {
-            if (!isValid(doc)) return "";
-
-            if (doc["command"].is<std::string>()) 
-                return doc["command"].as<std::string>();
-            else return "";
-        }
-
+        std::string getMainCommand(JsonDocument& doc) override;
+        
     private:
+        bool isValid(JsonDocument& doc) override;
+};
 
-        bool isValid(JsonDocument& doc) override
-        {
-            bool isvalid = false;
-            if (doc["roasterID"].is<int8_t>()) 
-            {
-                this->id = doc["roasterID"];
-                isvalid = true;
-                // ESPadapter::serial_print("FROM-ARTISAN: ");
-                // ESPadapter::serial_println(payload);
-            }
-            else if (!doc["roasterID"].is<int8_t>() && this->id == -1) 
-                isvalid = false;
+class ArtisanMessageStartRoasting : public IOutputMessage
+{
+    public: void send(WebSocketsServer& ws, int8_t id);
+};
 
-            return isvalid;
-        }
+class ArtisanMessageEndRoasting : public IOutputMessage
+{
+    public: void send(WebSocketsServer& ws, int8_t id);
+};
+
+class ArtisanMessageFirstCrack : public IOutputMessage
+{
+    public: void send(WebSocketsServer& ws, int8_t id);
 };

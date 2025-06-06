@@ -1,7 +1,9 @@
 #include "Manager.hpp"
+#include <algorithm>
 #include "adapters/ESPadapter.hpp"
 #include "utilities/CheckSSID.hpp"
-#include <algorithm>
+#include "websocket/CredentialNotification.hpp"
+
 
 #ifdef DEPLOY
 #include <EEPROM.h>
@@ -66,9 +68,9 @@ void Manager::registerSerialPortHandler()
         lista = strtok(NULL, ",");
         eepromdata.canalwifi = (uint8_t)ESPadapter::str2int(lista);
 
-        peer.executePairing(eepromdata);
-
         CheckSSID::validateSSID(eepromdata);
+
+        CredentialNotification::notifyOnChange(webSocket, clientHandler, eepromdata);
 
         bool sucess = WebsocketManager::buildWebSocket(webSocket, eepromdata);
         
@@ -96,37 +98,20 @@ void Manager::registerSerialPortHandler()
     });
 
     serialport.addFunctionToMainCommand("MCA", [&](const char* comand){
-        std::string output;
-        JsonDocument outdoc;
-        int8_t idArtisan = artisanClient.getClientId();
-
-        outdoc["pushMessage"] = "startRoasting";
-        serializeJson(outdoc, output);
-        webSocket.sendTXT(idArtisan, output);
+        ArtisanMessageStartRoasting msg;
+        artisanClient.sendEvent(webSocket, &msg);
     });
 
     serialport.addFunctionToMainCommand("MDR", [&](const char* comand){
-        std::string output;
-        JsonDocument outdoc;
-        int8_t idArtisan = artisanClient.getClientId();
-
-        outdoc["pushMessage"] = "endRoasting";
-        serializeJson(outdoc, output);
-        webSocket.sendTXT(idArtisan, output);
+        ArtisanMessageEndRoasting msg;
+        artisanClient.sendEvent(webSocket, &msg);
     });
 
     serialport.addFunctionToMainCommand("MFC", [&](const char* comand){
-        std::string output;
-        JsonDocument outdoc;
-        int8_t idArtisan = artisanClient.getClientId();
-
-        outdoc["pushMessage"] = "addEvent";
-		outdoc["data"]["event"] = "firstCrackBeginningEvent";
-        serializeJson(outdoc, output);
-        webSocket.sendTXT(idArtisan, output);
+        ArtisanMessageFirstCrack msg;
+        artisanClient.sendEvent(webSocket, &msg);
     });
 
-    // IN,230,160,1500,2000,200,600,200 --> ET, BT, Q, T, S, ROR, delta
     serialport.addFunctionToMainCommand("IN,", [&](const char* comand) { 
         char* cpycommand = (char*)comand;
         char *lista = strtok(cpycommand, ",");
@@ -151,6 +136,10 @@ void Manager::registerSerialPortHandler()
 
 		lista = strtok(NULL, ",");
 		applicationdata.deltaETBT = ESPadapter::str2int(lista);;
+    });
+
+    serialport.addFunctionToMainCommand("PAIR", [&](const char* comand){
+        peer.executePairing(eepromdata);
     });
 
     //------------- Debug purposes ----------------

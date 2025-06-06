@@ -24,11 +24,12 @@ class Manager
     public:
 
         Manager() : 
-            serialport(115200), 
-            webSocket(8080), 
-            clientHandler(webSocket),
-            artisanClient(&artisanMsg),
-            peer(webSocket) {}
+            serialport(115200) 
+            ,webSocket(8080)
+            ,clientHandler(webSocket)
+            ,artisanClient(&artisanMsg)
+            ,peer(webSocket) 
+            {}
 
         void initialize();
 

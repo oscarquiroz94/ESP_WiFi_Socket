@@ -1,6 +1,8 @@
 #pragma once
 
 #include "adapters/ESPadapter.hpp"
+#include "adapters/WebSocketAdapter.hpp"
+#include "messages/IOutputMessage.hpp"
 #include "IGeneralClient.hpp"
 
 class AudioCrackClient : public IGeneralClient
@@ -20,6 +22,11 @@ class AudioCrackClient : public IGeneralClient
         void addFunctionToMainCommand
             (std::string key, 
              std::function<void(uint8_t num, JsonDocument& doc)> func) override
+        {
+            //ESPadapter::serial_println("Audiocrack: Not implemented yet");
+        }
+
+        void sendEvent(WebSocketsServer &ws, IOutputMessage* msg) override
         {
             //ESPadapter::serial_println("Audiocrack: Not implemented yet");
         }

@@ -46,6 +46,8 @@ class GenericClient : public IGeneralClient
         }
         std::string getName() const override {return "generic";}
 
+        void sendEvent(WebSocketsServer &ws, IOutputMessage* msg) override {}
+
         ~GenericClient() = default;
 
     private:

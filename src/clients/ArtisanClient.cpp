@@ -27,3 +27,8 @@ void ArtisanClient::addFunctionToMainCommand
 {
     map2func[key] = func;
 }
+
+void ArtisanClient::sendEvent(WebSocketsServer &ws, IOutputMessage* msg)
+{
+    msg->send(ws, getClientId());
+}
