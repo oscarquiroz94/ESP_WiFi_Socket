@@ -14,7 +14,7 @@ void Manager::initialize()
 {
     serialport.openPort();
 
-    eepromdata.read();
+    //eepromdata.read();
     
     registerSerialPortHandler();
     registerWebSocketHandler();
@@ -76,22 +76,27 @@ void Manager::registerSerialPortHandler()
         
         if (sucess) 
         {
-            eepromdata.save();
+            //eepromdata.save();
 
             IPAddress IP = WiFi.softAPIP();
 
-            ESPadapter::serial_print("CSO"); // \0 included at the end
+            ESPadapter::serial_print("CSO");
+            ESPadapter::serial_write('\0');
 
-            ESPadapter::serial_print(
-                std::string("IPS") + IP.toString() 
-                + std::string("CH") + std::to_string(eepromdata.canalwifi)
-            );
+            ESPadapter::serial_print("IPS");
+            ESPadapter::serial_print(IP.toString());
+            ESPadapter::serial_print("CH");
+            ESPadapter::serial_print(eepromdata.canalwifi);
+            ESPadapter::serial_write('\0');
 
-            ESPadapter::serial_print(
-                std::string("SID,") + eepromdata.ssidSocket + ","
-                + eepromdata.passSocket + ","
-                + std::to_string(eepromdata.canalwifi)
-            );
+            ESPadapter::serial_print("SID,");
+            ESPadapter::serial_print(eepromdata.ssidSocket);
+            ESPadapter::serial_print(",");
+            ESPadapter::serial_print(eepromdata.passSocket);
+            ESPadapter::serial_print(",");
+            ESPadapter::serial_print(eepromdata.canalwifi);
+            ESPadapter::serial_print(",");
+            ESPadapter::serial_write('\0');
 
             ESPadapter::flush();
         }
@@ -135,7 +140,7 @@ void Manager::registerSerialPortHandler()
 		applicationdata.RoR = ESPadapter::str2int(lista);
 
 		lista = strtok(NULL, ",");
-		applicationdata.deltaETBT = ESPadapter::str2int(lista);;
+		applicationdata.deltaETBT = ESPadapter::str2int(lista);
     });
 
     serialport.addFunctionToMainCommand("PAIR", [&](const char* comand){
@@ -147,6 +152,10 @@ void Manager::registerSerialPortHandler()
     serialport.addFunctionToMainCommand("STOPWS", [&](const char* comand){
         ESPadapter::serial_println("Stopping WebSocket server");
         WebsocketManager::destroyWebSocket(webSocket);
+    });
+
+    serialport.addFunctionToMainCommand("SHOW", [&](const char* comand){
+        applicationdata.print();
     });
 
     serialport.addFunctionToMainCommand("LOG1", [&](const char* comand){
@@ -177,6 +186,7 @@ void Manager::registerArtisan()
     artisanClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
         std::string output;
         JsonDocument outdoc;
+        outdoc["id"] = doc["id"];
         outdoc["data"]["aire"] = applicationdata.tempET;
         outdoc["data"]["grano"] = applicationdata.tempBT;
         outdoc["data"]["ror"] = applicationdata.RoR;

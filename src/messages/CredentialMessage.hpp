@@ -8,7 +8,7 @@ class CredentialMessage : public IOutputMessage
     public: 
         void send(WebSocketsServer& ws, int8_t id)
         {
-            ESPadapter::serial_println("send credential message");
+            ESPadapter::debug_println("send credential message");
         }
 };
 

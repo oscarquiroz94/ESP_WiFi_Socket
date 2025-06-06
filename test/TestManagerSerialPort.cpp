@@ -9,7 +9,7 @@
 BOOST_AUTO_TEST_CASE(given_S_ROASTER_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED_1)
 {
     const char *SERIALCOMMAND = R"(S,ROASTER,Clave123*,1,)";
-    const char *EXPECTED      = "CSOIPS192.168.4.1CH1SID,ROASTER_3,Clave123*,1";
+    const char *EXPECTED      = "CSOIPS192.168.4.1CH1SID,ROASTER_3,Clave123*,1,";
 
     SerialPortTestAccess serialportTestAccess;
     ManagerAccess manager;
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(given_S_ROASTER_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPE
 BOOST_AUTO_TEST_CASE(given_S_ROASTER_4_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED)
 {
     const char *SERIALCOMMAND = R"(S,ROASTER_4,Clave123*,1,)";
-    const char *EXPECTED      = "CSOIPS192.168.4.1CH1SID,ROASTER_4,Clave123*,1";
+    const char *EXPECTED      = "CSOIPS192.168.4.1CH1SID,ROASTER_4,Clave123*,1,";
 
     SerialPortTestAccess serialportTestAccess;
     ManagerAccess manager;
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(given_MCA_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED)
 
     SerialPortTestAccess serialportTestAccess;
     ManagerAccess manager;
-    WebSocketsServer& ws = manager.getWsReference();
+    WebSocketsServer& ws = manager.getWebsocket();
     manager.setMaxTimeSearch(100);
     
     manager.registerSerialPortHandler();
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(given_MDR_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED)
 
     SerialPortTestAccess serialportTestAccess;
     ManagerAccess manager;
-    WebSocketsServer& ws = manager.getWsReference();
+    WebSocketsServer& ws = manager.getWebsocket();
     manager.setMaxTimeSearch(100);
     
     manager.registerSerialPortHandler();
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(given_MFC_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED)
     
     SerialPortTestAccess serialportTestAccess;
     ManagerAccess manager;
-    WebSocketsServer& ws = manager.getWsReference();
+    WebSocketsServer& ws = manager.getWebsocket();
     manager.setMaxTimeSearch(100);
     
     manager.registerSerialPortHandler();
@@ -111,5 +111,32 @@ BOOST_AUTO_TEST_CASE(given_MFC_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED)
 
 	BOOST_CHECK_EQUAL(ws.getOutputString().c_str(), JSONPAYLOAD);
 }
+
+BOOST_AUTO_TEST_CASE(given_IN_NUMBERS_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED)
+{
+    // ET, BT, Q, T, S, ROR, delta
+    const char *SERIALCOMMAND = R"(IN,230,160,1500,2000,200,600,200)";
+
+    SerialPortTestAccess serialportTestAccess;
+    ManagerAccess manager;
+    WebSocketsServer& ws = manager.getWebsocket();
+    CrossSectionalData& appdata = manager.getApplicationData();
+
+    manager.setMaxTimeSearch(100);
+    
+    manager.registerSerialPortHandler();
+
+    serialportTestAccess.setCommandFromAtmega(SERIALCOMMAND);
+    manager.processEvent();
+
+	BOOST_CHECK_EQUAL(appdata.tempET, 230);
+    BOOST_CHECK_EQUAL(appdata.tempBT, 160);
+    BOOST_CHECK_EQUAL(appdata.porcentQuem, 1500);
+    BOOST_CHECK_EQUAL(appdata.porcentTamb, 2000);
+    BOOST_CHECK_EQUAL(appdata.porcentSopl, 200);
+    BOOST_CHECK_EQUAL(appdata.RoR, 600);
+    BOOST_CHECK_EQUAL(appdata.deltaETBT, 200);
+}
+
 
 #endif

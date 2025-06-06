@@ -25,6 +25,19 @@ struct CrossSectionalData
     int16_t tambor = 0;
     int16_t quemador = 0;
     int16_t tedvalue = 0;
+
+    void print()
+    {
+        ESPadapter::serial_print("Tempera ET: "); ESPadapter::serial_println(tempET);
+        ESPadapter::serial_print("Tempera BT: "); ESPadapter::serial_println(tempBT);
+        ESPadapter::serial_print("Roaster quem: "); ESPadapter::serial_println(porcentQuem);
+        ESPadapter::serial_print("Roaster tamb: "); ESPadapter::serial_println(porcentTamb);
+        ESPadapter::serial_print("Roaster sopla: "); ESPadapter::serial_println(porcentSopl);
+        ESPadapter::serial_print("RoR: "); ESPadapter::serial_println(RoR);
+        ESPadapter::serial_print("Artisan quem: "); ESPadapter::serial_println(aire);
+        ESPadapter::serial_print("Artisan tambor: "); ESPadapter::serial_println(tambor);
+        ESPadapter::serial_print("Artisan quemador: "); ESPadapter::serial_println(quemador);
+    }
 };
 
 struct CrossSectionalDataEEPROM

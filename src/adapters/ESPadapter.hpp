@@ -87,21 +87,22 @@ class ESPadapter
 		Serial.print(num, precision);
 #else
 		std::cout << (uint16_t)num;
-		serialBuffer += num;
+		serialBuffer += std::to_string(num);
 #endif
 	}
 
 	//----------------------
 
-	static inline void serial_print(const uint8_t num)
+	static inline void serial_print(uint8_t num)
 	{
 #ifdef DEPLOY
 		Serial.print(num);
 #else
 		std::cout << (uint16_t)num;
-		serialBuffer += num;
+		serialBuffer += std::to_string(num);
 #endif
 	}
+
 
 	//-------------------
 
@@ -125,10 +126,29 @@ class ESPadapter
 #endif
 	}
 
-	static inline void serial_print(const std::string text)
+	static inline void serial_print(char *text)
 	{
 #ifdef DEPLOY
 		Serial.print(text);
+#else
+		std::cout << text;
+		serialBuffer += text;
+#endif
+	}
+
+	static inline void serial_write(const char text)
+	{
+#ifdef DEPLOY
+		Serial.write(text);
+#else
+		std::cout << text;
+#endif
+	}
+
+	static inline void serial_print(const std::string text)
+	{
+#ifdef DEPLOY
+		Serial.print(text.c_str());
 #else
 		std::cout << text;
 		serialBuffer += text;
@@ -155,7 +175,7 @@ class ESPadapter
 		Serial.println(num);
 #else
 		std::cout << (uint16_t)num << std::endl;
-		serialBuffer += num + "\n";
+		serialBuffer += std::to_string(num) + "\n";
 #endif
 	}
 

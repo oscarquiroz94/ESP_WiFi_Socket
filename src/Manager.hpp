@@ -42,13 +42,14 @@ class Manager
         CrossSectionalDataEEPROM eepromdata;
         SerialPort serialport;
         WebSocketsServer webSocket;
-        PairingManager peer;
 
         ArtisanMessage artisanMsg;
         
         WebsocketClientHandler clientHandler;
         ArtisanClient artisanClient;
         AudioCrackClient audioCrackClient;
+
+        PairingManager peer;
     
         uint8_t  sendVersionAmount = 0;
         uint32_t t_sendversion = 0;
