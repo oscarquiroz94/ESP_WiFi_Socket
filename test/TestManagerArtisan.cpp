@@ -7,7 +7,7 @@
 BOOST_AUTO_TEST_CASE(given_GET_DATA_when_REGISTER_ARTISAN_HANDLER_then_EXPECTED)
 {
     const char* JSONPAYLOAD_1 = R"({"command":"getData","id":2522,"roasterID":0})";
-    const char* JSONPAYLOAD_2 = R"({"data":{"aire":100,"grano":150,"ror":5,"quemador":10,"soplador":20,"tambor":30,"delta":40}})";
+    const char* JSONPAYLOAD_2 = R"({"id":2522,"data":{"aire":100,"grano":150,"ror":5,"quemador":10,"soplador":20,"tambor":30,"delta":40}})";
 
     ManagerAccess manager;
 

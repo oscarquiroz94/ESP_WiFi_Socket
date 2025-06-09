@@ -28,6 +28,6 @@ class AudioCrackClient : public IGeneralClient
 
         void sendEvent(WebSocketsServer &ws, IOutputMessage* msg) override
         {
-            //ESPadapter::serial_println("Audiocrack: Not implemented yet");
+            msg->send(ws, getClientId());
         }
 };

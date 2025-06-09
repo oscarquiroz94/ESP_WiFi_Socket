@@ -12,9 +12,12 @@ class CredentialNotification
         static void notifyOnChange
         (   WebSocketsServer &ws,
             WebsocketClientHandler &clienthandler,
-            CrossSectionalDataEEPROM &data)
+            const CrossSectionalDataEEPROM &newdata,
+            CrossSectionalDataEEPROM &olddata)
         {
-            CredentialMessage msg;
+            if (olddata == newdata) return;
+            
+            CredentialMessage msg(newdata);
             
             clienthandler.doForeachClient([&ws, &msg](IGeneralClient* client) {
                 // A todos los clientes enviar el mismo mensaje

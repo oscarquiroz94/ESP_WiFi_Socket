@@ -67,12 +67,18 @@ class WebSocketsServer
         void sendTXT(uint8_t num, JsonDocument& doc) {}
         void sendTXT(uint8_t num, String &stream) 
         {
-            outputString = stream;
-            outputNum = num;
+            outputString += stream;
+            ESPadapter::serial_print("sendTXT: ");
+            ESPadapter::serial_println(outputString);
         }
         void onEvent(std::function<void(uint8_t num, WStype_t type, uint8_t *payload, size_t length)>) {}
         IPAddress remoteIP(uint8_t num) { return IPAddress(); }
         std::string getOutputString() const { return outputString; }
+        void cleanOutputString() 
+        {
+            outputString = "";
+            ESPadapter::serial_println("clean");
+        }
         uint8_t getOutputNum() const { return outputNum; }
 
     private:

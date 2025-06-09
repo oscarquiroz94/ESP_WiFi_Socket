@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE(given_S_ROASTER_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPE
 
     std::string captured = ESPadapter::getSerialOutput();
 
-    // ROASTER is already registered on Network test
+    // ROASTER is already registered on Network test, also ROASTER_1 and ROASTER_2
     // So the expected result is ROASTER_3
 	BOOST_CHECK_EQUAL(captured.c_str(), EXPECTED);
 

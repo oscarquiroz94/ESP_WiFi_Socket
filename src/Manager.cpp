@@ -52,30 +52,29 @@ void Manager::sendInitializationData(const uint32_t version)
 void Manager::registerSerialPortHandler()
 {
     serialport.addFunctionToMainCommand("S,", [&](const char* comand) { 
-        //Limpiar valores anteriores
-        memset(eepromdata.ssidSocket, 0, sizeof(eepromdata.ssidSocket));
-        memset(eepromdata.passSocket, 0, sizeof(eepromdata.passSocket));
+        CrossSectionalDataEEPROM newdata;
 
         char* cpycommand = (char*)comand;
         char *lista = strtok(cpycommand, ",");
 
         lista = strtok(NULL, ",");
-        if (lista != NULL) strcpy(eepromdata.ssidSocket, String(lista).c_str());
+        if (lista != NULL) strcpy(newdata.ssidSocket, String(lista).c_str());
 
         lista = strtok(NULL, ",");
-        if (lista != NULL) strcpy(eepromdata.passSocket, String(lista).c_str());
+        if (lista != NULL) strcpy(newdata.passSocket, String(lista).c_str());
 
         lista = strtok(NULL, ",");
-        eepromdata.canalwifi = (uint8_t)ESPadapter::str2int(lista);
+        newdata.canalwifi = (uint8_t)ESPadapter::str2int(lista);
 
-        CheckSSID::validateSSID(eepromdata);
+        CheckSSID::validateSSID(newdata);
 
-        CredentialNotification::notifyOnChange(webSocket, clientHandler, eepromdata);
+        CredentialNotification::notifyOnChange(webSocket, clientHandler, newdata, eepromdata);
 
-        bool sucess = WebsocketManager::buildWebSocket(webSocket, eepromdata);
+        bool sucess = WebsocketManager::buildWebSocket(webSocket, newdata);
         
         if (sucess) 
         {
+            eepromdata = newdata;
             //eepromdata.save();
 
             IPAddress IP = WiFi.softAPIP();
@@ -218,7 +217,7 @@ void Manager::registerArtisan()
         ESPadapter::serial_print(applicationdata.tambor);ESPadapter::serial_print(',');
         ESPadapter::serial_print(applicationdata.quemador);ESPadapter::serial_print(',');
         ESPadapter::serial_print(applicationdata.tedvalue);ESPadapter::serial_print(',');
-        ESPadapter::serial_print('\0');
+        ESPadapter::serial_write('\0');
     });
 
     artisanClient.addFunctionToMainCommand("endRoasting", [](uint8_t num, JsonDocument& doc) {
