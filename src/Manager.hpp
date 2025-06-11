@@ -10,6 +10,7 @@
 #include "clients/AudioCrackClient.hpp"
 #include "messages/ArtisanMessage.hpp"
 #include "websocket/PairingManager.hpp"
+#include "utilities/Heartbeat.hpp"
 
 /*
 * @brief Class Manager
@@ -32,10 +33,7 @@ class Manager
             {}
 
         void initialize();
-
         void run();
-
-        void sendInitializationData(const uint32_t version);
 
     private:
         CrossSectionalData applicationdata;
@@ -50,14 +48,17 @@ class Manager
         AudioCrackClient audioCrackClient;
 
         PairingManager peer;
+        Heartbeat beat;
     
         uint8_t  sendVersionAmount = 0;
         uint32_t t_sendversion = 0;
+        uint32_t versionESP = 0;
 
         void registerSerialPortHandler();
         void registerWebSocketHandler();
         void registerArtisan();
         void registerAudioCrack();
+        void send_data();
 
         friend class ManagerAccess;
 };

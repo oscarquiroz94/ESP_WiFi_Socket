@@ -3,7 +3,7 @@
 #include "adapters/ESPadapter.hpp"
 #include "utilities/CheckSSID.hpp"
 #include "websocket/CredentialNotification.hpp"
-
+#include "utilities/Version.h"
 
 #ifdef DEPLOY
 #include <EEPROM.h>
@@ -12,6 +12,15 @@
 
 void Manager::initialize()
 {
+    versionESP = (completeVersion[0] - 48) * 10000000L +
+                 (completeVersion[1] - 48) * 1000000L +
+                 (completeVersion[2] - 48) * 100000L +
+                 (completeVersion[3] - 48) * 10000L +
+                 (completeVersion[4] - 48) * 1000L +
+                 (completeVersion[5] - 48) * 100L +
+                 (completeVersion[6] - 48) * 10L +
+                 (completeVersion[7] - 48) * 1L;
+
     serialport.openPort();
 
     //eepromdata.read();
@@ -32,20 +41,31 @@ void Manager::run()
     serialport.listen();
     serialport.processEvent();
 
+    beat.loop();
+
+    send_data();
+
     ESPadapter::retardo(5);
 }
 
-void Manager::sendInitializationData(const uint32_t version)
+// TODO: TESTING
+void Manager::send_data()
 {
     if (ESPadapter::milliseconds() - t_sendversion > 3000 &&
         sendVersionAmount < 3)
     {
-        serialport.sendRawData("ESPV,");
-        serialport.sendRawData(version);
-        serialport.sendRawData(",");
-        serialport.sendRawData('\0');
+        ESPadapter::serial_print("ESPV,");
+        ESPadapter::serial_print(versionESP);
+        ESPadapter::serial_print(",");
+        ESPadapter::serial_print('\0');
         t_sendversion = ESPadapter::milliseconds();
         sendVersionAmount++;
+    }
+
+    if (beat.is_alert())
+    {
+        ESPadapter::serial_print("HEARBEAT-DEAD");
+        ESPadapter::serial_print('\0');
     }
 }
 
@@ -173,9 +193,9 @@ void Manager::registerWebSocketHandler()
     // Registrar Artisan siempre
     registerArtisan();
 
-    if (std::find(eepromdata.clientNames.begin(), eepromdata.clientNames.end(), "audiocrack") 
-        != eepromdata.clientNames.end()) 
-        registerAudioCrack();
+    // if (std::find(eepromdata.clientNames.begin(), eepromdata.clientNames.end(), "audiocrack") 
+    //     != eepromdata.clientNames.end()) 
+    //     registerAudioCrack();
 }
 
 void Manager::registerArtisan()
@@ -197,6 +217,8 @@ void Manager::registerArtisan()
         webSocket.sendTXT(num, output);
         ESPadapter::debug_print("TO-ARTISAN: ");
         ESPadapter::debug_println(output);
+
+        beat.set_status(Heartbeat::online);
     });
 
     artisanClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
@@ -220,48 +242,62 @@ void Manager::registerArtisan()
         ESPadapter::serial_write('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("endRoasting", [](uint8_t num, JsonDocument& doc) {
-        ESPadapter::serial_print("SODROP");ESPadapter::serial_print('\0');
+    artisanClient.addFunctionToMainCommand("endRoasting", [&](uint8_t num, JsonDocument& doc) {
+        ESPadapter::serial_print("SODROP");
+        ESPadapter::serial_print('\0');
+        beat.set_step(Heartbeat::other);
     });
 
     artisanClient.addFunctionToMainCommand("ready", [](uint8_t num, JsonDocument& doc) {
-        ESPadapter::serial_print("SREADY");ESPadapter::serial_print('\0');
+        ESPadapter::serial_print("SREADY");
+        ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("noready", [](uint8_t num, JsonDocument& doc) {
-        ESPadapter::serial_print("SNOREA");ESPadapter::serial_print('\0');
+    artisanClient.addFunctionToMainCommand("noready", [&](uint8_t num, JsonDocument& doc) {
+        ESPadapter::serial_print("SNOREA");
+        ESPadapter::serial_print('\0');
+        beat.set_step(Heartbeat::other);
     });
 
     artisanClient.addFunctionToMainCommand("identify", [](uint8_t num, JsonDocument& doc) {
-        ESPadapter::serial_print("IDENTIFY");ESPadapter::serial_print('\0');
+        ESPadapter::serial_print("IDENTIFY");
+        ESPadapter::serial_print('\0');
     });
 
     artisanClient.addFunctionToMainCommand("noidentify", [](uint8_t num, JsonDocument& doc) {
-        ESPadapter::serial_print("NOIDENTIFY");ESPadapter::serial_print('\0');
+        ESPadapter::serial_print("NOIDENTIFY");
+        ESPadapter::serial_print('\0');
     });
 
     artisanClient.addFunctionToMainCommand("getinit", [](uint8_t num, JsonDocument& doc) {
-        ESPadapter::serial_print("GETINIT");ESPadapter::serial_print('\0');
+        ESPadapter::serial_print("GETINIT");
+        ESPadapter::serial_print('\0');
     });
 
     artisanClient.addFunctionToMainCommand("reset", [](uint8_t num, JsonDocument& doc) {
-        ESPadapter::serial_print("RESET");ESPadapter::serial_print('\0');
+        ESPadapter::serial_print("RESET");
+        ESPadapter::serial_print('\0');
     });
 
     artisanClient.addFunctionToMainCommand("fcstart", [](uint8_t num, JsonDocument& doc) {
-        ESPadapter::serial_print("FCSTART");ESPadapter::serial_print('\0');
+        ESPadapter::serial_print("FCSTART");
+        ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("oncharge", [](uint8_t num, JsonDocument& doc) {
-        ESPadapter::serial_print("ONCHARGE");ESPadapter::serial_print('\0');
+    artisanClient.addFunctionToMainCommand("oncharge", [&](uint8_t num, JsonDocument& doc) {
+        ESPadapter::serial_print("ONCHARGE");
+        ESPadapter::serial_print('\0');
+        beat.set_step(Heartbeat::roasting);
     });
 
     artisanClient.addFunctionToMainCommand("onted", [](uint8_t num, JsonDocument& doc) {
-        ESPadapter::serial_print("ONTED");ESPadapter::serial_print('\0');
+        ESPadapter::serial_print("ONTED");
+        ESPadapter::serial_print('\0');
     });
 
     artisanClient.addFunctionToMainCommand("offted", [](uint8_t num, JsonDocument& doc) {
-        ESPadapter::serial_print("OFFTED");ESPadapter::serial_print('\0');
+        ESPadapter::serial_print("OFFTED");
+        ESPadapter::serial_print('\0');
     });
 }
 

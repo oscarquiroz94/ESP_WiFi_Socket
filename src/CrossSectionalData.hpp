@@ -48,8 +48,8 @@ class CrossSectionalDataEEPROM
 
         bool operator==(const CrossSectionalDataEEPROM& other) const
         {
-            return std::strcmp(ssidSocket, other.ssidSocket) == 0 &&
-                    std::strcmp(passSocket, other.passSocket) == 0 &&
+            return strcmp(ssidSocket, other.ssidSocket) == 0 &&
+                    strcmp(passSocket, other.passSocket) == 0 &&
                     canalwifi == other.canalwifi;
         }
 };
