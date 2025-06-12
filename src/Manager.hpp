@@ -53,6 +53,7 @@ class Manager
         uint8_t  sendVersionAmount = 0;
         uint32_t t_sendversion = 0;
         uint32_t versionESP = 0;
+        bool heartbeatonce = false;
 
         void registerSerialPortHandler();
         void registerWebSocketHandler();

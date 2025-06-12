@@ -2,7 +2,6 @@
 
 #include "Temporizador.hpp"
 
-// TODO: TESTING
 class Heartbeat
 {
     public:

@@ -53,7 +53,6 @@ BOOST_AUTO_TEST_CASE(given_OFFLINE_ROASTING_when_MORE_THAN_5_SEG_then_IS_ALERT)
 
     std::thread roasterThreat([]{
         Heartbeat beat;
-        std::mutex mtx;
         beat.set_step(Heartbeat::roasting);
         std::string bufferCommand = "";
 
@@ -83,42 +82,6 @@ BOOST_AUTO_TEST_CASE(given_OFFLINE_ROASTING_when_MORE_THAN_5_SEG_then_IS_ALERT)
 
     artisanThreat.join();
     roasterThreat.join();
-
-    
-
-    // uint16_t conteo = 0;
-
-    // ESPadapter::serial_println("testing hearbeat...");
-    // while (true)
-    // {
-    //     beat.loop();
-
-    //     // Artisan envia heartbeat cada segundo
-    //     if (conteo == 1000)
-    //     {
-    //         beat.set_status(Heartbeat::online);
-    //         BOOST_CHECK(false == beat.is_alert());
-    //     }
-    //     if (conteo == 2000)
-    //     {
-    //         beat.set_status(Heartbeat::online);
-    //         BOOST_CHECK(false == beat.is_alert());
-    //     }
-
-    //     // Artisan tarda en enviar hearbeat (desconectado)
-    //     if (conteo == 9000)
-    //     {
-    //         BOOST_CHECK(true == beat.is_alert());
-    //     }
-    //     if (conteo == 15000) break;
-
-    //     ESPadapter::serial_print("estatus: ");
-    //     ESPadapter::serial_println(beat.is_alert());
-
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    //     conteo++;
-    //}
-    
 }
 
 #endif
