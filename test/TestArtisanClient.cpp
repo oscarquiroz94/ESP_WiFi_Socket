@@ -1,8 +1,8 @@
 #include "Compiletype.hpp"
 #ifdef TEST
 
-#include "messages/ArtisanMessage.hpp"
-#include "clients/ArtisanClient.hpp"
+#include "messages/VisualScopeMessage.hpp"
+#include "clients/VisualScopeClient.hpp"
 #include <boost/test/unit_test.hpp>
 
 
@@ -10,11 +10,11 @@ BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_SETPARAMS)
 {
     const char* JSONPAYLOAD_1 = R"({"roasterID": 1, "command": "setControlParams", "params": {"aire": 100, "tambor": 80, "quemador": 60, "soplador": 50}})";
 
-    ArtisanMessage artisanMsg;
-    ArtisanClient artisanClient(&artisanMsg);
+    VisualScopeMessage visualScopeMsg;
+    VisualScopeClient visualScopeClient(&visualScopeMsg);
     bool callbackCalled = false;
 
-    artisanClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
         callbackCalled = true;
         BOOST_CHECK(1 == doc["roasterID"]);
         BOOST_CHECK(100 == doc["params"]["aire"]);
@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_SETPARAMS)
         BOOST_CHECK(50 == doc["params"]["soplador"]);
     });
 
-    artisanClient.processEvent(128, JSONPAYLOAD_1, sizeof(JSONPAYLOAD_1));
+    visualScopeClient.processEvent(128, JSONPAYLOAD_1, sizeof(JSONPAYLOAD_1));
 
     BOOST_CHECK(true == callbackCalled);
 }
@@ -34,16 +34,16 @@ BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_2_when_EVENTWB_then_GETDATA)
 {
     const char* JSONPAYLOAD_2 = R"({"command":"getData","id":92295,"roasterID":0})";
 
-    ArtisanMessage artisanMsg;
-    ArtisanClient artisanClient(&artisanMsg);
+    VisualScopeMessage visualScopeMsg;
+    VisualScopeClient visualScopeClient(&visualScopeMsg);
     bool callbackCalled = false;
 
-    artisanClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
         callbackCalled = true;
         BOOST_CHECK(0 == doc["roasterID"]);
     });
 
-    artisanClient.processEvent(128, JSONPAYLOAD_2, sizeof(JSONPAYLOAD_2));
+    visualScopeClient.processEvent(128, JSONPAYLOAD_2, sizeof(JSONPAYLOAD_2));
 
     BOOST_CHECK(true == callbackCalled);
 }

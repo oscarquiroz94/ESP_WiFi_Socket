@@ -2,25 +2,22 @@
 
 ## 📋 Descripción General
 
-**ESP WiFi Socket** es un sistema de comunicación inalámbrica avanzado diseñado para **aplicaciones de control industrial**. Este proyecto implementa un puente de comunicación bidireccional entre sistemas de control y aplicaciones de monitoreo externas, proporcionando conectividad WebSocket robusta para el intercambio de datos en tiempo real.
+**ESP WiFi Socket** es un sistema de comunicación inalámbrica diseñado para **aplicaciones de control industrial**. Este proyecto implementa un puente de comunicación bidireccional entre sistemas de control y aplicaciones de monitoreo externas, proporcionando conectividad WebSocket robusta para el intercambio de datos en tiempo real.
 
 El sistema permite el control remoto y monitoreo en tiempo real de parámetros críticos de procesos industriales, incluyendo temperaturas, tiempos, y configuraciones de equipos especializados.
 
 ## 🎯 Características Principales
 
-### 🔌 Conectividad Avanzada
+### 🔌 Conectividad
 - **WebSocket Server**: Comunicación en tiempo real con múltiples clientes
 - **WiFi Access Point**: Crea su propia red WiFi para conexiones dedicadas
 - **Protocolo JSON**: Intercambio de datos estructurado y confiable
 - **Cliente Especializado**: Integración con sistemas de monitoreo externos
 
 ### 🌡️ Monitoreo de Datos en Tiempo Real
-- **Temperatura ET (Environment Temperature)**: Temperatura del ambiente de proceso
-- **Temperatura BT (Bean/Batch Temperature)**: Temperatura directa del proceso
-- **RoR (Rate of Rise)**: Velocidad de incremento de temperatura
+- **Temperatura**: Temperatura del ambiente de proceso
 - **Control de Equipos**: Porcentaje de potencia de equipos principales
 - **Control de Motores**: Velocidad de rotación de componentes
-- **Control de Ventilación**: Intensidad del flujo de aire
 
 ### 🛠️ Funciones de Control
 - **Configuración WiFi Dinámica**: Cambio de SSID, contraseña y canal por comando
@@ -55,14 +52,6 @@ El sistema permite el control remoto y monitoreo en tiempo real de parámetros c
 
 ## 📊 Protocolo de Comunicación
 
-### Comandos Serial (Entrada desde Sistema de Control)
-```
-S,<SSID>,<PASSWORD>,<CHANNEL>     # Configurar WiFi
-IN,<ET>,<BT>,<EQUIP1>,<EQUIP2>,<EQUIP3>,<ROR>,<DELTA>  # Datos de proceso
-MCA                               # Marcar inicio de proceso
-MDR                               # Marcar fin de proceso
-MFC                               # Marcar evento crítico
-PAIR                             # Iniciar emparejamiento
 ```
 
 ### Mensajes WebSocket (JSON)
@@ -71,9 +60,8 @@ PAIR                             # Iniciar emparejamiento
   "deviceID": 1,
   "command": "getData",
   "data": {
-    "ET": 150,
-    "BT": 120,
-    "RoR": 15,
+    "Temperatura1": 150,
+    "Temperatura2": 120,
     "equipo1": 75,
     "equipo2": 100,
     "equipo3": 50
@@ -88,14 +76,6 @@ PAIR                             # Iniciar emparejamiento
 - **Conexión Serial** con el sistema de control principal
 - **Alimentación 3.3V/5V**
 
-### Configuración Inicial
-1. **Flashear el firmware** en el ESP32
-2. **Conectar serialmente** al sistema de control principal
-3. **Configurar WiFi** mediante comando serial:
-   ```
-   S,MI_SISTEMA,MiPassword123,6
-   ```
-4. **Conectar aplicación cliente** a la IP: `192.168.4.1:8080`
 
 ### Integración con Aplicaciones de Monitoreo
 1. Abrir aplicación de monitoreo compatible
@@ -103,34 +83,6 @@ PAIR                             # Iniciar emparejamiento
    - **URL**: `ws://192.168.4.1:8080`
    - **Protocolo**: JSON
 3. Iniciar monitoreo en tiempo real
-
-## 📈 Casos de Uso
-
-### 🏭 Aplicaciones Comerciales
-- Monitoreo remoto de múltiples equipos
-- Registro automático de perfiles de proceso
-- Control de calidad en tiempo real
-- Alertas de anomalías en operación
-
-### 👨‍🔬 Investigación y Desarrollo
-- Análisis detallado de curvas de proceso
-- Desarrollo de nuevos perfiles
-- Estudios de reproducibilidad
-- Optimización de procesos industriales
-
-### 📚 Educación y Entrenamiento
-- Enseñanza de principios de control
-- Demostración de efectos de parámetros
-- Comparación de técnicas
-- Documentación de resultados
-
-## 🔒 Seguridad y Confiabilidad
-
-- **Comunicación Encriptada**: Protección de datos sensibles
-- **Validación de Comandos**: Verificación de integridad
-- **Timeout Protection**: Prevención de bloqueos
-- **Recovery Automático**: Reconexión en caso de fallas
-- **Heartbeat Monitoring**: Detección de desconexiones
 
 ## 🛠️ Desarrollo y Extensibilidad
 
@@ -165,18 +117,3 @@ PAIR                             # Iniciar emparejamiento
 - Integración con sistemas auxiliares
 - Interfaz web de configuración
 - Logging avanzado de datos
-- Certificación de seguridad
-
-## 📞 Soporte
-
-Este sistema está diseñado para integradores de sistemas industriales que requieren:
-- Conectividad inalámbrica confiable
-- Monitoreo en tiempo real
-- Integración con software existente
-- Flexibilidad de configuración
-
-**Ideal para:** Fabricantes de equipos industriales, centros de investigación, sistemas de automatización, y cualquier operación que requiera control y monitoreo avanzado de procesos industriales.
-
----
-
-*Desarrollado como sistema de comunicación versátil para aplicaciones de control industrial. Compatible con múltiples protocolos y estándares de la industria.*

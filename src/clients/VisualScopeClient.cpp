@@ -1,13 +1,13 @@
-#include "ArtisanClient.hpp"
-#include "messages/ArtisanMessage.hpp"
+#include "VisualScopeClient.hpp"
+#include "messages/VisualScopeMessage.hpp"
 
-void ArtisanClient::processEvent(uint8_t num, const char *payload, size_t length)
+void VisualScopeClient::processEvent(uint8_t num, const char *payload, size_t length)
 { 
     JsonDocument doc;
 
-    if (nullptr == message) {ESPadapter::print_null("ArtisanClient", __func__); return;}
+    if (nullptr == message) {ESPadapter::print_null("VisualScopeClient", __func__); return;}
 
-    // Si no es un documento de artisan, no se procesa
+    // Si no es un documento de visualScope, no se procesa
     if (!message->getDocument(doc, payload)) return;
     
     for (auto it = map2func.begin(); it != map2func.end(); it++)
@@ -21,14 +21,14 @@ void ArtisanClient::processEvent(uint8_t num, const char *payload, size_t length
     }
 }
 
-void ArtisanClient::addFunctionToMainCommand
+void VisualScopeClient::addFunctionToMainCommand
 (   std::string key, 
     std::function<void(uint8_t num, JsonDocument& doc)> func)
 {
     map2func[key] = func;
 }
 
-void ArtisanClient::sendEvent(WebSocketsServer &ws, IOutputMessage* msg)
+void VisualScopeClient::sendEvent(WebSocketsServer &ws, IOutputMessage* msg)
 {
     msg->send(ws, getClientId());
 }

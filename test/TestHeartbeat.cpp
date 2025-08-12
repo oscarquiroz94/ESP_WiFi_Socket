@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(given_OFFLINE_ROASTING_when_MORE_THAN_5_SEG_then_IS_ALERT)
 {
     ESPadapter::serial_println("testing hearbeat...");
 
-    std::thread artisanThreat([]{
+    std::thread visualScopeThreat([]{
 
         //Enviar 10 comandos cada segundo
         for (int i = 0; i < 10; i++)
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(given_OFFLINE_ROASTING_when_MORE_THAN_5_SEG_then_IS_ALERT)
         }
     });
 
-    artisanThreat.join();
+    visualScopeThreat.join();
     roasterThreat.join();
 }
 

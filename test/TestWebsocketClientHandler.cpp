@@ -1,8 +1,8 @@
 #include "Compiletype.hpp"
 #ifdef TEST
 
-#include "messages/ArtisanMessage.hpp"
-#include "clients/ArtisanClient.hpp"
+#include "messages/VisualScopeMessage.hpp"
+#include "clients/VisualScopeClient.hpp"
 #include "clients/AudioCrackClient.hpp"
 #include "websocket/WebsocketClientHandler.hpp"
 #include "adapters/WebSocketAdapter.hpp"
@@ -16,21 +16,21 @@ BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_WSTYPE_TEXT)
     WebSocketsServer webSocket = WebSocketsServer(8080);
     WebsocketClientHandler clientHandler(webSocket);
 
-    ArtisanMessage artisanMsg;
-    ArtisanClient artisanClient(&artisanMsg);
+    VisualScopeMessage visualScopeMsg;
+    VisualScopeClient visualScopeClient(&visualScopeMsg);
     AudioCrackClient audioCrackClient;
 
-    clientHandler.registerWebsocketClient(artisanClient);
+    clientHandler.registerWebsocketClient(visualScopeClient);
     clientHandler.registerWebsocketClient(audioCrackClient);
 
-    bool artisanCallbackCalled = true;
-    artisanClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
-        artisanCallbackCalled = true;
+    bool visualScopeCallbackCalled = true;
+    visualScopeClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
+        visualScopeCallbackCalled = true;
     });
 
     clientHandler.onWebSocketEvent(1, WStype_TEXT, (uint8_t*)JSONPAYLOAD_1, strlen(JSONPAYLOAD_1));
 
-    BOOST_CHECK(true == artisanCallbackCalled);
+    BOOST_CHECK(true == visualScopeCallbackCalled);
 
 }
 

@@ -1,12 +1,12 @@
-#include "ArtisanMessage.hpp"
+#include "VisualScopeMessage.hpp"
 
-bool ArtisanMessage::getDocument(JsonDocument& doc, const char* data)
+bool VisualScopeMessage::getDocument(JsonDocument& doc, const char* data)
 {
     parsePayload(doc, data);
     return isValid(doc);
 }
 
-std::string ArtisanMessage::getMainCommand(JsonDocument& doc)
+std::string VisualScopeMessage::getMainCommand(JsonDocument& doc)
 {
     if (!isValid(doc)) return "";
 
@@ -15,7 +15,7 @@ std::string ArtisanMessage::getMainCommand(JsonDocument& doc)
     else return "";
 }
 
-bool ArtisanMessage::isValid(JsonDocument& doc)
+bool VisualScopeMessage::isValid(JsonDocument& doc)
 {
     bool isvalid = false;
     if (doc["roasterID"].is<int8_t>()) 
@@ -29,7 +29,7 @@ bool ArtisanMessage::isValid(JsonDocument& doc)
     return isvalid;
 }
 
-void ArtisanMessageStartRoasting::send(WebSocketsServer& ws, int8_t id)
+void VisualScopeMessageStartRoasting::send(WebSocketsServer& ws, int8_t id)
 {
     std::string output;
     JsonDocument outdoc;
@@ -39,7 +39,7 @@ void ArtisanMessageStartRoasting::send(WebSocketsServer& ws, int8_t id)
     ws.sendTXT(id, output);
 }
 
-void ArtisanMessageEndRoasting::send(WebSocketsServer& ws, int8_t id)
+void VisualScopeMessageEndRoasting::send(WebSocketsServer& ws, int8_t id)
 {
     std::string output;
     JsonDocument outdoc;
@@ -49,7 +49,7 @@ void ArtisanMessageEndRoasting::send(WebSocketsServer& ws, int8_t id)
     ws.sendTXT(id, output);
 }
 
-void ArtisanMessageFirstCrack::send(WebSocketsServer& ws, int8_t id)
+void VisualScopeMessageFirstCrack::send(WebSocketsServer& ws, int8_t id)
 {
     std::string output;
     JsonDocument outdoc;

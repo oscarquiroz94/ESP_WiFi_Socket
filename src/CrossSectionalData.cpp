@@ -8,9 +8,9 @@ void CrossSectionalData::print()
     ESPadapter::serial_print("Roaster tamb: "); ESPadapter::serial_println(porcentTamb);
     ESPadapter::serial_print("Roaster sopla: "); ESPadapter::serial_println(porcentSopl);
     ESPadapter::serial_print("RoR: "); ESPadapter::serial_println(RoR);
-    ESPadapter::serial_print("Artisan quem: "); ESPadapter::serial_println(aire);
-    ESPadapter::serial_print("Artisan tambor: "); ESPadapter::serial_println(tambor);
-    ESPadapter::serial_print("Artisan quemador: "); ESPadapter::serial_println(quemador);
+    ESPadapter::serial_print("VisualScope quem: "); ESPadapter::serial_println(aire);
+    ESPadapter::serial_print("VisualScope tambor: "); ESPadapter::serial_println(tambor);
+    ESPadapter::serial_print("VisualScope quemador: "); ESPadapter::serial_println(quemador);
 }
 
 

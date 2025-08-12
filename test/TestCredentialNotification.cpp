@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "adapters/WebSocketAdapter.hpp"
-#include "messages/ArtisanMessage.hpp"
+#include "messages/VisualScopeMessage.hpp"
 #include "clients/AudioCrackClient.hpp"
 #include "websocket/WebsocketClientHandler.hpp"
 #include "websocket/CredentialNotification.hpp"
@@ -31,12 +31,12 @@ BOOST_AUTO_TEST_CASE(given_NEW_CREDENTIALS_when_REGISTER_CLIENTS_ON_HANDLER_then
     strcpy(newdata.passSocket, "Clave fija");
     newdata.canalwifi = 5;
 
-    ArtisanMessage artisanMsg;
-    ArtisanClient artisan(&artisanMsg);
+    VisualScopeMessage visualScopeMsg;
+    VisualScopeClient visualScope(&visualScopeMsg);
 
     AudioCrackClient audiocrack;
 
-    clienthandler.registerWebsocketClient(artisan);
+    clienthandler.registerWebsocketClient(visualScope);
     clienthandler.registerWebsocketClient(audiocrack);
 
     websocket.cleanOutputString();
@@ -64,12 +64,12 @@ BOOST_AUTO_TEST_CASE(given_SAME_CREDENTIALS_when_REGISTER_CLIENTS_ON_HANDLER_the
     strcpy(newdata.passSocket, "Clave fija");
     newdata.canalwifi = 1;
 
-    ArtisanMessage artisanMsg;
-    ArtisanClient artisan(&artisanMsg);
+    VisualScopeMessage visualScopeMsg;
+    VisualScopeClient visualScope(&visualScopeMsg);
 
     AudioCrackClient audiocrack;
 
-    clienthandler.registerWebsocketClient(artisan);
+    clienthandler.registerWebsocketClient(visualScope);
     clienthandler.registerWebsocketClient(audiocrack);
 
     websocket.cleanOutputString();

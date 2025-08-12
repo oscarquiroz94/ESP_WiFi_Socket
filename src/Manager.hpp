@@ -6,9 +6,9 @@
 #include "websocket/WebsocketManager.hpp"
 #include "websocket/WebsocketClientHandler.hpp"
 #include "CrossSectionalData.hpp"
-#include "clients/ArtisanClient.hpp"
+#include "clients/VisualScopeClient.hpp"
 #include "clients/AudioCrackClient.hpp"
-#include "messages/ArtisanMessage.hpp"
+#include "messages/VisualScopeMessage.hpp"
 #include "websocket/PairingManager.hpp"
 #include "utilities/Heartbeat.hpp"
 
@@ -28,7 +28,7 @@ class Manager
             serialport(115200) 
             ,webSocket(8080)
             ,clientHandler(webSocket)
-            ,artisanClient(&artisanMsg)
+            ,visualScopeClient(&visualScopeMsg)
             ,peer(webSocket) 
             {}
 
@@ -40,9 +40,9 @@ class Manager
         CrossSectionalDataEEPROM eepromdata;
         SerialPort               serialport;
         WebSocketsServer         webSocket;
-        ArtisanMessage           artisanMsg;
+        VisualScopeMessage           visualScopeMsg;
         WebsocketClientHandler   clientHandler;
-        ArtisanClient            artisanClient;
+        VisualScopeClient            visualScopeClient;
         AudioCrackClient         audioCrackClient;
         PairingManager           peer;
         Heartbeat                beat;
@@ -53,7 +53,7 @@ class Manager
 
         void registerSerialPortHandler();
         void registerWebSocketHandler();
-        void registerArtisan();
+        void registerVisualScope();
         void registerAudioCrack();
         void send_data();
 

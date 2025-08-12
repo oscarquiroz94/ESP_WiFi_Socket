@@ -10,14 +10,14 @@
 
 
 
-class ArtisanClient : public IGeneralClient
+class VisualScopeClient : public IGeneralClient
 {
     public:
-        ArtisanClient(IClientMessage* msg) : message(msg) {}
+        VisualScopeClient(IClientMessage* msg) : message(msg) {}
 
         int8_t getClientId () const override {return message->getClientId();}
 
-        std::string getName() const final {return "artisan";}
+        std::string getName() const final {return "visualScope";}
 
         void processEvent
             (uint8_t num, const char *payload, size_t length) override;
@@ -28,7 +28,7 @@ class ArtisanClient : public IGeneralClient
 
         void sendEvent(WebSocketsServer &ws, IOutputMessage* msg) override;
 
-        virtual ~ArtisanClient() = default;
+        virtual ~VisualScopeClient() = default;
 
     private:
         IClientMessage* message;

@@ -3,8 +3,8 @@
 
 #include "serial/SerialPort.hpp"
 #include "SerialPortTestAccess.hpp"
-#include "clients/ArtisanClient.hpp"
-#include "messages/ArtisanMessage.hpp"
+#include "clients/VisualScopeClient.hpp"
+#include "messages/VisualScopeMessage.hpp"
 #include "CrossSectionalData.hpp"
 
 #include <boost/test/unit_test.hpp>
@@ -62,15 +62,15 @@ BOOST_AUTO_TEST_CASE(given_COMMANDPORT_1_when_EVENTSERIAL_MCA_then_SEND_STARTROA
     CrossSectionalDataEEPROM applicationdata;
     SerialPortTestAccess serialportTestAccess;
 
-    ArtisanMessage artisanMsg;
-    ArtisanClient artisanClient(&artisanMsg);
+    VisualScopeMessage visualScopeMsg;
+    VisualScopeClient visualScopeClient(&visualScopeMsg);
 
     bool callbackCalled = false;
 
     serialport.addFunctionToMainCommand("MCA", [&](const char* comand){
         String output;
         JsonDocument outdoc;
-        int8_t idArtisan = artisanClient.getClientId();
+        int8_t idVisualScope = visualScopeClient.getClientId();
 
         outdoc["pushMessage"] = "startRoasting";
         serializeJson(outdoc, output);

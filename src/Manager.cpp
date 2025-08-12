@@ -120,18 +120,18 @@ void Manager::registerSerialPortHandler()
     });
 
     serialport.addFunctionToMainCommand("MCA", [&](const char* comand){
-        ArtisanMessageStartRoasting msg;
-        artisanClient.sendEvent(webSocket, &msg);
+        VisualScopeMessageStartRoasting msg;
+        visualScopeClient.sendEvent(webSocket, &msg);
     });
 
     serialport.addFunctionToMainCommand("MDR", [&](const char* comand){
-        ArtisanMessageEndRoasting msg;
-        artisanClient.sendEvent(webSocket, &msg);
+        VisualScopeMessageEndRoasting msg;
+        visualScopeClient.sendEvent(webSocket, &msg);
     });
 
     serialport.addFunctionToMainCommand("MFC", [&](const char* comand){
-        ArtisanMessageFirstCrack msg;
-        artisanClient.sendEvent(webSocket, &msg);
+        VisualScopeMessageFirstCrack msg;
+        visualScopeClient.sendEvent(webSocket, &msg);
     });
 
     serialport.addFunctionToMainCommand("IN,", [&](const char* comand) { 
@@ -188,8 +188,8 @@ void Manager::registerSerialPortHandler()
 
 void Manager::registerWebSocketHandler()
 {
-    // Registrar Artisan siempre
-    registerArtisan();
+    // Registrar VisualScope siempre
+    registerVisualScope();
 
     // TODO: Uncomment when AudioCrack is ready
     // if (std::find(eepromdata.clientNames.begin(), eepromdata.clientNames.end(), "audiocrack") 
@@ -197,11 +197,11 @@ void Manager::registerWebSocketHandler()
     //     registerAudioCrack();
 }
 
-void Manager::registerArtisan()
+void Manager::registerVisualScope()
 {
-    clientHandler.registerWebsocketClient(artisanClient);
+    clientHandler.registerWebsocketClient(visualScopeClient);
 
-    artisanClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
         std::string output;
         JsonDocument outdoc;
         outdoc["id"] = doc["id"];
@@ -220,7 +220,7 @@ void Manager::registerArtisan()
         beat.set_status(Heartbeat::online);
     });
 
-    artisanClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
         if (doc["params"]["aire"].is<int16_t>()) 
             applicationdata.aire = (int16_t)doc["params"]["aire"];
 
@@ -241,62 +241,62 @@ void Manager::registerArtisan()
         ESPadapter::serial_write('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("endRoasting", [&](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("endRoasting", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("SODROP");
         ESPadapter::serial_print('\0');
         beat.set_step(Heartbeat::other);
     });
 
-    artisanClient.addFunctionToMainCommand("ready", [&](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("ready", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("SREADY");
         ESPadapter::serial_print('\0');
         heartbeatonce = false;
     });
 
-    artisanClient.addFunctionToMainCommand("noready", [&](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("noready", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("SNOREA");
         ESPadapter::serial_print('\0');
         beat.set_step(Heartbeat::other);
         heartbeatonce = false;
     });
 
-    artisanClient.addFunctionToMainCommand("identify", [](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("identify", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("IDENTIFY");
         ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("noidentify", [](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("noidentify", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("NOIDENTIFY");
         ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("getinit", [](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("getinit", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("GETINIT");
         ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("reset", [](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("reset", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("RESET");
         ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("fcstart", [](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("fcstart", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("FCSTART");
         ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("oncharge", [&](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("oncharge", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("ONCHARGE");
         ESPadapter::serial_print('\0');
         beat.set_step(Heartbeat::roasting);
     });
 
-    artisanClient.addFunctionToMainCommand("onted", [](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("onted", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("ONTED");
         ESPadapter::serial_print('\0');
     });
 
-    artisanClient.addFunctionToMainCommand("offted", [](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("offted", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("OFFTED");
         ESPadapter::serial_print('\0');
     });

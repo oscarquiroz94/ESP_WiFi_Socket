@@ -3,7 +3,7 @@
 #include "adapters/ESPadapter.hpp"
 #include "adapters/WebSocketAdapter.hpp"
 #include "clients/IGeneralClient.hpp"
-#include "clients/ArtisanClient.hpp"
+#include "clients/VisualScopeClient.hpp"
 
 class WebsocketClientHandler
 {

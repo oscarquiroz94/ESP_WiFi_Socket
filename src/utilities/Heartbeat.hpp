@@ -19,7 +19,7 @@ class Heartbeat
 
         void loop()
         {
-            // Cada 3 segundos poner offline (artisan debera poner online)
+            // Cada 3 segundos poner offline (visualScope debera poner online)
             if (t_setoffline.tiempo(3000)) state = offline;
 
             // Si esta offline y roasting por mas de 5 seg alertar (puede ser 8seg)
