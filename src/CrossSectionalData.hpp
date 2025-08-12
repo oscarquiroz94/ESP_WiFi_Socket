@@ -14,18 +14,17 @@
 class CrossSectionalData
 {
     public:
-        int16_t tempET = 0;
-        int16_t tempBT = 0;
-        int16_t porcentQuem = 0;
-        int16_t porcentTamb = 0;
-        int16_t porcentSopl = 0;
-        int16_t RoR = 0;
-        int16_t deltaETBT = 0;
-
-        int16_t aire = 0;
-        int16_t tambor = 0;
-        int16_t quemador = 0;
-        int16_t tedvalue = 0;
+        int16_t tempET      {0};
+        int16_t tempBT      {0};
+        int16_t porcentQuem {0};
+        int16_t porcentTamb {0};
+        int16_t porcentSopl {0};
+        int16_t RoR         {0};
+        int16_t deltaETBT   {0};
+        int16_t aire        {0};
+        int16_t tambor      {0};
+        int16_t quemador    {0};
+        int16_t tedvalue    {0};
 
         void print();
 };

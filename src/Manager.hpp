@@ -36,24 +36,20 @@ class Manager
         void run();
 
     private:
-        CrossSectionalData applicationdata;
+        CrossSectionalData       applicationdata;
         CrossSectionalDataEEPROM eepromdata;
-        SerialPort serialport;
-        WebSocketsServer webSocket;
-
-        ArtisanMessage artisanMsg;
-        
-        WebsocketClientHandler clientHandler;
-        ArtisanClient artisanClient;
-        AudioCrackClient audioCrackClient;
-
-        PairingManager peer;
-        Heartbeat beat;
-    
-        uint8_t  sendVersionAmount = 0;
-        uint32_t t_sendversion = 0;
-        uint32_t versionESP = 0;
-        bool heartbeatonce = false;
+        SerialPort               serialport;
+        WebSocketsServer         webSocket;
+        ArtisanMessage           artisanMsg;
+        WebsocketClientHandler   clientHandler;
+        ArtisanClient            artisanClient;
+        AudioCrackClient         audioCrackClient;
+        PairingManager           peer;
+        Heartbeat                beat;
+        uint8_t                  sendVersionAmount = 0;
+        uint32_t                 t_sendversion = 0;
+        uint32_t                 versionESP = 0;
+        bool                     heartbeatonce = false;
 
         void registerSerialPortHandler();
         void registerWebSocketHandler();

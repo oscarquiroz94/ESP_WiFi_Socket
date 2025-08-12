@@ -27,13 +27,6 @@ void CrossSectionalDataEEPROM::save()
 
     uint8_t oldCanalWifi = preferences.getUChar("canalwifi", 1);
     if (oldCanalWifi != canalwifi) preferences.putUChar("canalwifi", canalwifi);
-    
-    // std::string concatNames = "";
-    // for (std::vector<std::string>::iterator it = clientNames.begin(); it != clientNames.end(); ++it) 
-    // {
-    //     concatNames += *it + ",";
-    // }
-    // preferences.putString("clientNames", concatNames.c_str());
 
     preferences.end();
 #endif
@@ -50,30 +43,10 @@ void CrossSectionalDataEEPROM::read()
     preferences.getString("ssidSocket", ssidSocket, sizeof(ssidSocket));
     preferences.getString("passSocket", passSocket, sizeof(passSocket));
     canalwifi = preferences.getUChar("canalwifi", 1);
-    //preferences.getString("clientNames", _clientNames, sizeof(_clientNames));
     preferences.end();
 
     print();
 
-    // ESPadapter::debug_print("SSID: ");
-    // ESPadapter::debug_println(ssidSocket);
-    // ESPadapter::debug_print("Pass: ");
-    // ESPadapter::debug_println(passSocket);
-    // ESPadapter::debug_print("Canal wifi: ");
-    // ESPadapter::debug_println(canalwifi);
-
-    // ESPadapter::debug_print("Client names: ");
-    // char* token = strtok(_clientNames, ",");
-    // while (token != nullptr) 
-    // {
-    //     if (strlen(token) > 0) 
-    //     {
-    //         ESPadapter::debug_print(token);
-    //         ESPadapter::debug_print(F(","));
-    //         // clientNames.push_back(std::string(token));
-    //     }
-    //     token = strtok(nullptr, ",");
-    // }
 #endif
 }
 

@@ -28,22 +28,10 @@ BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_WSTYPE_TEXT)
         artisanCallbackCalled = true;
     });
 
-    // bool audioCallbackCalled = false;
-    // audioCrackClient.addFunctionToMainCommand(JSONPAYLOAD_1, [&](uint8_t num, JsonDocument& doc) {
-    //     audioCallbackCalled = true;
-    // });
-
     clientHandler.onWebSocketEvent(1, WStype_TEXT, (uint8_t*)JSONPAYLOAD_1, strlen(JSONPAYLOAD_1));
 
     BOOST_CHECK(true == artisanCallbackCalled);
-    //BOOST_CHECK(true == audioCallbackCalled);
 
-    // WStype_ERROR,
-    // WStype_DISCONNECTED,
-    // WStype_CONNECTED,
-    // WStype_TEXT,
-    // WStype_PING,
-    // WStype_PONG,
 }
 
 #endif

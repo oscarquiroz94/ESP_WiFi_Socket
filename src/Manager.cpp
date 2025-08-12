@@ -22,8 +22,6 @@ void Manager::initialize()
                  (completeVersion[7] - 48) * 1L;
 
     serialport.openPort();
-
-    //eepromdata.read();
     
     registerSerialPortHandler();
     registerWebSocketHandler();
@@ -48,7 +46,6 @@ void Manager::run()
     ESPadapter::retardo(5);
 }
 
-// TODO: TESTING
 void Manager::send_data()
 {
     if (ESPadapter::milliseconds() - t_sendversion > 3000 &&
@@ -194,6 +191,7 @@ void Manager::registerWebSocketHandler()
     // Registrar Artisan siempre
     registerArtisan();
 
+    // TODO: Uncomment when AudioCrack is ready
     // if (std::find(eepromdata.clientNames.begin(), eepromdata.clientNames.end(), "audiocrack") 
     //     != eepromdata.clientNames.end()) 
     //     registerAudioCrack();
@@ -309,6 +307,7 @@ void Manager::registerAudioCrack()
     ESPadapter::debug_println("Registering AudioCrack client...");
     //clientHandler.registerWebsocketClient(audioCrackClient);
 
+    // TODO: Uncomment when AudioCrack is ready
     // audioCrackClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
     //     String output;
     //     JsonDocument outdoc;

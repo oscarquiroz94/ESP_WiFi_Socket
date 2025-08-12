@@ -16,14 +16,14 @@ class AudioCrackClient : public IGeneralClient
         void processEvent
             (uint8_t num, const char* payload, size_t length) override
         {
-            //ESPadapter::serial_println("Audiocrack: Not implemented yet");
+            ESPadapter::serial_println("Audiocrack: Not implemented yet");
         }
 
         void addFunctionToMainCommand
             (std::string key, 
              std::function<void(uint8_t num, JsonDocument& doc)> func) override
         {
-            //ESPadapter::serial_println("Audiocrack: Not implemented yet");
+            ESPadapter::serial_println("Audiocrack: Not implemented yet");
         }
 
         void sendEvent(WebSocketsServer &ws, IOutputMessage* msg) override

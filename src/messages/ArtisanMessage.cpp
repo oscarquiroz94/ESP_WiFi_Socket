@@ -22,8 +22,6 @@ bool ArtisanMessage::isValid(JsonDocument& doc)
     {
         this->id = doc["roasterID"];
         isvalid = true;
-        // ESPadapter::serial_print("FROM-ARTISAN: ");
-        // ESPadapter::serial_println(payload);
     }
     else if (!doc["roasterID"].is<int8_t>() && this->id == -1) 
         isvalid = false;
