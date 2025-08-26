@@ -4,10 +4,14 @@
 #include <boost/test/unit_test.hpp>
 #include "adapters/WebSocketAdapter.hpp"
 #include "messages/VisualScopeMessage.hpp"
+#include "messages/AudioCrackMessage.hpp"
 #include "clients/AudioCrackClient.hpp"
 #include "websocket/WebsocketClientHandler.hpp"
 #include "websocket/CredentialNotification.hpp"
 #include "CrossSectionalData.hpp"
+
+typedef GenericClient VisualScopeClient;
+typedef GenericClient AudioCrackClient;
 
 BOOST_AUTO_TEST_CASE(given_NEW_CREDENTIALS_when_REGISTER_CLIENTS_ON_HANDLER_then_SEND_NOTIFICATION)
 {
@@ -18,8 +22,8 @@ BOOST_AUTO_TEST_CASE(given_NEW_CREDENTIALS_when_REGISTER_CLIENTS_ON_HANDLER_then
 
     //------------
 
-    const char* JSONPAYLOAD_PART_1 = R"({"deviceID":-1,"command":"newcredentials","parameters":{"ssid":"SSID FIJA","pass":"Clave fija","channel":5}})";
-    const char* JSONPAYLOAD_PART_2 = R"({"deviceID":0,"command":"newcredentials","parameters":{"ssid":"SSID FIJA","pass":"Clave fija","channel":5}})";
+    const char* JSONPAYLOAD_PART_1 = R"({"deviceID":0,"command":"newcredentials","parameters":{"ssid":"SSID FIJA","pass":"Clave fija","channel":5}})";
+    const char* JSONPAYLOAD_PART_2 = R"({"deviceID":1,"command":"newcredentials","parameters":{"ssid":"SSID FIJA","pass":"Clave fija","channel":5}})";
     char JSONPAYLOAD_CONCAT[200] = {};
     strcat(JSONPAYLOAD_CONCAT, JSONPAYLOAD_PART_1);
     strcat(JSONPAYLOAD_CONCAT, JSONPAYLOAD_PART_2);
@@ -34,7 +38,8 @@ BOOST_AUTO_TEST_CASE(given_NEW_CREDENTIALS_when_REGISTER_CLIENTS_ON_HANDLER_then
     VisualScopeMessage visualScopeMsg;
     VisualScopeClient visualScope(&visualScopeMsg);
 
-    AudioCrackClient audiocrack;
+    AudioCrackMessage audioCrackMsg;
+    AudioCrackClient audiocrack(&audioCrackMsg);
 
     clienthandler.registerWebsocketClient(visualScope);
     clienthandler.registerWebsocketClient(audiocrack);
@@ -67,7 +72,8 @@ BOOST_AUTO_TEST_CASE(given_SAME_CREDENTIALS_when_REGISTER_CLIENTS_ON_HANDLER_the
     VisualScopeMessage visualScopeMsg;
     VisualScopeClient visualScope(&visualScopeMsg);
 
-    AudioCrackClient audiocrack;
+    AudioCrackMessage audioCrackMsg;
+    AudioCrackClient audiocrack(&audioCrackMsg);
 
     clienthandler.registerWebsocketClient(visualScope);
     clienthandler.registerWebsocketClient(audiocrack);

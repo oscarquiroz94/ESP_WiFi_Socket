@@ -9,7 +9,7 @@ class IClientMessage
     public:
         virtual ~IClientMessage() = default;
 
-        virtual int8_t getClientId() const = 0;
+        virtual int8_t getId() const = 0;
 
         /**
          * @brief Get the Document object

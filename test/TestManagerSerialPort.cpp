@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(given_S_ROASTER_4_when_REGISTER_SERIAL_PORT_HANDLER_then_EX
 }
 
 
-BOOST_AUTO_TEST_CASE(given_MCA_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED)
+BOOST_AUTO_TEST_CASE(given_MCA_when_REGISTER_SERIAL_PORT_HANDLER_then_SCOPEJSONPAYLOAD)
 {
     const char *SERIALCOMMAND = R"(MCA)";
     const char *JSONPAYLOAD   = R"({"pushMessage":"startRoasting"})";
@@ -71,11 +71,29 @@ BOOST_AUTO_TEST_CASE(given_MCA_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED)
     serialportTestAccess.setCommandFromAtmega(SERIALCOMMAND);
     manager.processEvent();
 
-	BOOST_CHECK_EQUAL(ws.getOutputString().c_str(), JSONPAYLOAD);
+    BOOST_CHECK(ws.getOutputString().find(JSONPAYLOAD) != std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(given_MCA_when_REGISTER_SERIAL_PORT_HANDLER_then_AUDIOCRACKJSONPAYLOAD)
+{
+    const char *SERIALCOMMAND = R"(MCA)";
+    const char *JSONPAYLOAD   = R"({"command":"startroasting"})";
+
+    SerialPortTestAccess serialportTestAccess;
+    ManagerAccess manager;
+    WebSocketsServer& ws = manager.getWebsocket();
+    manager.setMaxTimeSearch(100);
+    
+    manager.registerSerialPortHandler();
+
+    serialportTestAccess.setCommandFromAtmega(SERIALCOMMAND);
+    manager.processEvent();
+
+    BOOST_CHECK(ws.getOutputString().find(JSONPAYLOAD) != std::string::npos);
 }
 
 
-BOOST_AUTO_TEST_CASE(given_MDR_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED)
+BOOST_AUTO_TEST_CASE(given_MDR_when_REGISTER_SERIAL_PORT_HANDLER_then_JSONPAYLOAD)
 {
     const char *SERIALCOMMAND = R"(MDR)";
     const char *JSONPAYLOAD   = R"({"pushMessage":"endRoasting"})";
@@ -90,11 +108,11 @@ BOOST_AUTO_TEST_CASE(given_MDR_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED)
     serialportTestAccess.setCommandFromAtmega(SERIALCOMMAND);
     manager.processEvent();
 
-	BOOST_CHECK_EQUAL(ws.getOutputString().c_str(), JSONPAYLOAD);
+	BOOST_CHECK(ws.getOutputString().find(JSONPAYLOAD) != std::string::npos);
 }
 
 
-BOOST_AUTO_TEST_CASE(given_MFC_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED)
+BOOST_AUTO_TEST_CASE(given_MFC_when_REGISTER_SERIAL_PORT_HANDLER_then_JSONPAYLOAD)
 {
     const char *SERIALCOMMAND = R"(MFC)";
     const char *JSONPAYLOAD   = R"({"pushMessage":"addEvent","data":{"event":"firstCrackBeginningEvent"}})";
@@ -109,10 +127,10 @@ BOOST_AUTO_TEST_CASE(given_MFC_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED)
     serialportTestAccess.setCommandFromAtmega(SERIALCOMMAND);
     manager.processEvent();
 
-	BOOST_CHECK_EQUAL(ws.getOutputString().c_str(), JSONPAYLOAD);
+	BOOST_CHECK(ws.getOutputString().find(JSONPAYLOAD) != std::string::npos);
 }
 
-BOOST_AUTO_TEST_CASE(given_IN_NUMBERS_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED)
+BOOST_AUTO_TEST_CASE(given_IN_NUMBERS_when_REGISTER_SERIAL_PORT_HANDLER_then_EXPECTED_VALUES)
 {
     // ET, BT, Q, T, S, ROR, delta
     const char *SERIALCOMMAND = R"(IN,230,160,1500,2000,200,600,200)";
@@ -136,6 +154,26 @@ BOOST_AUTO_TEST_CASE(given_IN_NUMBERS_when_REGISTER_SERIAL_PORT_HANDLER_then_EXP
     BOOST_CHECK_EQUAL(appdata.porcentSopl, 200);
     BOOST_CHECK_EQUAL(appdata.RoR, 600);
     BOOST_CHECK_EQUAL(appdata.deltaETBT, 200);
+}
+
+BOOST_AUTO_TEST_CASE(given_IN_NUMBERS_when_REGISTER_SERIAL_PORT_HANDLER_then_JSON_PAYLOAD)
+{
+    const char *SERIALCOMMAND = R"(IN,230,160,1500,2000,200,600,200)";
+    const char *JSONPAYLOAD   = R"({"command":"operatives","data":{"beantemperature":160,"rateofrise":600}})";
+
+    SerialPortTestAccess serialportTestAccess;
+    ManagerAccess manager;
+    WebSocketsServer& ws = manager.getWebsocket();
+    CrossSectionalData& appdata = manager.getApplicationData();
+
+    manager.setMaxTimeSearch(100);
+
+    manager.registerSerialPortHandler();
+
+    serialportTestAccess.setCommandFromAtmega(SERIALCOMMAND);
+    manager.processEvent();
+
+    BOOST_CHECK(ws.getOutputString().find(JSONPAYLOAD) != std::string::npos);
 }
 
 

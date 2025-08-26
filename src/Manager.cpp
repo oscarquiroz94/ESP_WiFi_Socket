@@ -120,8 +120,11 @@ void Manager::registerSerialPortHandler()
     });
 
     serialport.addFunctionToMainCommand("MCA", [&](const char* comand){
-        VisualScopeMessageStartRoasting msg;
-        visualScopeClient.sendEvent(webSocket, &msg);
+        VisualScopeMessageStartRoasting scopeMsg;
+        visualScopeClient.sendEvent(webSocket, &scopeMsg);
+
+        AudioCrackMessageStartRoasting audioMsg;
+        audioCrackClient.sendEvent(webSocket, &audioMsg);
     });
 
     serialport.addFunctionToMainCommand("MDR", [&](const char* comand){
@@ -145,19 +148,24 @@ void Manager::registerSerialPortHandler()
 		applicationdata.tempBT = ESPadapter::str2int(lista);
 
 		lista = strtok(NULL, ",");
-		applicationdata.porcentQuem = ESPadapter::str2int(lista);;
+		applicationdata.porcentQuem = ESPadapter::str2int(lista);
 
 		lista = strtok(NULL, ",");
-		applicationdata.porcentTamb = ESPadapter::str2int(lista);;
+		applicationdata.porcentTamb = ESPadapter::str2int(lista);
 
 		lista = strtok(NULL, ",");
-		applicationdata.porcentSopl = ESPadapter::str2int(lista);;
+		applicationdata.porcentSopl = ESPadapter::str2int(lista);
 
 		lista = strtok(NULL, ",");
 		applicationdata.RoR = ESPadapter::str2int(lista);
 
 		lista = strtok(NULL, ",");
 		applicationdata.deltaETBT = ESPadapter::str2int(lista);
+
+        AudioCrackMessageOperatives msg;
+        msg.m_beanTemperature = applicationdata.tempBT;
+        msg.m_rateOfRise = applicationdata.RoR;
+        audioCrackClient.sendEvent(webSocket, &msg);
     });
 
     serialport.addFunctionToMainCommand("PAIR", [&](const char* comand){
@@ -191,10 +199,9 @@ void Manager::registerWebSocketHandler()
     // Registrar VisualScope siempre
     registerVisualScope();
 
-    // TODO: Uncomment when AudioCrack is ready
-    // if (std::find(eepromdata.clientNames.begin(), eepromdata.clientNames.end(), "audiocrack") 
-    //     != eepromdata.clientNames.end()) 
-    //     registerAudioCrack();
+    if (std::find(eepromdata.clientNames.begin(), eepromdata.clientNames.end(), "audiocrack") 
+        != eepromdata.clientNames.end()) 
+        registerAudioCrack();
 }
 
 void Manager::registerVisualScope()
@@ -270,7 +277,7 @@ void Manager::registerVisualScope()
         ESPadapter::serial_print('\0');
     });
 
-    visualScopeClient.addFunctionToMainCommand("getinit", [](uint8_t num, JsonDocument& doc) {
+    visualScopeClient.addFunctionToMainCommand("getinit", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("GETINIT");
         ESPadapter::serial_print('\0');
     });
@@ -305,15 +312,32 @@ void Manager::registerVisualScope()
 void Manager::registerAudioCrack()
 {
     ESPadapter::debug_println("Registering AudioCrack client...");
-    //clientHandler.registerWebsocketClient(audioCrackClient);
+    
+    clientHandler.registerWebsocketClient(audioCrackClient);
 
-    // TODO: Uncomment when AudioCrack is ready
-    // audioCrackClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
-    //     String output;
-    //     JsonDocument outdoc;
-    //     outdoc["id"] = doc["id"];
-    //     outdoc["data"]["event"] = "firstCrackBeginningEvent";
-    //     serializeJson(outdoc, output);
-    //     webSocket.sendTXT(num, output);
-    // });
+    audioCrackClient.addFunctionToMainCommand("getinitial", [&](uint8_t num, JsonDocument& doc) {
+        // Send initial data to audiocrack device
+        // {
+        // "command":"config",
+        // "data":
+        //       {
+        //         "configuracion1":150,
+        //         "configuracion2":20
+        //       }
+        // }
+        std::string output;
+        JsonDocument outdoc;
+        outdoc["command"] = "config";
+        outdoc["data"]["configuracion1"] = 150;
+        outdoc["data"]["configuracion2"] = 20;
+
+        serializeJson(outdoc, output);
+        webSocket.sendTXT(num, output);
+        ESPadapter::debug_print("TO-AUDIOCRACK: ");
+        ESPadapter::debug_println(output);
+    });
+
+    audioCrackClient.addFunctionToMainCommand("firstcrack", [&](uint8_t num, JsonDocument& doc) {
+        // Audiocrack device notification for first crack event
+    });
 }

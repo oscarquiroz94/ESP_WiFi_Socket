@@ -31,7 +31,7 @@ void PairingManager::registerGenericClient
 
     genericClient.addFunctionToMainCommand("attach", [&](uint8_t num, JsonDocument& doc) {
         int8_t id = doc["deviceID"];
-        int8_t idClient = genericClient.getClientId();
+        uint8_t idClient = genericClient.getId();
 
         std::string name = doc["deviceName"];
         

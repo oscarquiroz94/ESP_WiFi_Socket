@@ -1,9 +1,12 @@
-#include "IGeneralClient.hpp"
-#include "messages/IClientMessage.hpp"
+#pragma once
+
 #include <functional>
 #include <map>
+#include "IGeneralClient.hpp"
+#include "messages/IClientMessage.hpp"
 
 #define CLASSNAME "GenericClient"
+
 
 class GenericClient : public IGeneralClient
 {
@@ -35,23 +38,20 @@ class GenericClient : public IGeneralClient
             map2func[key] = func;
         }
 
-        int8_t getClientId () const override 
-        {   
-            if (nullptr != message) return message->getClientId();
-            else 
-            {
-                ESPadapter::print_null(CLASSNAME, __func__);
-                return -1;
-            }
-        }
+        uint8_t getId () const override {return m_id;}
+        void setId(uint8_t id) override {m_id = id;}
+
         std::string getName() const override {return "generic";}
 
-        void sendEvent(WebSocketsServer &ws, IOutputMessage* msg) override {}
+        void sendEvent(WebSocketsServer &ws, IOutputMessage* msg) override 
+        {
+            msg->send(ws, getId());
+        }
 
         ~GenericClient() = default;
 
     private:
-
+        uint8_t m_id {0};
         IClientMessage* message = nullptr;
         std::map<std::string, std::function<void(uint8_t num, JsonDocument& doc)>> map2func;
 };

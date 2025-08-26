@@ -3,9 +3,13 @@
 void WebsocketClientHandler::registerWebsocketClient
     (IGeneralClient& client)
 {
+    client.setId(m_idCounter++);
     websocketClients.push_back(&client);
+
     ESPadapter::debug_print("Client registered: ");
-    ESPadapter::debug_println(client.getName().c_str());
+    ESPadapter::debug_print(client.getName().c_str());
+    ESPadapter::debug_print(" id: ");
+    ESPadapter::debug_println(client.getId());
 }
 
 void WebsocketClientHandler::onWebSocketEvent

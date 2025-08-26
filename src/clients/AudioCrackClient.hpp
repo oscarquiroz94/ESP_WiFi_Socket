@@ -1,33 +1,33 @@
 #pragma once
 
+#include <functional>
+#include <map>
 #include "adapters/ESPadapter.hpp"
 #include "adapters/WebSocketAdapter.hpp"
+#include "messages/IClientMessage.hpp"
 #include "messages/IOutputMessage.hpp"
-#include "IGeneralClient.hpp"
+#include "GenericClient.hpp"
 
-class AudioCrackClient : public IGeneralClient
-{
-    public:
+//class AudioCrackClient : public GenericClient {}
 
-        int8_t getClientId () const override {return 0;}
+// class AudioCrackClient : public IGeneralClient
+// {
+//     public:
 
-        std::string getName() const final {return "audiocrack";}
+//         int8_t getClientId () const override {return 0;}
 
-        void processEvent
-            (uint8_t num, const char* payload, size_t length) override
-        {
-            ESPadapter::serial_println("Audiocrack: Not implemented yet");
-        }
+//         std::string getName() const final {return "audiocrack";}
 
-        void addFunctionToMainCommand
-            (std::string key, 
-             std::function<void(uint8_t num, JsonDocument& doc)> func) override
-        {
-            ESPadapter::serial_println("Audiocrack: Not implemented yet");
-        }
+//         void processEvent
+//             (uint8_t num, const char* payload, size_t length) override;
 
-        void sendEvent(WebSocketsServer &ws, IOutputMessage* msg) override
-        {
-            msg->send(ws, getClientId());
-        }
-};
+//         void addFunctionToMainCommand
+//             (std::string key, 
+//              std::function<void(uint8_t num, JsonDocument& doc)> func) override;
+
+//         void sendEvent(WebSocketsServer &ws, IOutputMessage* msg) override;
+
+//     private:
+//         IClientMessage* message;
+//         std::map<std::string, std::function<void(uint8_t num, JsonDocument& doc)>> map2func;
+// };

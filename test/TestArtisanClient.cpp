@@ -1,10 +1,12 @@
 #include "Compiletype.hpp"
 #ifdef TEST
 
+#include <boost/test/unit_test.hpp>
 #include "messages/VisualScopeMessage.hpp"
 #include "clients/VisualScopeClient.hpp"
-#include <boost/test/unit_test.hpp>
+#include "clients/GenericClient.hpp"
 
+typedef GenericClient VisualScopeClient;
 
 BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_SETPARAMS)
 {

@@ -6,7 +6,7 @@
 #include "IClientMessage.hpp"
 #include "IOutputMessage.hpp"
 
-class VisualScopeMessage : public IClientMessage
+class AudioCrackMessage : public IClientMessage
 {
     public:        
 
@@ -20,17 +20,16 @@ class VisualScopeMessage : public IClientMessage
         bool isValid(JsonDocument& doc) override;
 };
 
-class VisualScopeMessageStartRoasting : public IOutputMessage
+
+class AudioCrackMessageStartRoasting : public IOutputMessage
 {
     public: void send(WebSocketsServer& ws, int8_t id);
 };
 
-class VisualScopeMessageEndRoasting : public IOutputMessage
+class AudioCrackMessageOperatives : public IOutputMessage
 {
-    public: void send(WebSocketsServer& ws, int8_t id);
-};
-
-class VisualScopeMessageFirstCrack : public IOutputMessage
-{
-    public: void send(WebSocketsServer& ws, int8_t id);
+    public: 
+        void send(WebSocketsServer& ws, int8_t id);
+        int16_t m_beanTemperature;
+        int16_t m_rateOfRise;
 };
