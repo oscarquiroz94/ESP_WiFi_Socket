@@ -5,7 +5,7 @@ class GenericMessage : public IClientMessage
     public:
         GenericMessage() = default;
 
-        int8_t getClientId() const override {return id;}
+        int8_t getId() const override {return id;}
         
         bool getDocument(JsonDocument& doc, const char* data) override
         {

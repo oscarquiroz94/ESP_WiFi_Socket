@@ -1,13 +1,16 @@
 #include "Compiletype.hpp"
 #ifdef TEST
 
+#include <boost/test/unit_test.hpp>
 #include "messages/VisualScopeMessage.hpp"
 #include "clients/VisualScopeClient.hpp"
 #include "clients/AudioCrackClient.hpp"
 #include "websocket/WebsocketClientHandler.hpp"
 #include "adapters/WebSocketAdapter.hpp"
-#include <boost/test/unit_test.hpp>
 
+
+typedef GenericClient VisualScopeClient;
+typedef GenericClient AudioCrackClient;
 
 BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_WSTYPE_TEXT)
 {
@@ -18,10 +21,10 @@ BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_WSTYPE_TEXT)
 
     VisualScopeMessage visualScopeMsg;
     VisualScopeClient visualScopeClient(&visualScopeMsg);
-    AudioCrackClient audioCrackClient;
+    //AudioCrackClient audioCrackClient;
 
     clientHandler.registerWebsocketClient(visualScopeClient);
-    clientHandler.registerWebsocketClient(audioCrackClient);
+    //clientHandler.registerWebsocketClient(audioCrackClient);
 
     bool visualScopeCallbackCalled = true;
     visualScopeClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {

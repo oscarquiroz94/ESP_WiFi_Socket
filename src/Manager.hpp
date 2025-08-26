@@ -9,6 +9,7 @@
 #include "clients/VisualScopeClient.hpp"
 #include "clients/AudioCrackClient.hpp"
 #include "messages/VisualScopeMessage.hpp"
+#include "messages/AudioCrackMessage.hpp"
 #include "websocket/PairingManager.hpp"
 #include "utilities/Heartbeat.hpp"
 
@@ -29,7 +30,8 @@ class Manager
             ,webSocket(8080)
             ,clientHandler(webSocket)
             ,visualScopeClient(&visualScopeMsg)
-            ,peer(webSocket) 
+            ,audioCrackClient(&audioCrackMsg)
+            ,peer(webSocket)
             {}
 
         void initialize();
@@ -40,10 +42,11 @@ class Manager
         CrossSectionalDataEEPROM eepromdata;
         SerialPort               serialport;
         WebSocketsServer         webSocket;
-        VisualScopeMessage           visualScopeMsg;
+        VisualScopeMessage       visualScopeMsg;
+        AudioCrackMessage        audioCrackMsg;
         WebsocketClientHandler   clientHandler;
-        VisualScopeClient            visualScopeClient;
-        AudioCrackClient         audioCrackClient;
+        GenericClient            visualScopeClient;
+        GenericClient            audioCrackClient;
         PairingManager           peer;
         Heartbeat                beat;
         uint8_t                  sendVersionAmount = 0;
@@ -58,4 +61,5 @@ class Manager
         void send_data();
 
         friend class ManagerAccess;
+
 };

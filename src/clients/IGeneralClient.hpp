@@ -19,7 +19,8 @@ class IGeneralClient
 
         virtual void sendEvent(WebSocketsServer &ws, IOutputMessage* msg) = 0;
 
-        virtual int8_t getClientId () const = 0;
+        virtual uint8_t getId () const = 0;
+        virtual void setId(uint8_t id) = 0;
         virtual std::string getName() const = 0;
 
         virtual ~IGeneralClient() = default;

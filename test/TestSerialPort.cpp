@@ -1,13 +1,15 @@
 #include "Compiletype.hpp"
 #ifdef TEST
 
+#include <boost/test/unit_test.hpp>
 #include "serial/SerialPort.hpp"
 #include "SerialPortTestAccess.hpp"
 #include "clients/VisualScopeClient.hpp"
 #include "messages/VisualScopeMessage.hpp"
 #include "CrossSectionalData.hpp"
 
-#include <boost/test/unit_test.hpp>
+
+typedef GenericClient VisualScopeClient;
 
 const char* COMMANDPORT_1 = "S,ROASTER,Clave123*,5,";
 const char* COMMANDPORT_2 = "MCA";
@@ -70,7 +72,7 @@ BOOST_AUTO_TEST_CASE(given_COMMANDPORT_1_when_EVENTSERIAL_MCA_then_SEND_STARTROA
     serialport.addFunctionToMainCommand("MCA", [&](const char* comand){
         String output;
         JsonDocument outdoc;
-        int8_t idVisualScope = visualScopeClient.getClientId();
+        int8_t idVisualScope = visualScopeClient.getId();
 
         outdoc["pushMessage"] = "startRoasting";
         serializeJson(outdoc, output);

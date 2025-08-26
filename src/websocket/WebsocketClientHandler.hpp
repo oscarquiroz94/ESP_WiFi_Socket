@@ -23,6 +23,7 @@ class WebsocketClientHandler
         }
 
     private:
+        uint8_t m_idCounter {0};
         WebSocketsServer& webSocket;
         std::vector<IGeneralClient*> websocketClients;   
 };
