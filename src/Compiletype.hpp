@@ -1,4 +1,4 @@
 #pragma once
 
-//#define DEPLOY
-#define TEST
+#define DEPLOY
+//#define TEST
