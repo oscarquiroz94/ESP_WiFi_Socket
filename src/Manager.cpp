@@ -9,6 +9,14 @@
 #include <EEPROM.h>
 #endif
 
+Manager::Manager() : 
+    serialport(115200) 
+    ,webSocket(8080)
+    ,clientHandler(webSocket)
+    ,visualScopeClient(&visualScopeMsg)
+    ,audioCrackClient(&audioCrackMsg)
+    ,peer(webSocket, clientHandler)
+    {}
 
 void Manager::initialize()
 {
@@ -24,11 +32,13 @@ void Manager::initialize()
     serialport.openPort();
     
     registerSerialPortHandler();
-    registerWebSocketHandler();
+    registerWebSocketHandler(); //! Comment for testing pairing
 
     webSocket.onEvent([&](uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
         clientHandler.onWebSocketEvent(num, type, payload, length);
     });
+
+    eepromdata.read();
 
 }
 
@@ -65,6 +75,15 @@ void Manager::send_data()
         ESPadapter::serial_print('\0');
         heartbeatonce = true;
     }
+
+    // if (sendVersionAmount == 3)
+    // {
+    //     peer.executePairing(eepromdata);
+    //     sendVersionAmount++; // to avoid re-entering here
+    //     registerWebSocketHandler();
+    //     ESPadapter::debug_println("WBS clients: " + String(clientHandler.getClientCount()));
+    // }
+        
 }
 
 void Manager::registerSerialPortHandler()
@@ -88,12 +107,12 @@ void Manager::registerSerialPortHandler()
 
         CredentialNotification::notifyOnChange(webSocket, clientHandler, newdata, eepromdata);
 
-        bool sucess = WebsocketManager::buildWebSocket(webSocket, newdata);
+        bool sucess = WebsocketManager::turnOnWebSocket(webSocket, newdata);
         
         if (sucess) 
         {
             eepromdata = newdata;
-            //eepromdata.save();
+            eepromdata.save();
 
             IPAddress IP = WiFi.softAPIP();
 
@@ -120,21 +139,46 @@ void Manager::registerSerialPortHandler()
     });
 
     serialport.addFunctionToMainCommand("MCA", [&](const char* comand){
-        VisualScopeMessageStartRoasting scopeMsg;
-        visualScopeClient.sendEvent(webSocket, &scopeMsg);
+        std::string output;
+        JsonDocument outdoc;
 
-        AudioCrackMessageStartRoasting audioMsg;
-        audioCrackClient.sendEvent(webSocket, &audioMsg);
+        outdoc["pushMessage"] = "startRoasting";
+        outdoc["command"] = "startroasting"; //! Temporal
+        serializeJson(outdoc, output);
+        webSocket.broadcastTXT(output.c_str());
+        // VisualScopeMessageStartRoasting scopeMsg;
+        // visualScopeClient.sendEvent(webSocket, &scopeMsg);
+
+        //todo: id esta mal, no lo puedo asignar yo
+        // AudioCrackMessageStartRoasting audioMsg;
+        // audioCrackClient.sendEvent(webSocket, &audioMsg);
     });
 
     serialport.addFunctionToMainCommand("MDR", [&](const char* comand){
-        VisualScopeMessageEndRoasting msg;
-        visualScopeClient.sendEvent(webSocket, &msg);
+        std::string output;
+        JsonDocument outdoc;
+
+        outdoc["pushMessage"] = "endRoasting";
+        outdoc["command"] = "endroasting"; //! Temporal
+        this->firstCrack = false;
+        serializeJson(outdoc, output);
+        webSocket.broadcastTXT(output.c_str());
+        // VisualScopeMessageEndRoasting msg;
+        // visualScopeClient.sendEvent(webSocket, &msg);
     });
 
     serialport.addFunctionToMainCommand("MFC", [&](const char* comand){
-        VisualScopeMessageFirstCrack msg;
-        visualScopeClient.sendEvent(webSocket, &msg);
+        std::string output;
+        JsonDocument outdoc;
+
+        outdoc["pushMessage"] = "addEvent";
+        outdoc["data"]["event"] = "firstCrackBeginningEvent";
+        outdoc["command"] = "firstcrack"; //! Temporal
+        this->firstCrack = true;
+        serializeJson(outdoc, output);
+        webSocket.broadcastTXT(output.c_str());
+        // VisualScopeMessageFirstCrack msg;
+        // visualScopeClient.sendEvent(webSocket, &msg);
     });
 
     serialport.addFunctionToMainCommand("IN,", [&](const char* comand) { 
@@ -168,6 +212,7 @@ void Manager::registerSerialPortHandler()
         audioCrackClient.sendEvent(webSocket, &msg);
     });
 
+    // This will be requested by the ATM
     serialport.addFunctionToMainCommand("PAIR", [&](const char* comand){
         peer.executePairing(eepromdata);
     });
@@ -176,11 +221,12 @@ void Manager::registerSerialPortHandler()
 
     serialport.addFunctionToMainCommand("STOPWS", [&](const char* comand){
         ESPadapter::serial_println("Stopping WebSocket server");
-        WebsocketManager::destroyWebSocket(webSocket);
+        WebsocketManager::turnOffWebSocket(webSocket);
     });
 
     serialport.addFunctionToMainCommand("SHOW", [&](const char* comand){
         applicationdata.print();
+        eepromdata.print();
     });
 
     serialport.addFunctionToMainCommand("LOG1", [&](const char* comand){
@@ -199,18 +245,25 @@ void Manager::registerWebSocketHandler()
     // Registrar VisualScope siempre
     registerVisualScope();
 
-    if (std::find(eepromdata.clientNames.begin(), eepromdata.clientNames.end(), "audiocrack") 
+    /*
+      if (std::find(eepromdata.clientNames.begin(), eepromdata.clientNames.end(), "audiocrack") 
         != eepromdata.clientNames.end()) 
-        registerAudioCrack();
+        registerAudioCrack();*/
+    registerAudioCrack();
+    
 }
 
 void Manager::registerVisualScope()
 {
+    ESPadapter::debug_println("Registering VisualScope client...");
+
+    visualScopeClient.setName("visualscope");
     clientHandler.registerWebsocketClient(visualScopeClient);
 
     visualScopeClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
         std::string output;
         JsonDocument outdoc;
+
         outdoc["id"] = doc["id"];
         outdoc["data"]["aire"] = applicationdata.tempET;
         outdoc["data"]["grano"] = applicationdata.tempBT;
@@ -219,10 +272,23 @@ void Manager::registerVisualScope()
         outdoc["data"]["soplador"] = applicationdata.porcentSopl;
         outdoc["data"]["tambor"] = applicationdata.porcentTamb;
         outdoc["data"]["delta"] = applicationdata.deltaETBT;
+
+        //! Temporal
+        outdoc["command"] = "operatives";
+        outdoc["data"]["beantemperature"] = applicationdata.tempBT;
+        outdoc["data"]["rateofrise"] = applicationdata.RoR;
+        outdoc["data"]["manualfccrack"] = this->firstCrack;
+        //!------------
+
         serializeJson(outdoc, output);
-        webSocket.sendTXT(num, output);
+
+        
+        //webSocket.sendTXT(num, output);
+        webSocket.broadcastTXT(output.c_str()); //! Temporal
+    
         ESPadapter::debug_print("TO-ARTISAN: ");
         ESPadapter::debug_println(output);
+
 
         beat.set_status(Heartbeat::online);
     });
@@ -313,6 +379,7 @@ void Manager::registerAudioCrack()
 {
     ESPadapter::debug_println("Registering AudioCrack client...");
     
+    audioCrackClient.setName("audiocrack");
     clientHandler.registerWebsocketClient(audioCrackClient);
 
     audioCrackClient.addFunctionToMainCommand("getinitial", [&](uint8_t num, JsonDocument& doc) {

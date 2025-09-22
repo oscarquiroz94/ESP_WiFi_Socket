@@ -9,6 +9,6 @@ extern WiFiClass WiFi;
 class WebsocketManager
 {
     public:
-        static bool buildWebSocket(WebSocketsServer& webSocket, CrossSectionalDataEEPROM& data);
-        static void destroyWebSocket(WebSocketsServer& webSocket);
+        static bool turnOnWebSocket(WebSocketsServer& webSocket, const CrossSectionalDataEEPROM& data);
+        static void turnOffWebSocket(WebSocketsServer& webSocket);
 };

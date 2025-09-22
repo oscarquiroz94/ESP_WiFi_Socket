@@ -1,10 +1,11 @@
 #include "WebsocketManager.hpp"
 
-bool WebsocketManager::buildWebSocket
-(   WebSocketsServer& webSocket, CrossSectionalDataEEPROM& data)
+bool WebsocketManager::turnOnWebSocket(
+    WebSocketsServer& webSocket, 
+    const CrossSectionalDataEEPROM& data)
 {
-    // Destroy any existing WebSocket connection
-    destroyWebSocket(webSocket);
+    // Shut down any existing connection
+    turnOffWebSocket(webSocket);
 
     bool success = false;
     WiFi.mode(WIFI_OFF);
@@ -35,7 +36,7 @@ bool WebsocketManager::buildWebSocket
     return success && webSocket.isRunning();
 }
 
-void WebsocketManager::destroyWebSocket(WebSocketsServer& webSocket)
+void WebsocketManager::turnOffWebSocket(WebSocketsServer& webSocket)
 {
     webSocket.close();
     WiFi.softAPdisconnect(true);

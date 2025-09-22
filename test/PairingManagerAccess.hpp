@@ -11,10 +11,9 @@ class PairingManagerAccess
         PairingManagerAccess(WebSocketsServer &ws) : peer(ws) {}
 
         void registerGenericClient
-            (WebSocketsServer& webSocket, 
-             CrossSectionalDataEEPROM& data)
+            (CrossSectionalDataEEPROM& data)
         {
-            peer.registerGenericClient(webSocket, data);
+            peer.registerGenericClient(data);
         }
 
         WebsocketClientHandler& getClientHandler()

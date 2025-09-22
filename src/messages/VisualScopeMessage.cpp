@@ -26,6 +26,8 @@ bool VisualScopeMessage::isValid(JsonDocument& doc)
     else if (!doc["roasterID"].is<int8_t>() && this->id == -1) 
         isvalid = false;
 
+    if (!isvalid)
+        ESPadapter::debug_println("VisualScopeMessage: Document missing required fields");
     return isvalid;
 }
 

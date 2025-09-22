@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(given_ATTACH_MSG_when_PAIRING_then_CLIENTS_ON_VECTOR)
     strcpy(eepromdata.passSocket, "ClaveTest*");
     eepromdata.canalwifi = 5;
 
-    peer_access.registerGenericClient(webSocket, eepromdata);
+    peer_access.registerGenericClient(eepromdata);
 
     
     // Simulate receiving the attach messages from two clients

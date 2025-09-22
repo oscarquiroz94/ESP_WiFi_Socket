@@ -5,7 +5,7 @@
 #include "adapters/WebSocketAdapter.hpp"
 #include "messages/VisualScopeMessage.hpp"
 #include "messages/AudioCrackMessage.hpp"
-#include "clients/AudioCrackClient.hpp"
+#include "clients/GenericClient.hpp"
 #include "websocket/WebsocketClientHandler.hpp"
 #include "websocket/CredentialNotification.hpp"
 #include "CrossSectionalData.hpp"

@@ -71,6 +71,12 @@ class WebSocketsServer
             ESPadapter::serial_print("sendTXT: ");
             ESPadapter::serial_println(outputString);
         }
+        void broadcastTXT(String stream) 
+        {
+            outputString += stream;
+            ESPadapter::serial_print("broadcastTXT: ");
+            ESPadapter::serial_println(outputString);
+        }
         void onEvent(std::function<void(uint8_t num, WStype_t type, uint8_t *payload, size_t length)>) {}
         IPAddress remoteIP(uint8_t num) { return IPAddress(); }
         std::string getOutputString() const { return outputString; }

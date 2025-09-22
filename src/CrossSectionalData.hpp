@@ -32,6 +32,7 @@ class CrossSectionalData
 class CrossSectionalDataEEPROM
 {
     public:
+
         char ssidSocket[20] = "ROASTER";
         char passSocket[20] = "Clave123*";
         uint8_t canalwifi = 1;
@@ -44,6 +45,30 @@ class CrossSectionalDataEEPROM
         void save();
         void read();
         void print();
+
+        CrossSectionalDataEEPROM() = default;
+        ~CrossSectionalDataEEPROM() = default;
+
+        // Copy constructor
+        CrossSectionalDataEEPROM(const CrossSectionalDataEEPROM& other)
+        {
+            strcpy(ssidSocket, other.ssidSocket);
+            strcpy(passSocket, other.passSocket);
+            canalwifi = other.canalwifi;
+            //clientNames = other.clientNames;
+        }
+
+        // Assignment operator
+        CrossSectionalDataEEPROM& operator=(const CrossSectionalDataEEPROM& other)
+        {
+            if (this != &other) {
+                strcpy(ssidSocket, other.ssidSocket);
+                strcpy(passSocket, other.passSocket);
+                canalwifi = other.canalwifi;
+                //clientNames = other.clientNames;
+            }
+            return *this;
+        }
 
         bool operator==(const CrossSectionalDataEEPROM& other) const
         {

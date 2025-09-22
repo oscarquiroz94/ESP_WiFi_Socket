@@ -1,14 +1,23 @@
 #include "AudioCrackMessage.hpp"
 
-// Messages received from audiocrack device
+// Messages received or send from audiocrack device
+// {
+//    "device":"audiocrack",
+//    "command":"startroasting"
+// }
 // {
 //    "device":"audiocrack",
 //    "command":"firstcrack"
 // }
 // {
 //    "device":"audiocrack",
+//    "command":"endroasting"
+// }
+// {
+//    "device":"audiocrack",
 //    "command":"getinitial"
 // }
+
 
 bool AudioCrackMessage::getDocument(JsonDocument& doc, const char* data)
 {
@@ -27,7 +36,15 @@ std::string AudioCrackMessage::getMainCommand(JsonDocument& doc)
 
 bool AudioCrackMessage::isValid(JsonDocument& doc)
 {
-    return (doc["device"].is<std::string>() && doc["device"] == "audiocrack") ? true : false;
+    bool valid = doc["device"].is<std::string>() && 
+                 doc["command"].is<std::string>();
+    if (!valid)
+    {
+        ESPadapter::debug_println("AudioCrackMessage: Document missing required fields");
+        // Print document for debugging
+        //serializeJson(doc, Serial);
+    }
+    return valid ;
 }
 
 void AudioCrackMessageStartRoasting::send(WebSocketsServer& ws, int8_t id)

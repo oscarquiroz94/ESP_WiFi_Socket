@@ -12,6 +12,28 @@ void WebsocketClientHandler::registerWebsocketClient
     ESPadapter::debug_println(client.getId());
 }
 
+void WebsocketClientHandler::unregisterWebsocketClient
+    (IGeneralClient& client)
+{
+    auto it = std::find(websocketClients.begin(), websocketClients.end(), &client);
+    if (it != websocketClients.end())
+    {
+        ESPadapter::debug_print("Client unregistered: ");
+        ESPadapter::debug_print(client.getName().c_str());
+        ESPadapter::debug_print(" id: ");
+        ESPadapter::debug_println(client.getId());
+        m_idCounter--;
+        websocketClients.erase(it);
+    }
+    else
+    {
+        ESPadapter::debug_print("Client not found for unregistration: ");
+        ESPadapter::debug_print(client.getName().c_str());
+        ESPadapter::debug_print(" id: ");
+        ESPadapter::debug_println(client.getId());
+    }
+}
+
 void WebsocketClientHandler::onWebSocketEvent
     (uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 {
@@ -32,14 +54,20 @@ void WebsocketClientHandler::onWebSocketEvent
         {
             ESPadapter::debug_print("New client connected: ");
             IPAddress ip = webSocket.remoteIP(num);
-            ESPadapter::debug_println(ip.toString());
+            ESPadapter::debug_print(ip.toString());
+            ESPadapter::debug_print(" id: ");
+            ESPadapter::debug_println(num);
             break;
         }
 
         // Echo text message back to client
         case WStype_TEXT:
         {
-            if (websocketClients.empty()) return;
+            if (websocketClients.empty()) 
+            {
+                ESPadapter::debug_println("No clients registered to handle messages.");
+                return;
+            }
             
             for (auto& client : websocketClients)
             {

@@ -19,10 +19,7 @@
 class PairingManager
 { 
     public:
-        PairingManager(WebSocketsServer& ws) : 
-            webSocket(ws),
-            genericClient(&genericMessage), 
-            clientHandler(ws) {}
+        PairingManager(WebSocketsServer& ws, WebsocketClientHandler& handler);
 
         void executePairing
             (CrossSectionalDataEEPROM& data);
@@ -36,19 +33,19 @@ class PairingManager
              
     private:
         WebSocketsServer& webSocket;
-        GenericMessage genericMessage;
-        GenericClient  genericClient;
-        WebsocketClientHandler clientHandler;
+        GenericMessage    genericMessage;
+        GenericClient     genericClient;
+        WebsocketClientHandler& clientHandler;
 
-        uint32_t maxTimeSearch = 30L * 1000L; //seconds
+        uint32_t maxTimeSearch = 1 * 30L * 1000L; //seconds
 
-        void registerGenericClient
-            (WebSocketsServer& webSocket,
-             CrossSectionalDataEEPROM& data);
+        void registerGenericClient(CrossSectionalDataEEPROM& data);
 
-        void searchingLoopForClients(WebSocketsServer& webSocket);
+        void searchingLoopForClients();
 
-        bool setupDefaultCredentials(WebSocketsServer& webSocket);
+        bool setupDefaultCredentials();
+
+        void setupUserCredentials(CrossSectionalDataEEPROM& data);
 
         WebsocketClientHandler& getClientHandler() {return clientHandler;}
 

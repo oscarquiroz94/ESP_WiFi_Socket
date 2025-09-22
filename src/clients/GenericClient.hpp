@@ -41,7 +41,8 @@ class GenericClient : public IGeneralClient
         uint8_t getId () const override {return m_id;}
         void setId(uint8_t id) override {m_id = id;}
 
-        std::string getName() const override {return "generic";}
+        void setName(const std::string& newname) override {name = newname;}
+        std::string getName() const override {return name;}
 
         void sendEvent(WebSocketsServer &ws, IOutputMessage* msg) override 
         {
@@ -52,6 +53,7 @@ class GenericClient : public IGeneralClient
 
     private:
         uint8_t m_id {0};
+        std::string name {"generic"};
         IClientMessage* message = nullptr;
         std::map<std::string, std::function<void(uint8_t num, JsonDocument& doc)>> map2func;
 };

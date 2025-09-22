@@ -52,10 +52,10 @@ class IClientMessage
             
             switch (err.code()) {
                 case DeserializationError::Ok:
-                    ESPadapter::debug_println("IClientmessage: Valid message!");
+                    //ESPadapter::debug_println("IClientmessage: Valid json struct!");
                     break;
                 case DeserializationError::InvalidInput:
-                    ESPadapter::debug_println("IClientmessage: Invalid message!");
+                    ESPadapter::debug_println("IClientmessage: Invalid json struct!");
                     break;
                 case DeserializationError::NoMemory:
                     ESPadapter::debug_println("IClientmessage: Not enough memory");

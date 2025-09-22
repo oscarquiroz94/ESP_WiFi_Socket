@@ -30,7 +30,8 @@ void CrossSectionalDataEEPROM::save()
 
     preferences.end();
 #endif
-    ESPadapter::debug_println("Preferences: updated");
+    if (oldSSID != ssidSocket || oldPass != passSocket || oldCanalWifi != canalwifi)
+        ESPadapter::debug_println("Preferences: updated");
 }
 
 void CrossSectionalDataEEPROM::read()
