@@ -135,6 +135,7 @@ void Manager::registerSerialPortHandler()
             ESPadapter::serial_write('\0');
 
             ESPadapter::flush();
+            ESPadapter::retardo(50);
         }
     });
 
@@ -312,23 +313,27 @@ void Manager::registerVisualScope()
         ESPadapter::serial_print(applicationdata.quemador);ESPadapter::serial_print(',');
         ESPadapter::serial_print(applicationdata.tedvalue);ESPadapter::serial_print(',');
         ESPadapter::serial_write('\0');
+        ESPadapter::retardo(50);
     });
 
     visualScopeClient.addFunctionToMainCommand("endRoasting", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("SODROP");
         ESPadapter::serial_print('\0');
+        ESPadapter::retardo(50);
         beat.set_step(Heartbeat::other);
     });
 
     visualScopeClient.addFunctionToMainCommand("ready", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("SREADY");
         ESPadapter::serial_print('\0');
+        ESPadapter::retardo(50);
         heartbeatonce = false;
     });
 
     visualScopeClient.addFunctionToMainCommand("noready", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("SNOREA");
         ESPadapter::serial_print('\0');
+        ESPadapter::retardo(50);
         beat.set_step(Heartbeat::other);
         heartbeatonce = false;
     });
@@ -336,42 +341,50 @@ void Manager::registerVisualScope()
     visualScopeClient.addFunctionToMainCommand("identify", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("IDENTIFY");
         ESPadapter::serial_print('\0');
+        ESPadapter::retardo(50);
     });
 
     visualScopeClient.addFunctionToMainCommand("noidentify", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("NOIDENTIFY");
         ESPadapter::serial_print('\0');
+        ESPadapter::retardo(50);
     });
 
     visualScopeClient.addFunctionToMainCommand("getinit", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("GETINIT");
         ESPadapter::serial_print('\0');
+        ESPadapter::retardo(50);
     });
 
     visualScopeClient.addFunctionToMainCommand("reset", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("RESET");
         ESPadapter::serial_print('\0');
+        ESPadapter::retardo(50);
     });
 
     visualScopeClient.addFunctionToMainCommand("fcstart", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("FCSTART");
         ESPadapter::serial_print('\0');
+        ESPadapter::retardo(50);
     });
 
     visualScopeClient.addFunctionToMainCommand("oncharge", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("ONCHARGE");
         ESPadapter::serial_print('\0');
+        ESPadapter::retardo(50);
         beat.set_step(Heartbeat::roasting);
     });
 
     visualScopeClient.addFunctionToMainCommand("onted", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("ONTED");
         ESPadapter::serial_print('\0');
+        ESPadapter::retardo(50);
     });
 
     visualScopeClient.addFunctionToMainCommand("offted", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("OFFTED");
         ESPadapter::serial_print('\0');
+        ESPadapter::retardo(50);
     });
 }
 
