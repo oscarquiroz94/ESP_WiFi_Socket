@@ -40,7 +40,7 @@ bool AudioCrackMessage::isValid(JsonDocument& doc)
                  doc["command"].is<std::string>();
     if (!valid)
     {
-        ESPadapter::debug_println("AudioCrackMessage: Document missing required fields");
+        //ESPadapter::debug_println("AudioCrackMessage: Document missing required fields");
         // Print document for debugging
         //serializeJson(doc, Serial);
     }
@@ -53,6 +53,26 @@ void AudioCrackMessageStartRoasting::send(WebSocketsServer& ws, int8_t id)
     JsonDocument outdoc;
 
     outdoc["command"] = "startroasting";
+    serializeJson(outdoc, output);
+    ws.sendTXT(id, output);
+}
+
+void AudioCrackMessageEndRoasting::send(WebSocketsServer& ws, int8_t id)
+{
+    std::string output;
+    JsonDocument outdoc;
+
+    outdoc["command"] = "endroasting";
+    serializeJson(outdoc, output);
+    ws.sendTXT(id, output);
+}
+
+void AudioCrackMessageFirstCrack::send(WebSocketsServer& ws, int8_t id)
+{
+    std::string output;
+    JsonDocument outdoc;
+
+    outdoc["command"] = "firstcrack";
     serializeJson(outdoc, output);
     ws.sendTXT(id, output);
 }

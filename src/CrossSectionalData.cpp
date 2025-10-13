@@ -29,8 +29,9 @@ void CrossSectionalDataEEPROM::save()
     if (oldCanalWifi != canalwifi) preferences.putUChar("canalwifi", canalwifi);
 
     preferences.end();
-#endif
+
     if (oldSSID != ssidSocket || oldPass != passSocket || oldCanalWifi != canalwifi)
+#endif
         ESPadapter::debug_println("Preferences: updated");
 }
 

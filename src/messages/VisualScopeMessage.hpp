@@ -22,15 +22,30 @@ class VisualScopeMessage : public IClientMessage
 
 class VisualScopeMessageStartRoasting : public IOutputMessage
 {
-    public: void send(WebSocketsServer& ws, int8_t id);
+    public: void send(WebSocketsServer& ws, int8_t id) override;
 };
 
 class VisualScopeMessageEndRoasting : public IOutputMessage
 {
-    public: void send(WebSocketsServer& ws, int8_t id);
+    public: void send(WebSocketsServer& ws, int8_t id) override;
 };
 
 class VisualScopeMessageFirstCrack : public IOutputMessage
 {
-    public: void send(WebSocketsServer& ws, int8_t id);
+    public: void send(WebSocketsServer& ws, int8_t id) override;
+};
+
+class VisualScopeMessageOperatives : public IOutputMessage
+{
+    public:
+        void send(WebSocketsServer& ws, int8_t id) override;
+
+        int8_t m_id;
+        int16_t m_tempET;
+        int16_t m_tempBT;
+        int16_t m_ror;
+        int16_t m_porcentQuem;
+        int16_t m_porcentSopl;
+        int16_t m_porcentTamb;
+        int16_t m_deltaETBT;
 };

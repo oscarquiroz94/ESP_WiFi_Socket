@@ -26,6 +26,16 @@ class AudioCrackMessageStartRoasting : public IOutputMessage
     public: void send(WebSocketsServer& ws, int8_t id);
 };
 
+class AudioCrackMessageEndRoasting : public IOutputMessage
+{
+    public: void send(WebSocketsServer& ws, int8_t id);
+};
+
+class AudioCrackMessageFirstCrack : public IOutputMessage
+{
+    public: void send(WebSocketsServer& ws, int8_t id);
+};
+
 class AudioCrackMessageOperatives : public IOutputMessage
 {
     public: 

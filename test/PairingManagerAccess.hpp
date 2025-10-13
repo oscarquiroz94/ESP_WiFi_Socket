@@ -8,7 +8,8 @@
 class PairingManagerAccess
 {
     public:
-        PairingManagerAccess(WebSocketsServer &ws) : peer(ws) {}
+        PairingManagerAccess(WebSocketsServer &ws, WebsocketClientHandler &clientHandler) 
+            : peer(ws, clientHandler) {}
 
         void registerGenericClient
             (CrossSectionalDataEEPROM& data)

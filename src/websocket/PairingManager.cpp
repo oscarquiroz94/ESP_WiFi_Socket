@@ -34,21 +34,19 @@ void PairingManager::registerGenericClient
     (CrossSectionalDataEEPROM& data)
 {
     clientHandler.registerWebsocketClient(genericClient);
+    genericClient.setName("generic");
 
     // {
-    //     “deviceid” : m [uint8],
     //     “command”: “attach”,
-    //     “devicename” :“audiocrack”,
+    //     “devicen” :“audiocrack”,
     // }
     genericClient.addFunctionToMainCommand("attach", [&](uint8_t num, JsonDocument& doc) {
-        int8_t id = doc["deviceid"];
         uint8_t idClient = genericClient.getId();
 
-        std::string name = doc["devicename"];
+        std::string name = doc["device"];
         
         JsonDocument outdoc;
         std::string output;
-        outdoc["deviceid"] = id;
         outdoc["command"] = "newcredentials";
         outdoc["parameters"]["ssid"] = data.ssidSocket;
         outdoc["parameters"]["pass"] = data.passSocket;
