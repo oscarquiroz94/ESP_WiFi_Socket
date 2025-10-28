@@ -41,7 +41,7 @@ void CrossSectionalDataEEPROM::read()
     memset(ssidSocket, 0, sizeof(ssidSocket));
     memset(passSocket, 0, sizeof(passSocket));
 
-    preferences.begin("config", true);
+    if (!preferences.begin("config", true)) return;
     preferences.getString("ssidSocket", ssidSocket, sizeof(ssidSocket));
     preferences.getString("passSocket", passSocket, sizeof(passSocket));
     canalwifi = preferences.getUChar("canalwifi", 1);
