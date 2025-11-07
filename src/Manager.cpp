@@ -288,17 +288,11 @@ void Manager::registerVisualScope()
     });
 
     visualScopeClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
-        if (doc["params"]["aire"].is<int16_t>()) 
-            applicationdata.aire = (int16_t)doc["params"]["aire"];
 
-        if (doc["params"]["tambor"].is<int16_t>()) 
-            applicationdata.tambor = (int16_t)doc["params"]["tambor"];
-
-        if (doc["params"]["quemador"].is<int16_t>()) 
-            applicationdata.quemador = (int16_t)doc["params"]["quemador"];
-
-        if (doc["params"]["tedvalue"].is<int16_t>())
-            applicationdata.tedvalue = (int16_t)doc["params"]["tedvalue"];
+        applicationdata.aire = doc["params"]["aire"].as<int16_t>();
+        applicationdata.tambor = (int16_t)doc["params"]["tambor"].as<int16_t>();
+        applicationdata.quemador = (int16_t)doc["params"]["quemador"].as<int16_t>();
+        applicationdata.tedvalue = (int16_t)doc["params"]["tedvalue"].as<int16_t>();
 
         ESPadapter::serial_print("PARAM,");
         ESPadapter::serial_print(applicationdata.aire);ESPadapter::serial_print(',');
