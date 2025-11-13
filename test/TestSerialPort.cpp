@@ -4,7 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include "serial/SerialPort.hpp"
 #include "SerialPortTestAccess.hpp"
-#include "clients/VisualScopeClient.hpp"
+#include "clients/GenericClient.hpp"
 #include "messages/VisualScopeMessage.hpp"
 #include "CrossSectionalData.hpp"
 

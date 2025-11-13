@@ -26,6 +26,10 @@ bool VisualScopeMessage::isValid(JsonDocument& doc)
     else if (!doc["roasterID"].is<int8_t>() && this->id == -1) 
         isvalid = false;
 
+    if (!isvalid)
+    {
+        //ESPadapter::debug_println("VisualScopeMessage: Document missing required fields");
+    }
     return isvalid;
 }
 
@@ -57,5 +61,25 @@ void VisualScopeMessageFirstCrack::send(WebSocketsServer& ws, int8_t id)
     outdoc["pushMessage"] = "addEvent";
     outdoc["data"]["event"] = "firstCrackBeginningEvent";
     serializeJson(outdoc, output);
+    ws.sendTXT(id, output);
+}
+
+void VisualScopeMessageOperatives::send(WebSocketsServer& ws, int8_t id)
+{
+    std::string output;
+    JsonDocument outdoc;
+    
+    outdoc["id"] = static_cast<uint8_t>(m_id);
+    outdoc["data"]["aire"] = m_tempET;
+    outdoc["data"]["grano"] = m_tempBT;
+    outdoc["data"]["ror"] = m_ror;
+    outdoc["data"]["quemador"] = m_porcentQuem;
+    outdoc["data"]["soplador"] = m_porcentSopl;
+    outdoc["data"]["tambor"] = m_porcentTamb;
+    outdoc["data"]["delta"] = m_deltaETBT;
+    serializeJson(outdoc, output);
+
+    ESPadapter::debug_print("VisualScopeMessageOperatives: ");
+    ESPadapter::debug_print(output.c_str());
     ws.sendTXT(id, output);
 }

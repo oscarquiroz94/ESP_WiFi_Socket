@@ -3,8 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include "messages/VisualScopeMessage.hpp"
-#include "clients/VisualScopeClient.hpp"
-#include "clients/AudioCrackClient.hpp"
+#include "clients/GenericClient.hpp"
+#include "clients/GenericClient.hpp"
 #include "websocket/WebsocketClientHandler.hpp"
 #include "adapters/WebSocketAdapter.hpp"
 

@@ -3,7 +3,6 @@
 
 #include <boost/test/unit_test.hpp>
 #include "messages/VisualScopeMessage.hpp"
-#include "clients/VisualScopeClient.hpp"
 #include "clients/GenericClient.hpp"
 
 typedef GenericClient VisualScopeClient;

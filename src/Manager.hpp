@@ -24,14 +24,7 @@ class Manager
 {
     public:
 
-        Manager() : 
-            serialport(115200) 
-            ,webSocket(8080)
-            ,clientHandler(webSocket)
-            ,visualScopeClient(&visualScopeMsg)
-            ,audioCrackClient(&audioCrackMsg)
-            ,peer(webSocket)
-            {}
+        Manager();
 
         void initialize();
         void run();
@@ -52,6 +45,8 @@ class Manager
         uint32_t                 t_sendversion = 0;
         uint32_t                 versionESP = 0;
         bool                     heartbeatonce = false;
+
+        bool firstCrack = false; //! Temporal pruebas
 
         void registerSerialPortHandler();
         void registerWebSocketHandler();

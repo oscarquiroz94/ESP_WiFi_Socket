@@ -14,9 +14,10 @@ BOOST_AUTO_TEST_CASE(given_ATTACH_MSG_when_PAIRING_then_CLIENTS_ON_VECTOR)
     const char* JSONPAYLOAD_3 = R"({"deviceID":1,"command":"newcredentials","parameters":{"ssid":"TEST_SSID","pass":"ClaveTest*","channel":5}})";
     const char* JSONPAYLOAD_4 = R"({"deviceID":2,"command":"newcredentials","parameters":{"ssid":"TEST_SSID","pass":"ClaveTest*","channel":5}})";
 
-    WebSocketsServer webSocket(8080);
-    CrossSectionalDataEEPROM eepromdata;
-    PairingManagerAccess peer_access(webSocket);
+    WebSocketsServer          webSocket(8080);
+    CrossSectionalDataEEPROM  eepromdata;
+    WebsocketClientHandler    clientHandler(webSocket);
+    PairingManagerAccess      peer_access(webSocket, clientHandler);
 
     memset(eepromdata.ssidSocket, 0, sizeof(eepromdata.ssidSocket));
     memset(eepromdata.passSocket, 0, sizeof(eepromdata.passSocket));
@@ -24,7 +25,7 @@ BOOST_AUTO_TEST_CASE(given_ATTACH_MSG_when_PAIRING_then_CLIENTS_ON_VECTOR)
     strcpy(eepromdata.passSocket, "ClaveTest*");
     eepromdata.canalwifi = 5;
 
-    peer_access.registerGenericClient(webSocket, eepromdata);
+    peer_access.registerGenericClient(eepromdata);
 
     
     // Simulate receiving the attach messages from two clients

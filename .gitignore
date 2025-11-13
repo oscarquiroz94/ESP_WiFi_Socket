@@ -1,4 +1,4 @@
-.pio
-.clang_complete
-.vscode
+/.pio
+/.clang_complete
+/.vscode
 *.json

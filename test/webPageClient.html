@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      button {
+        display: block;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Cliente WebSocket</h2>
+    <button onclick="sendAttach()">Enviar attach</button>
+    <button onclick="sendGetData()">Enviar getData</button>
+
+    <script>
+      // ...existing code...
+      let socket = new WebSocket("ws://192.168.4.1:8080");
+
+      socket.onopen = () => {
+        console.log("✅ Conectado al servidor");
+      };
+
+      socket.onmessage = (event) => {
+        console.log("📩 Mensaje recibido:", event.data);
+      };
+
+      socket.onerror = (err) => {
+        console.error("❌ Error:", err);
+      };
+
+      function sendGetData() 
+      {
+        let msg = {
+          id : 123,
+          roasterID: 1,
+          command: "getData"
+        };
+        socket.send(JSON.stringify(msg));
+        console.log("➡️ Enviado:", msg);
+      }
+      function sendAttach() 
+      {
+        let msg = {
+          deviceid : 123,
+          command: "attach",
+          devicename : "audiocrack"
+        };
+        socket.send(JSON.stringify(msg));
+        console.log("➡️ Enviado:", msg);
+      }
+    </script>
+  </body>
+</html>

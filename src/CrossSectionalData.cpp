@@ -29,8 +29,10 @@ void CrossSectionalDataEEPROM::save()
     if (oldCanalWifi != canalwifi) preferences.putUChar("canalwifi", canalwifi);
 
     preferences.end();
+
+    if (oldSSID != ssidSocket || oldPass != passSocket || oldCanalWifi != canalwifi)
 #endif
-    ESPadapter::debug_println("Preferences: updated");
+        ESPadapter::debug_println("Preferences: updated");
 }
 
 void CrossSectionalDataEEPROM::read()
@@ -39,7 +41,7 @@ void CrossSectionalDataEEPROM::read()
     memset(ssidSocket, 0, sizeof(ssidSocket));
     memset(passSocket, 0, sizeof(passSocket));
 
-    preferences.begin("config", true);
+    if (!preferences.begin("config", true)) return;
     preferences.getString("ssidSocket", ssidSocket, sizeof(ssidSocket));
     preferences.getString("passSocket", passSocket, sizeof(passSocket));
     canalwifi = preferences.getUChar("canalwifi", 1);

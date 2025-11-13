@@ -1,15 +1,36 @@
 #include "WebsocketClientHandler.hpp"
+#include <algorithm>
 
 void WebsocketClientHandler::registerWebsocketClient
     (IGeneralClient& client)
 {
-    client.setId(m_idCounter++);
+    m_idCounter++;
     websocketClients.push_back(&client);
 
     ESPadapter::debug_print("Client registered: ");
-    ESPadapter::debug_print(client.getName().c_str());
-    ESPadapter::debug_print(" id: ");
-    ESPadapter::debug_println(client.getId());
+    ESPadapter::debug_println(client.getName().c_str());
+}
+
+void WebsocketClientHandler::unregisterWebsocketClient
+    (IGeneralClient& client)
+{
+    auto it = std::find(websocketClients.begin(), websocketClients.end(), &client);
+    if (it != websocketClients.end())
+    {
+        ESPadapter::debug_print("Client unregistered: ");
+        ESPadapter::debug_print(client.getName().c_str());
+        ESPadapter::debug_print(" id: ");
+        ESPadapter::debug_println(client.getId());
+        m_idCounter--;
+        websocketClients.erase(it);
+    }
+    else
+    {
+        ESPadapter::debug_print("Client not found for unregistration: ");
+        ESPadapter::debug_print(client.getName().c_str());
+        ESPadapter::debug_print(" id: ");
+        ESPadapter::debug_println(client.getId());
+    }
 }
 
 void WebsocketClientHandler::onWebSocketEvent
@@ -32,19 +53,43 @@ void WebsocketClientHandler::onWebSocketEvent
         {
             ESPadapter::debug_print("New client connected: ");
             IPAddress ip = webSocket.remoteIP(num);
-            ESPadapter::debug_println(ip.toString());
+            ESPadapter::debug_print(ip.toString());
+            ESPadapter::debug_print(" id: ");
+            ESPadapter::debug_println(num);
             break;
         }
 
         // Echo text message back to client
         case WStype_TEXT:
         {
-            if (websocketClients.empty()) return;
-            
+            ESPadapter::debug_print("Message from client id ");
+            ESPadapter::debug_print((uint16_t)num);
+            ESPadapter::debug_print(": ");
+            ESPadapter::debug_println(payloadconst);
+
+            if (websocketClients.empty()) 
+            {
+                ESPadapter::debug_println("No clients registered to handle messages.");
+                return;
+            }
+
+            // Registrar id del cliente segun el devicename del mensaje
             for (auto& client : websocketClients)
             {
                 if (nullptr != client)
+                    client->setId(num, payloadconst);
+            }
+
+            // Procesar evento solo para el cliente correspondiente
+            for (auto& client : websocketClients)
+            {
+                if (nullptr != client && client->getId() == num)
+                {
+                    ESPadapter::debug_print("Processing event for client id: ");
+                    ESPadapter::debug_println(num);
                     client->processEvent(num, payloadconst, length);
+                    break;
+                }
             }
             
             break;
