@@ -95,7 +95,8 @@ void Manager::registerSerialPortHandler()
         lista = strtok(NULL, ",");
         newdata.canalwifi = (uint8_t)ESPadapter::str2int(lista);
 
-        CheckSSID::validateSSID(newdata);
+        if (CheckSSID::isExistingNetwork(newdata.ssidSocket)) 
+            CheckSSID::assignAnotherSSID(newdata);
 
         CredentialNotification::notifyOnChange(m_webSocket, m_clientHandler, newdata, m_eepromdata);
 
@@ -314,7 +315,7 @@ void Manager::registerVisualScope()
         
         AudioCrackMessageEndRoasting dropMessage;
         dropMessage.send(m_webSocket, num);
-        
+
         ESPadapter::serial_print("SODROP");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);

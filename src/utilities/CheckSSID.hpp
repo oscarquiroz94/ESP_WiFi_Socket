@@ -10,20 +10,35 @@ extern WiFiClass WiFi;
 class CheckSSID
 {
     public:
-        static void validateSSID(CrossSectionalDataEEPROM &eepromdata)
+        static bool isExistingNetwork(const char* ssidToCheck)
         {
             uint16_t numNetworks = WiFi.scanNetworks();
 
             for (int i = 0; i < numNetworks; i++)
             {
                 String onNetworkSSID = WiFi.SSID(i);
-                String currentSSID(eepromdata.ssidSocket);
+                String checkSSID(ssidToCheck);
 
-                if (currentSSID == onNetworkSSID) assignAnotherSSID(eepromdata);
+                if (checkSSID == onNetworkSSID) return true;
             }
+
+            return false;
         }
 
-    private:
+        static std::vector<std::string> scanAvailableSSIDs()
+        {
+            std::vector<std::string> ssidList;
+            uint16_t numNetworks = WiFi.scanNetworks(false, true, false, 300);
+
+            for (int i = 0; i < numNetworks; i++)
+            {
+                String onNetworkSSID = WiFi.SSID(i);
+                ssidList.push_back(onNetworkSSID.c_str());
+            }
+
+            return ssidList;
+        }
+
         static void assignAnotherSSID(CrossSectionalDataEEPROM &eepromdata)
         {
             size_t length    = strlen(eepromdata.ssidSocket); 
@@ -46,6 +61,7 @@ class CheckSSID
             else strcat(eepromdata.ssidSocket, "_1");
         }
 
+    private:
         static bool isNumericChar(const char c)
         {
             return (c >= '0' && c <= '9');

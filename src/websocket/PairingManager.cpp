@@ -1,4 +1,5 @@
 #include "PairingManager.hpp"
+#include "utilities/CheckSSID.hpp"
 #include "utilities/Temporizador.hpp"
 #include <algorithm>
 
@@ -10,7 +11,9 @@ PairingManager::PairingManager(WebSocketsServer& ws, WebsocketClientHandler& han
 void PairingManager::executePairing
     (CrossSectionalDataEEPROM& newdata)
 {
-    if (!setupDefaultCredentials()) return;
+    if (not setupDefaultCredentials()) return;
+
+    if (isExistingPairingNetwork()) return;
 
     registerGenericClient(newdata);
 
@@ -100,7 +103,26 @@ void PairingManager::setupUserCredentials
         ESPadapter::debug_println("PairingManager: Error starting WebSocket with user credentials");
 }
 
-void PairingManager::searchNonExistingPairingModeOnNetwork()
+bool PairingManager::isExistingPairingNetwork()
 {
-    
+    Temporizador t_search(false, true);
+
+    ESPadapter::debug_println("PairingManager: buscando red PAIRING existente...");
+
+    while (not t_search.tiempo(maxTimeSearch))
+    {
+        // Escanear en busqueda de red con nombre PAIRING
+        std::vector<std::string> networks = CheckSSID::scanAvailableSSIDs();
+        auto it = std::find(networks.begin(), networks.end(), "PAIRING");
+        if (it != networks.end()) 
+        {
+            ESPadapter::debug_println("PairingManager: Modo emparejamiento existente encontrado");
+            return true;
+        }
+
+        ESPadapter::retardo(5);
+    }
+
+    ESPadapter::debug_println("PairingManager: No se encontro red PAIRING existente");
+    return false;
 }

@@ -43,7 +43,7 @@ class PairingManager
 
         void searchingLoopForClients();
 
-        void searchNonExistingPairingModeOnNetwork();
+        bool isExistingPairingNetwork();
 
         bool setupDefaultCredentials();
 
