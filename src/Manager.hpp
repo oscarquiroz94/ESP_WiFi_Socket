@@ -30,23 +30,21 @@ class Manager
         void run();
 
     private:
-        CrossSectionalData       applicationdata;
-        CrossSectionalDataEEPROM eepromdata;
-        SerialPort               serialport;
-        WebSocketsServer         webSocket;
-        VisualScopeMessage       visualScopeMsg;
-        AudioCrackMessage        audioCrackMsg;
-        WebsocketClientHandler   clientHandler;
-        GenericClient            visualScopeClient;
-        GenericClient            audioCrackClient;
-        PairingManager           peer;
-        Heartbeat                beat;
-        uint8_t                  sendVersionAmount = 0;
-        uint32_t                 t_sendversion = 0;
-        uint32_t                 versionESP = 0;
-        bool                     heartbeatonce = false;
-
-        bool firstCrack = false; //! Temporal pruebas
+        CrossSectionalData       m_applicationdata;
+        CrossSectionalDataEEPROM m_eepromdata;
+        SerialPort               m_serialport;
+        WebSocketsServer         m_webSocket;
+        VisualScopeMessage       m_visualScopeMsg;
+        AudioCrackMessage        m_audioCrackMsg;
+        WebsocketClientHandler   m_clientHandler;
+        GenericClient            m_visualScopeClient;
+        GenericClient            m_audioCrackClient;
+        PairingManager           m_peer;
+        Heartbeat                m_beat;
+        uint8_t                  m_sendVersionAmount = 0;
+        uint32_t                 m_tempo_sendversion = 0;
+        uint32_t                 m_versionESP = 0;
+        bool                     m_heartbeatonce = false;
 
         void registerSerialPortHandler();
         void registerWebSocketHandler();

@@ -10,17 +10,17 @@
 #endif
 
 Manager::Manager() : 
-    serialport(115200) 
-    ,webSocket(8080)
-    ,clientHandler(webSocket)
-    ,visualScopeClient(&visualScopeMsg)
-    ,audioCrackClient(&audioCrackMsg)
-    ,peer(webSocket, clientHandler)
+    m_serialport(115200) 
+    ,m_webSocket(8080)
+    ,m_clientHandler(m_webSocket)
+    ,m_visualScopeClient(&m_visualScopeMsg)
+    ,m_audioCrackClient(&m_audioCrackMsg)
+    ,m_peer(m_webSocket, m_clientHandler)
     {}
 
 void Manager::initialize()
 {
-    versionESP = (completeVersion[0] - 48) * 10000000L +
+    m_versionESP = (completeVersion[0] - 48) * 10000000L +
                  (completeVersion[1] - 48) * 1000000L +
                  (completeVersion[2] - 48) * 100000L +
                  (completeVersion[3] - 48) * 10000L +
@@ -29,27 +29,27 @@ void Manager::initialize()
                  (completeVersion[6] - 48) * 10L +
                  (completeVersion[7] - 48) * 1L;
 
-    serialport.openPort();
+    m_serialport.openPort();
     
     registerSerialPortHandler();
     registerWebSocketHandler();
 
-    webSocket.onEvent([&](uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
-        clientHandler.onWebSocketEvent(num, type, payload, length);
+    m_webSocket.onEvent([&](uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
+        m_clientHandler.onWebSocketEvent(num, type, payload, length);
     });
 
-    eepromdata.read();
+    m_eepromdata.read();
 
 }
 
 void Manager::run()
 {
-    webSocket.loop();
+    m_webSocket.loop();
 
-    serialport.listen();
-    serialport.processEvent();
+    m_serialport.listen();
+    m_serialport.processEvent();
 
-    beat.loop();
+    m_beat.loop();
 
     send_data();
 
@@ -58,29 +58,29 @@ void Manager::run()
 
 void Manager::send_data()
 {
-    if (ESPadapter::milliseconds() - t_sendversion > 3000 &&
-        sendVersionAmount < 3)
+    if (ESPadapter::milliseconds() - m_tempo_sendversion > 3000 &&
+        m_sendVersionAmount < 3)
     {
         ESPadapter::serial_print("ESPV,");
-        ESPadapter::serial_print(versionESP);
+        ESPadapter::serial_print(m_versionESP);
         ESPadapter::serial_print(",");
         ESPadapter::serial_print('\0');
-        t_sendversion = ESPadapter::milliseconds();
-        sendVersionAmount++;
+        m_tempo_sendversion = ESPadapter::milliseconds();
+        m_sendVersionAmount++;
     }
 
-    if (beat.is_alert() && !heartbeatonce)
+    if (m_beat.is_alert() && !m_heartbeatonce)
     {
         ESPadapter::serial_print("HEARBEAT-DEAD");
         ESPadapter::serial_print('\0');
-        heartbeatonce = true;
+        m_heartbeatonce = true;
     }
         
 }
 
 void Manager::registerSerialPortHandler()
 {
-    serialport.addFunctionToMainCommand("S,", [&](const char* comand) { 
+    m_serialport.addFunctionToMainCommand("S,", [&](const char* comand) { 
         CrossSectionalDataEEPROM newdata;
 
         char* cpycommand = (char*)comand;
@@ -97,14 +97,14 @@ void Manager::registerSerialPortHandler()
 
         CheckSSID::validateSSID(newdata);
 
-        CredentialNotification::notifyOnChange(webSocket, clientHandler, newdata, eepromdata);
+        CredentialNotification::notifyOnChange(m_webSocket, m_clientHandler, newdata, m_eepromdata);
 
-        bool sucess = WebsocketManager::turnOnWebSocket(webSocket, newdata);
+        bool sucess = WebsocketManager::turnOnWebSocket(m_webSocket, newdata);
         
         if (sucess) 
         {
-            eepromdata = newdata;
-            eepromdata.save();
+            m_eepromdata = newdata;
+            m_eepromdata.save();
 
             IPAddress IP = WiFi.softAPIP();
 
@@ -114,15 +114,15 @@ void Manager::registerSerialPortHandler()
             ESPadapter::serial_print("IPS");
             ESPadapter::serial_print(IP.toString());
             ESPadapter::serial_print("CH");
-            ESPadapter::serial_print(eepromdata.canalwifi);
+            ESPadapter::serial_print(m_eepromdata.canalwifi);
             ESPadapter::serial_write('\0');
 
             ESPadapter::serial_print("SID,");
-            ESPadapter::serial_print(eepromdata.ssidSocket);
+            ESPadapter::serial_print(m_eepromdata.ssidSocket);
             ESPadapter::serial_print(",");
-            ESPadapter::serial_print(eepromdata.passSocket);
+            ESPadapter::serial_print(m_eepromdata.passSocket);
             ESPadapter::serial_print(",");
-            ESPadapter::serial_print(eepromdata.canalwifi);
+            ESPadapter::serial_print(m_eepromdata.canalwifi);
             ESPadapter::serial_print(",");
             ESPadapter::serial_write('\0');
 
@@ -131,98 +131,98 @@ void Manager::registerSerialPortHandler()
         }
     });
 
-    serialport.addFunctionToMainCommand("MCA", [&](const char* comand){
+    m_serialport.addFunctionToMainCommand("MCA", [&](const char* comand){
 
         VisualScopeMessageStartRoasting scopeMsg;
-        visualScopeClient.sendEvent(webSocket, &scopeMsg);
+        m_visualScopeClient.sendEvent(m_webSocket, &scopeMsg);
 
         AudioCrackMessageStartRoasting audioMsg;
-        audioCrackClient.sendEvent(webSocket, &audioMsg);
+        m_audioCrackClient.sendEvent(m_webSocket, &audioMsg);
     });
 
-    serialport.addFunctionToMainCommand("MDR", [&](const char* comand){
+    m_serialport.addFunctionToMainCommand("MDR", [&](const char* comand){
 
         VisualScopeMessageEndRoasting scopeMsg;
-        visualScopeClient.sendEvent(webSocket, &scopeMsg);
+        m_visualScopeClient.sendEvent(m_webSocket, &scopeMsg);
 
         AudioCrackMessageEndRoasting audioMsg;
-        audioCrackClient.sendEvent(webSocket, &audioMsg);
+        m_audioCrackClient.sendEvent(m_webSocket, &audioMsg);
     });
 
-    serialport.addFunctionToMainCommand("MFC", [&](const char* comand){
+    m_serialport.addFunctionToMainCommand("MFC", [&](const char* comand){
 
         VisualScopeMessageFirstCrack scopeMsg;
-        visualScopeClient.sendEvent(webSocket, &scopeMsg);
+        m_visualScopeClient.sendEvent(m_webSocket, &scopeMsg);
 
         AudioCrackMessageFirstCrack audioMsg;
-        audioCrackClient.sendEvent(webSocket, &audioMsg);
+        m_audioCrackClient.sendEvent(m_webSocket, &audioMsg);
     });
 
-    serialport.addFunctionToMainCommand("IN,", [&](const char* comand) { 
+    m_serialport.addFunctionToMainCommand("IN,", [&](const char* comand) { 
         char* cpycommand = (char*)comand;
         char *lista = strtok(cpycommand, ",");
 
 		lista = strtok(NULL, ",");
-		applicationdata.tempET = ESPadapter::str2int(lista); 
+		m_applicationdata.tempET = ESPadapter::str2int(lista); 
 
 		lista = strtok(NULL, ",");
-		applicationdata.tempBT = ESPadapter::str2int(lista);
+		m_applicationdata.tempBT = ESPadapter::str2int(lista);
 
 		lista = strtok(NULL, ",");
-		applicationdata.porcentQuem = ESPadapter::str2int(lista);
+		m_applicationdata.porcentQuem = ESPadapter::str2int(lista);
 
 		lista = strtok(NULL, ",");
-		applicationdata.porcentTamb = ESPadapter::str2int(lista);
+		m_applicationdata.porcentTamb = ESPadapter::str2int(lista);
 
 		lista = strtok(NULL, ",");
-		applicationdata.porcentSopl = ESPadapter::str2int(lista);
+		m_applicationdata.porcentSopl = ESPadapter::str2int(lista);
 
 		lista = strtok(NULL, ",");
-		applicationdata.RoR = ESPadapter::str2int(lista);
+		m_applicationdata.RoR = ESPadapter::str2int(lista);
 
 		lista = strtok(NULL, ",");
-		applicationdata.deltaETBT = ESPadapter::str2int(lista);
+		m_applicationdata.deltaETBT = ESPadapter::str2int(lista);
 
         AudioCrackMessageOperatives msg;
-        msg.m_beanTemperature = applicationdata.tempBT;
-        msg.m_rateOfRise = applicationdata.RoR;
-        audioCrackClient.sendEvent(webSocket, &msg);
+        msg.m_beanTemperature = m_applicationdata.tempBT;
+        msg.m_rateOfRise = m_applicationdata.RoR;
+        m_audioCrackClient.sendEvent(m_webSocket, &msg);
     });
 
     // This will be requested by the ATM
-    serialport.addFunctionToMainCommand("PAIR", [&](const char* comand){
+    m_serialport.addFunctionToMainCommand("PAIR", [&](const char* comand){
 
-        clientHandler.unregisterWebsocketClient(visualScopeClient);
-        clientHandler.unregisterWebsocketClient(audioCrackClient);
-        ESPadapter::debug_println("WBS clients: " + String(clientHandler.getClientCount()));
-        peer.executePairing(eepromdata);
+        m_clientHandler.unregisterWebsocketClient(m_visualScopeClient);
+        m_clientHandler.unregisterWebsocketClient(m_audioCrackClient);
+        ESPadapter::debug_println("WBS clients: " + String(m_clientHandler.getClientCount()));
+        m_peer.executePairing(m_eepromdata);
         registerWebSocketHandler();
-        ESPadapter::debug_println("WBS clients: " + String(clientHandler.getClientCount()));
+        ESPadapter::debug_println("WBS clients: " + String(m_clientHandler.getClientCount()));
     });
 
     //------------- Debug purposes ----------------
 
-    serialport.addFunctionToMainCommand("STOPWS", [&](const char* comand){
+    m_serialport.addFunctionToMainCommand("STOPWS", [&](const char* comand){
         ESPadapter::serial_println("Stopping WebSocket server");
-        WebsocketManager::turnOffWebSocket(webSocket);
+        WebsocketManager::turnOffWebSocket(m_webSocket);
     });
 
-    serialport.addFunctionToMainCommand("SHOW", [&](const char* comand){
-        applicationdata.print();
-        eepromdata.print();
+    m_serialport.addFunctionToMainCommand("SHOW", [&](const char* comand){
+        m_applicationdata.print();
+        m_eepromdata.print();
     });
 
-    serialport.addFunctionToMainCommand("LOG1", [&](const char* comand){
+    m_serialport.addFunctionToMainCommand("LOG1", [&](const char* comand){
         ESPadapter::serial_println("Debug traces enabled");
         ESPadapter::trace_debug = true;
     });
 
-    serialport.addFunctionToMainCommand("LOGNULL", [&](const char* comand){
+    m_serialport.addFunctionToMainCommand("LOGNULL", [&](const char* comand){
         ESPadapter::serial_println("All traces disabled");
         ESPadapter::trace_debug = false;
     });
 
-    serialport.addFunctionToMainCommand("MEMOFREE", [&](const char* comand){
+    m_serialport.addFunctionToMainCommand("MEMOFREE", [&](const char* comand){
         size_t totalHeap = ESP.getHeapSize();
         size_t freeHeap = ESP.getFreeHeap();
         size_t usedHeap = totalHeap - freeHeap;
@@ -249,133 +249,141 @@ void Manager::registerVisualScope()
 {
     ESPadapter::debug_println("Registering VisualScope client...");
 
-    visualScopeClient.setName("visualscope");
-    clientHandler.registerWebsocketClient(visualScopeClient);
+    m_visualScopeClient.setName("visualscope");
+    m_clientHandler.registerWebsocketClient(m_visualScopeClient);
 
-    visualScopeClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
 
         //! No funciona, why ?
         // VisualScopeMessageOperatives scopeMsg;
         // scopeMsg.m_id = static_cast<int8_t>(doc["id"]);
-        // scopeMsg.m_tempET = applicationdata.tempET;
-        // scopeMsg.m_tempBT = applicationdata.tempBT;
-        // scopeMsg.m_ror = applicationdata.RoR;
-        // scopeMsg.m_porcentQuem = applicationdata.porcentQuem;
-        // scopeMsg.m_porcentSopl = applicationdata.porcentSopl;
-        // scopeMsg.m_porcentTamb = applicationdata.porcentTamb;
-        // scopeMsg.m_deltaETBT = applicationdata.deltaETBT;
-        // visualScopeClient.sendEvent(webSocket, &scopeMsg);
+        // scopeMsg.m_tempET = m_applicationdata.tempET;
+        // scopeMsg.m_tempBT = m_applicationdata.tempBT;
+        // scopeMsg.m_ror = m_applicationdata.RoR;
+        // scopeMsg.m_porcentQuem = m_applicationdata.porcentQuem;
+        // scopeMsg.m_porcentSopl = m_applicationdata.porcentSopl;
+        // scopeMsg.m_porcentTamb = m_applicationdata.porcentTamb;
+        // scopeMsg.m_deltaETBT = m_applicationdata.deltaETBT;
+        // m_visualScopeClient.sendEvent(m_webSocket, &scopeMsg);
 
         std::string output;
         JsonDocument outdoc;
         outdoc["id"] = doc["id"];
-        outdoc["data"]["aire"] = applicationdata.tempET;
-        outdoc["data"]["grano"] = applicationdata.tempBT;
-        outdoc["data"]["ror"] = applicationdata.RoR;
-        outdoc["data"]["quemador"] = applicationdata.porcentQuem;
-        outdoc["data"]["soplador"] = applicationdata.porcentSopl;
-        outdoc["data"]["tambor"] = applicationdata.porcentTamb;
-        outdoc["data"]["delta"] = applicationdata.deltaETBT;
+        outdoc["data"]["aire"] = m_applicationdata.tempET;
+        outdoc["data"]["grano"] = m_applicationdata.tempBT;
+        outdoc["data"]["ror"] = m_applicationdata.RoR;
+        outdoc["data"]["quemador"] = m_applicationdata.porcentQuem;
+        outdoc["data"]["soplador"] = m_applicationdata.porcentSopl;
+        outdoc["data"]["tambor"] = m_applicationdata.porcentTamb;
+        outdoc["data"]["delta"] = m_applicationdata.deltaETBT;
         serializeJson(outdoc, output);
-        webSocket.sendTXT(num, output);
+        m_webSocket.sendTXT(num, output);
 
         AudioCrackMessageOperatives audioMsg;
-        audioMsg.m_beanTemperature = applicationdata.tempBT;
-        audioMsg.m_rateOfRise = applicationdata.RoR;
-        audioCrackClient.sendEvent(webSocket, &audioMsg);
+        audioMsg.m_beanTemperature = m_applicationdata.tempBT;
+        audioMsg.m_rateOfRise = m_applicationdata.RoR;
+        m_audioCrackClient.sendEvent(m_webSocket, &audioMsg);
 
-        beat.set_status(Heartbeat::online);
+        m_beat.set_status(Heartbeat::online);
     });
 
-    visualScopeClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
 
         if (doc["params"].containsKey("aire"))
-            applicationdata.aire = doc["params"]["aire"].as<int16_t>();
+            m_applicationdata.aire = doc["params"]["aire"].as<int16_t>();
 
         if (doc["params"].containsKey("tambor"))    
-            applicationdata.tambor = doc["params"]["tambor"].as<int16_t>();
+            m_applicationdata.tambor = doc["params"]["tambor"].as<int16_t>();
 
         if (doc["params"].containsKey("quemador"))
-            applicationdata.quemador = doc["params"]["quemador"].as<int16_t>();
+            m_applicationdata.quemador = doc["params"]["quemador"].as<int16_t>();
 
         if (doc["params"].containsKey("tedvalue"))
-            applicationdata.tedvalue = doc["params"]["tedvalue"].as<int16_t>();
+            m_applicationdata.tedvalue = doc["params"]["tedvalue"].as<int16_t>();
 
         ESPadapter::serial_print("PARAM,");
-        ESPadapter::serial_print(applicationdata.aire);ESPadapter::serial_print(',');
-        ESPadapter::serial_print(applicationdata.tambor);ESPadapter::serial_print(',');
-        ESPadapter::serial_print(applicationdata.quemador);ESPadapter::serial_print(',');
-        ESPadapter::serial_print(applicationdata.tedvalue);ESPadapter::serial_print(',');
+        ESPadapter::serial_print(m_applicationdata.aire);ESPadapter::serial_print(',');
+        ESPadapter::serial_print(m_applicationdata.tambor);ESPadapter::serial_print(',');
+        ESPadapter::serial_print(m_applicationdata.quemador);ESPadapter::serial_print(',');
+        ESPadapter::serial_print(m_applicationdata.tedvalue);ESPadapter::serial_print(',');
         ESPadapter::serial_write('\0');
         ESPadapter::retardo(50);
     });
 
-    visualScopeClient.addFunctionToMainCommand("endRoasting", [&](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("endRoasting", [&](uint8_t num, JsonDocument& doc) {
+        
+        AudioCrackMessageEndRoasting dropMessage;
+        dropMessage.send(m_webSocket, num);
+        
         ESPadapter::serial_print("SODROP");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
-        beat.set_step(Heartbeat::other);
+        m_beat.set_step(Heartbeat::other);
     });
 
-    visualScopeClient.addFunctionToMainCommand("ready", [&](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("ready", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("SREADY");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
-        heartbeatonce = false;
+        m_heartbeatonce = false;
     });
 
-    visualScopeClient.addFunctionToMainCommand("noready", [&](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("noready", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("SNOREA");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
-        beat.set_step(Heartbeat::other);
-        heartbeatonce = false;
+        m_beat.set_step(Heartbeat::other);
+        m_heartbeatonce = false;
     });
 
-    visualScopeClient.addFunctionToMainCommand("identify", [](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("identify", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("IDENTIFY");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
     });
 
-    visualScopeClient.addFunctionToMainCommand("noidentify", [](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("noidentify", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("NOIDENTIFY");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
     });
 
-    visualScopeClient.addFunctionToMainCommand("getinit", [&](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("getinit", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("GETINIT");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
     });
 
-    visualScopeClient.addFunctionToMainCommand("reset", [](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("reset", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("RESET");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
     });
 
-    visualScopeClient.addFunctionToMainCommand("fcstart", [](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("fcstart", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("FCSTART");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
     });
 
-    visualScopeClient.addFunctionToMainCommand("oncharge", [&](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("oncharge", [&](uint8_t num, JsonDocument& doc) {
+        
+        AudioCrackMessageStartRoasting startMessage;
+        startMessage.send(m_webSocket, num);
+        
         ESPadapter::serial_print("ONCHARGE");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
-        beat.set_step(Heartbeat::roasting);
+        m_beat.set_step(Heartbeat::roasting);
     });
 
-    visualScopeClient.addFunctionToMainCommand("onted", [](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("onted", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("ONTED");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
     });
 
-    visualScopeClient.addFunctionToMainCommand("offted", [](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("offted", [](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("OFFTED");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
@@ -386,10 +394,10 @@ void Manager::registerAudioCrack()
 {
     ESPadapter::debug_println("Registering AudioCrack client...");
     
-    audioCrackClient.setName("audiocrack");
-    clientHandler.registerWebsocketClient(audioCrackClient);
+    m_audioCrackClient.setName("audiocrack");
+    m_clientHandler.registerWebsocketClient(m_audioCrackClient);
 
-    audioCrackClient.addFunctionToMainCommand("getinitial", [&](uint8_t num, JsonDocument& doc) {
+    m_audioCrackClient.addFunctionToMainCommand("getinitial", [&](uint8_t num, JsonDocument& doc) {
         // Send initial data to audiocrack device
         // {
         // "command":"config",
@@ -407,12 +415,12 @@ void Manager::registerAudioCrack()
         outdoc["data"]["configuracion2"] = 20;
 
         serializeJson(outdoc, output);
-        webSocket.sendTXT(num, output);
+        m_webSocket.sendTXT(num, output);
         ESPadapter::debug_print("TO-AUDIOCRACK: ");
         ESPadapter::debug_println(output);
     });
 
-    audioCrackClient.addFunctionToMainCommand("firstcrack", [&](uint8_t num, JsonDocument& doc) {
+    m_audioCrackClient.addFunctionToMainCommand("firstcrack", [&](uint8_t num, JsonDocument& doc) {
         // Audiocrack device notification for first crack event
     });
 }

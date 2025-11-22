@@ -54,7 +54,9 @@ void AudioCrackMessageStartRoasting::send(WebSocketsServer& ws, int8_t id)
 
     outdoc["command"] = "startroasting";
     serializeJson(outdoc, output);
-    ws.sendTXT(id, output);
+
+    ws.broadcastTXT(output.c_str());
+    //ws.sendTXT(id, output);
 }
 
 void AudioCrackMessageEndRoasting::send(WebSocketsServer& ws, int8_t id)
@@ -64,7 +66,9 @@ void AudioCrackMessageEndRoasting::send(WebSocketsServer& ws, int8_t id)
 
     outdoc["command"] = "endroasting";
     serializeJson(outdoc, output);
-    ws.sendTXT(id, output);
+
+    ws.broadcastTXT(output.c_str()); //! Temporal
+    //ws.sendTXT(id, output);
 }
 
 void AudioCrackMessageFirstCrack::send(WebSocketsServer& ws, int8_t id)
@@ -74,7 +78,9 @@ void AudioCrackMessageFirstCrack::send(WebSocketsServer& ws, int8_t id)
 
     outdoc["command"] = "firstcrack";
     serializeJson(outdoc, output);
-    ws.sendTXT(id, output);
+
+    ws.broadcastTXT(output.c_str());
+    //ws.sendTXT(id, output);
 }
 
 void AudioCrackMessageOperatives::send(WebSocketsServer& ws, int8_t id)
@@ -86,5 +92,7 @@ void AudioCrackMessageOperatives::send(WebSocketsServer& ws, int8_t id)
     outdoc["data"]["beantemperature"] = m_beanTemperature;
     outdoc["data"]["rateofrise"] = m_rateOfRise;
     serializeJson(outdoc, output);
-    ws.sendTXT(id, output);
+
+    ws.broadcastTXT(output.c_str());
+    //ws.sendTXT(id, output);
 }

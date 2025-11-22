@@ -99,3 +99,8 @@ void PairingManager::setupUserCredentials
     if (!success) 
         ESPadapter::debug_println("PairingManager: Error starting WebSocket with user credentials");
 }
+
+void PairingManager::searchNonExistingPairingModeOnNetwork()
+{
+    
+}

@@ -58,7 +58,7 @@ void CrossSectionalDataEEPROM::print()
     ESPadapter::debug_print("Preference SSID: "); ESPadapter::debug_println(ssidSocket);
     ESPadapter::debug_print("Preference Pass: "); ESPadapter::debug_println(passSocket);
     ESPadapter::debug_print("Preference Canal wifi: "); ESPadapter::debug_println(canalwifi);
-    ESPadapter::debug_print("Preference Client names: ");
+    ESPadapter::debug_print("Client names: ");
     for (std::vector<std::string>::iterator it = clientNames.begin(); it != clientNames.end(); ++it) 
     {
         const char* name = it->c_str();

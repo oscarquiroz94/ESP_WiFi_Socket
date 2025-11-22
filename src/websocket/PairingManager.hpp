@@ -43,6 +43,8 @@ class PairingManager
 
         void searchingLoopForClients();
 
+        void searchNonExistingPairingModeOnNetwork();
+
         bool setupDefaultCredentials();
 
         void setupUserCredentials(CrossSectionalDataEEPROM& data);
