@@ -29,21 +29,26 @@ void GenericClient::setId(uint8_t num, const char* payload)
 {
     JsonDocument doc;
     if (!message->getDocument(doc, payload)) return;
+
     if (doc["device"] == name) 
-        m_id = num;
-
-    // Special case for Artisan
-    if (doc["roasterID"].is<int8_t>()) 
-        m_id = num;
-
-    // Special case for pairing
-    if (doc["command"] == "attach")
         m_id = num;
 
     ESPadapter::debug_print("Client ");
     ESPadapter::debug_print(name.c_str());
     ESPadapter::debug_print(" assigned id: ");
     ESPadapter::debug_println(m_id);
+}
+
+void GenericClient::unsetId(uint8_t num)
+{
+    if (m_id == num)
+    {
+        ESPadapter::debug_println();
+        ESPadapter::debug_print("Disconnected ");
+        ESPadapter::debug_println(name.c_str());
+        m_id = -1;
+    }
+        
 }
 
 void GenericClient::sendEvent(WebSocketsServer &ws, IOutputMessage* msg)

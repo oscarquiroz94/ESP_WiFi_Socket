@@ -13,7 +13,7 @@ void PairingManager::executePairing
 {
     if (not setupDefaultCredentials()) return;
 
-    if (isExistingPairingNetwork()) return;
+    //if (isExistingPairingNetwork()) return;
 
     registerGenericClient(newdata);
 

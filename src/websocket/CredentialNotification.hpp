@@ -25,7 +25,6 @@ class CredentialNotification
             });
         }
 
-    private:
         static void notify(IGeneralClient* client, WebSocketsServer& ws, IOutputMessage *msg)
         {
             client->sendEvent(ws, msg);

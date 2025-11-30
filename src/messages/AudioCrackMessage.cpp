@@ -36,15 +36,7 @@ std::string AudioCrackMessage::getMainCommand(JsonDocument& doc)
 
 bool AudioCrackMessage::isValid(JsonDocument& doc)
 {
-    bool valid = doc["device"].is<std::string>() && 
-                 doc["command"].is<std::string>();
-    if (!valid)
-    {
-        //ESPadapter::debug_println("AudioCrackMessage: Document missing required fields");
-        // Print document for debugging
-        //serializeJson(doc, Serial);
-    }
-    return valid ;
+    return doc["device"].is<std::string>() || doc["command"].is<std::string>();
 }
 
 void AudioCrackMessageStartRoasting::send(WebSocketsServer& ws, int8_t id)
@@ -54,9 +46,10 @@ void AudioCrackMessageStartRoasting::send(WebSocketsServer& ws, int8_t id)
 
     outdoc["command"] = "startroasting";
     serializeJson(outdoc, output);
+    ws.sendTXT(id, output);
 
-    ws.broadcastTXT(output.c_str());
-    //ws.sendTXT(id, output);
+    ESPadapter::debug_print("AudioCrackMessageStartRoasting: ");
+    ESPadapter::debug_print(output.c_str());
 }
 
 void AudioCrackMessageEndRoasting::send(WebSocketsServer& ws, int8_t id)
@@ -66,9 +59,10 @@ void AudioCrackMessageEndRoasting::send(WebSocketsServer& ws, int8_t id)
 
     outdoc["command"] = "endroasting";
     serializeJson(outdoc, output);
+    ws.sendTXT(id, output);
 
-    ws.broadcastTXT(output.c_str()); //! Temporal
-    //ws.sendTXT(id, output);
+    ESPadapter::debug_print("AudioCrackMessageEndRoasting: ");
+    ESPadapter::debug_print(output.c_str());
 }
 
 void AudioCrackMessageFirstCrack::send(WebSocketsServer& ws, int8_t id)
@@ -78,9 +72,10 @@ void AudioCrackMessageFirstCrack::send(WebSocketsServer& ws, int8_t id)
 
     outdoc["command"] = "firstcrack";
     serializeJson(outdoc, output);
+    ws.sendTXT(id, output);
 
-    ws.broadcastTXT(output.c_str());
-    //ws.sendTXT(id, output);
+    ESPadapter::debug_print("AudioCrackMessageFirstCrack: ");
+    ESPadapter::debug_print(output.c_str());
 }
 
 void AudioCrackMessageOperatives::send(WebSocketsServer& ws, int8_t id)
@@ -92,7 +87,8 @@ void AudioCrackMessageOperatives::send(WebSocketsServer& ws, int8_t id)
     outdoc["data"]["beantemperature"] = m_beanTemperature;
     outdoc["data"]["rateofrise"] = m_rateOfRise;
     serializeJson(outdoc, output);
+    ws.sendTXT(id, output);
 
-    ws.broadcastTXT(output.c_str());
-    //ws.sendTXT(id, output);
+    ESPadapter::debug_print("AudioCrackMessageOperatives: ");
+    ESPadapter::debug_print(output.c_str());
 }

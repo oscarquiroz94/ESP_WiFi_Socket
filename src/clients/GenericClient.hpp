@@ -22,6 +22,8 @@ class GenericClient : public IGeneralClient
         void setId(uint8_t num, const char* payload) override;
         int8_t getId() const override {return m_id;}
 
+        void unsetId(uint8_t num) override;
+
         void setName(const std::string& newname) override {name = newname;}
         std::string getName() const override {return name;}
 

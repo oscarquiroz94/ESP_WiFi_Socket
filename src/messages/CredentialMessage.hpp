@@ -9,12 +9,12 @@ class CredentialMessage : public IOutputMessage
         CredentialMessage(const CrossSectionalDataEEPROM &data)
             : _data(data) {}
 
-        void send(WebSocketsServer& ws, int8_t id)
+        void send(WebSocketsServer& ws, int8_t id) override
         {
             std::string output;
             JsonDocument outdoc;
 
-            outdoc["deviceID"] = id;
+            outdoc["deviceid"] = id;
             outdoc["command"] = "newcredentials";
             outdoc["parameters"]["ssid"] = _data.ssidSocket;
             outdoc["parameters"]["pass"] = _data.passSocket;

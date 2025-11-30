@@ -211,6 +211,12 @@ void Manager::registerSerialPortHandler()
     m_serialport.addFunctionToMainCommand("SHOW", [&](const char* comand){
         m_applicationdata.print();
         m_eepromdata.print();
+        m_clientHandler.doForeachClient([&](IGeneralClient* client){
+            ESPadapter::serial_print("Client: ");
+            ESPadapter::serial_print(client->getName().c_str());
+            ESPadapter::serial_print(" Id: ");
+            ESPadapter::serial_println(client->getId());
+        });
     });
 
     m_serialport.addFunctionToMainCommand("LOG1", [&](const char* comand){
@@ -236,6 +242,18 @@ void Manager::registerSerialPortHandler()
 
         ESPadapter::serial_print("Memoria libre (heap): ");
         ESPadapter::serial_println(freeHeap);
+    });
+
+    m_serialport.addFunctionToMainCommand("CREDENTIAL", [&](const char* comand){
+        CrossSectionalDataEEPROM newdata;
+        newdata.canalwifi = 6;
+        strcpy(newdata.ssidSocket, "NOREALSSID");
+        strcpy(newdata.passSocket, "Clave2022*");
+        CredentialMessage msg(newdata);
+            
+        m_clientHandler.doForeachClient([&](IGeneralClient* client) {
+            client->sendEvent(m_webSocket, &msg);
+        });
     });
 }
 
@@ -361,7 +379,11 @@ void Manager::registerVisualScope()
         ESPadapter::retardo(50);
     });
 
-    m_visualScopeClient.addFunctionToMainCommand("fcstart", [](uint8_t num, JsonDocument& doc) {
+    m_visualScopeClient.addFunctionToMainCommand("fcstart", [&](uint8_t num, JsonDocument& doc) {
+        
+        AudioCrackMessageFirstCrack firstCrackMsg;
+        firstCrackMsg.send(m_webSocket, num);
+        
         ESPadapter::serial_print("FCSTART");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);

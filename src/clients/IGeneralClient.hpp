@@ -22,6 +22,8 @@ class IGeneralClient
         virtual void setId(uint8_t num, const char* payload) = 0;
         virtual int8_t getId () const = 0;
 
+        virtual void unsetId(uint8_t num) = 0;
+
         virtual void setName(const std::string& newname) = 0;
         virtual std::string getName() const = 0;
 

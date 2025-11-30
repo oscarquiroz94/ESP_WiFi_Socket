@@ -33,6 +33,14 @@ void WebsocketClientHandler::unregisterWebsocketClient
     }
 }
 
+void WebsocketClientHandler::doForeachClient(std::function<void(IGeneralClient*)> func) 
+{ 
+    for (auto &client : websocketClients)
+    {
+        func(client);
+    }
+}
+
 void WebsocketClientHandler::onWebSocketEvent
     (uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 {
@@ -43,8 +51,13 @@ void WebsocketClientHandler::onWebSocketEvent
         // Client has disconnected
         case WStype_DISCONNECTED:
         {
-            //No way to know which client disconnected
-            ESPadapter::debug_println("Disconnected");
+            // Eliminar id del cliente
+            for (auto& client : websocketClients)
+            {
+                if (nullptr != client)
+                    client->unsetId(num);
+            }
+            
             break;
         }  
 
@@ -73,7 +86,7 @@ void WebsocketClientHandler::onWebSocketEvent
                 return;
             }
 
-            // Registrar id del cliente segun el devicename del mensaje
+            // Registrar id del cliente segun el device del mensaje
             for (auto& client : websocketClients)
             {
                 if (nullptr != client)
