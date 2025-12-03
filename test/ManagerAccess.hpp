@@ -17,14 +17,13 @@ class ManagerAccess : public Manager
             {Manager::registerWebSocketHandler();}
 
         void processEvent() 
-            {Manager::serialport.processEvent();}
+            {Manager::m_serialport.processEvent();}
 
         void setMaxTimeSearch(uint32_t time) 
-            {Manager::peer.setMaxTimeSearch(time);}
+            {Manager::m_peer.setMaxTimeSearch(time);}
 
-        WebSocketsServer& getWebsocket() {return webSocket;}
+        WebSocketsServer& getWebsocket() {return Manager::m_webSocket;}
 
-        WebsocketClientHandler& getClientHandler() {return clientHandler;}
-
-        CrossSectionalData& getApplicationData() {return applicationdata;}
+        WebsocketClientHandler& getClientHandler() {return Manager::m_clientHandler;}
+        CrossSectionalData& getApplicationData() {return Manager::m_applicationdata;}
 };

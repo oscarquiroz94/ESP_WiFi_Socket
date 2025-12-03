@@ -195,10 +195,12 @@ void Manager::registerSerialPortHandler()
 
         m_clientHandler.unregisterWebsocketClient(m_visualScopeClient);
         m_clientHandler.unregisterWebsocketClient(m_audioCrackClient);
-        ESPadapter::debug_println("WBS clients: " + String(m_clientHandler.getClientCount()));
+        ESPadapter::debug_print("WBS clients: ");
+        ESPadapter::debug_println(m_clientHandler.getClientCount());
         m_peer.executePairing(m_eepromdata);
         registerWebSocketHandler();
-        ESPadapter::debug_println("WBS clients: " + String(m_clientHandler.getClientCount()));
+        ESPadapter::debug_print("WBS clients: ");
+        ESPadapter::debug_println(m_clientHandler.getClientCount());
     });
 
     //------------- Debug purposes ----------------
@@ -230,8 +232,8 @@ void Manager::registerSerialPortHandler()
     });
 
     m_serialport.addFunctionToMainCommand("MEMOFREE", [&](const char* comand){
-        size_t totalHeap = ESP.getHeapSize();
-        size_t freeHeap = ESP.getFreeHeap();
+        size_t totalHeap = ESPadapter::getHeapSize();
+        size_t freeHeap = ESPadapter::getFreeHeap();
         size_t usedHeap = totalHeap - freeHeap;
 
         ESPadapter::serial_print("Memoria total (heap): ");
@@ -308,16 +310,16 @@ void Manager::registerVisualScope()
 
     m_visualScopeClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
 
-        if (doc["params"].containsKey("aire"))
+        if (doc["params"]["aire"].is<int16_t>())
             m_applicationdata.aire = doc["params"]["aire"].as<int16_t>();
 
-        if (doc["params"].containsKey("tambor"))    
+        if (doc["params"]["tambor"].is<int16_t>())    
             m_applicationdata.tambor = doc["params"]["tambor"].as<int16_t>();
 
-        if (doc["params"].containsKey("quemador"))
+        if (doc["params"]["quemador"].is<int16_t>())
             m_applicationdata.quemador = doc["params"]["quemador"].as<int16_t>();
 
-        if (doc["params"].containsKey("tedvalue"))
+        if (doc["params"]["tedvalue"].is<int16_t>())
             m_applicationdata.tedvalue = doc["params"]["tedvalue"].as<int16_t>();
 
         ESPadapter::serial_print("PARAM,");

@@ -26,6 +26,24 @@ class ESPadapter
 	static bool trace_debug;
 	static std::string serialBuffer;
 
+	static size_t getHeapSize()
+	{
+#ifdef DEPLOY
+		return ESP.getHeapSize();
+#else
+		return 0;
+#endif
+	}
+
+	static size_t getFreeHeap()
+	{
+#ifdef DEPLOY
+		return ESP.getFreeHeap();
+#else
+		return 0;
+#endif
+	}
+
 	static inline void flush() 
 	{
 #ifdef DEPLOY

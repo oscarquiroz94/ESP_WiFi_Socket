@@ -12,7 +12,9 @@ BOOST_AUTO_TEST_CASE(given_ROASTER_when_SSID_ALREADY_EXIST_then_SET_ROASTER_1)
 
     memset(eepromdata.ssidSocket, 0, sizeof(eepromdata.ssidSocket));
     strcpy(eepromdata.ssidSocket, SSID_1);
-    CheckSSID::validateSSID(eepromdata);
+
+    if (CheckSSID::isExistingNetwork(eepromdata.ssidSocket)) 
+        CheckSSID::assignAnotherSSID(eepromdata);
 
     // ROASTER, ROASTER_1 and ROASTER_2 already exists on Network test
     // So the expected result is ROASTER_3
@@ -26,7 +28,9 @@ BOOST_AUTO_TEST_CASE(given_ROASTER_1_when_SSID_ALREADY_EXIST_then_SET_ROASTER_2)
 
     memset(eepromdata.ssidSocket, 0, sizeof(eepromdata.ssidSocket));
     strcpy(eepromdata.ssidSocket, SSID_1);
-    CheckSSID::validateSSID(eepromdata);
+
+    if (CheckSSID::isExistingNetwork(eepromdata.ssidSocket)) 
+        CheckSSID::assignAnotherSSID(eepromdata);
 
     // ROASTER, ROASTER_1 and ROASTER_2 already exists on Network test
     // So the expected result is ROASTER_3
@@ -41,7 +45,9 @@ BOOST_AUTO_TEST_CASE(given_ROASTER12345ROASTER_when_SSID_ALREADY_EXIST_AND_TO_BI
 
     memset(eepromdata.ssidSocket, 0, sizeof(eepromdata.ssidSocket));
     strcpy(eepromdata.ssidSocket, SSID_1);
-    CheckSSID::validateSSID(eepromdata);
+    
+    if (CheckSSID::isExistingNetwork(eepromdata.ssidSocket)) 
+        CheckSSID::assignAnotherSSID(eepromdata);
 
     // ROASTER12345ROASTER already exists on Network test
     // So the expected result is ROASTER12345ROAST_1 because the last two characters are removed

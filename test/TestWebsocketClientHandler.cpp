@@ -9,9 +9,6 @@
 #include "adapters/WebSocketAdapter.hpp"
 
 
-typedef GenericClient VisualScopeClient;
-typedef GenericClient AudioCrackClient;
-
 BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_WSTYPE_TEXT)
 {
     const char* JSONPAYLOAD_1 = R"({"roasterID": 1, "command": "getData"})";
@@ -20,8 +17,8 @@ BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_WSTYPE_TEXT)
     WebsocketClientHandler clientHandler(webSocket);
 
     VisualScopeMessage visualScopeMsg;
-    VisualScopeClient visualScopeClient(&visualScopeMsg);
-    //AudioCrackClient audioCrackClient;
+    GenericClient visualScopeClient(&visualScopeMsg);
+    //GenericClient audioCrackClient;
 
     clientHandler.registerWebsocketClient(visualScopeClient);
     //clientHandler.registerWebsocketClient(audioCrackClient);

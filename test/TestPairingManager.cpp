@@ -8,12 +8,12 @@
 
 BOOST_AUTO_TEST_CASE(given_ATTACH_MSG_when_PAIRING_then_CLIENTS_ON_VECTOR)
 {
-    const char* JSONPAYLOAD_1 = R"({"deviceID":1,"command":"attach","deviceName":"TestClient"})";
-    const char* JSONPAYLOAD_2 = R"({"deviceID":2,"command":"attach","deviceName":"TestClient2"})";
+    const char* JSONPAYLOAD_1 = R"({"command":"attach","device":"TestClient"})";
+    const char* JSONPAYLOAD_2 = R"({"command":"attach","device":"TestClient2"})";
 
-    const char* JSONPAYLOAD_3 = R"({"deviceID":1,"command":"newcredentials","parameters":{"ssid":"TEST_SSID","pass":"ClaveTest*","channel":5}})";
-    const char* JSONPAYLOAD_4 = R"({"deviceID":2,"command":"newcredentials","parameters":{"ssid":"TEST_SSID","pass":"ClaveTest*","channel":5}})";
-
+    const char* JSONPAYLOAD_3 = R"({"command":"newcredentials","parameters":{"ssid":"TEST_SSID","pass":"ClaveTest*","channel":5}})";
+    const char* JSONPAYLOAD_4 = R"({"command":"newcredentials","parameters":{"ssid":"TEST_SSID","pass":"ClaveTest*","channel":5}})";
+    
     WebSocketsServer          webSocket(8080);
     CrossSectionalDataEEPROM  eepromdata;
     WebsocketClientHandler    clientHandler(webSocket);

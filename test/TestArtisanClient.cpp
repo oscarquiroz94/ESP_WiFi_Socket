@@ -5,14 +5,13 @@
 #include "messages/VisualScopeMessage.hpp"
 #include "clients/GenericClient.hpp"
 
-typedef GenericClient VisualScopeClient;
 
 BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_1_when_EVENTWB_then_SETPARAMS)
 {
     const char* JSONPAYLOAD_1 = R"({"roasterID": 1, "command": "setControlParams", "params": {"aire": 100, "tambor": 80, "quemador": 60, "soplador": 50}})";
 
     VisualScopeMessage visualScopeMsg;
-    VisualScopeClient visualScopeClient(&visualScopeMsg);
+    GenericClient visualScopeClient(&visualScopeMsg);
     bool callbackCalled = false;
 
     visualScopeClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
@@ -36,7 +35,7 @@ BOOST_AUTO_TEST_CASE(given_JSONPAYLOAD_2_when_EVENTWB_then_GETDATA)
     const char* JSONPAYLOAD_2 = R"({"command":"getData","id":92295,"roasterID":0})";
 
     VisualScopeMessage visualScopeMsg;
-    VisualScopeClient visualScopeClient(&visualScopeMsg);
+    GenericClient visualScopeClient(&visualScopeMsg);
     bool callbackCalled = false;
 
     visualScopeClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {

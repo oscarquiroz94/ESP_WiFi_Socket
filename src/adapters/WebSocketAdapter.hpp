@@ -45,6 +45,7 @@ class WiFiClass
         void end() {}
         bool isRunning() { return true; }
         void softAPdisconnect(bool) {}
+        int scanNetworks(bool, bool, bool, int) { return 5; }
         int scanNetworks() { return 5; }
         String SSID(int i) 
         { 

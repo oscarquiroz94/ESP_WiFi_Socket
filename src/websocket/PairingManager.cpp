@@ -13,7 +13,7 @@ void PairingManager::executePairing
 {
     if (not setupDefaultCredentials()) return;
 
-    //if (isExistingPairingNetwork()) return;
+    if (isExistingPairingNetwork()) return;
 
     registerGenericClient(newdata);
 
@@ -109,20 +109,15 @@ bool PairingManager::isExistingPairingNetwork()
 
     ESPadapter::debug_println("PairingManager: buscando red PAIRING existente...");
 
-    while (not t_search.tiempo(maxTimeSearch))
+    // Escanear en busqueda de red con nombre PAIRING
+    std::vector<std::string> networks = CheckSSID::scanAvailableSSIDs();
+    auto it = std::find(networks.begin(), networks.end(), "PAIRING");
+    if (it != networks.end()) 
     {
-        // Escanear en busqueda de red con nombre PAIRING
-        std::vector<std::string> networks = CheckSSID::scanAvailableSSIDs();
-        auto it = std::find(networks.begin(), networks.end(), "PAIRING");
-        if (it != networks.end()) 
-        {
-            ESPadapter::debug_println("PairingManager: Modo emparejamiento existente encontrado");
-            return true;
-        }
-
-        ESPadapter::retardo(5);
+        ESPadapter::debug_println("PairingManager: Red PAIRING ya existe");
+        return true;
     }
 
-    ESPadapter::debug_println("PairingManager: No se encontro red PAIRING existente");
+    ESPadapter::debug_println("PairingManager: No hay conflicto con red PAIRING existente");
     return false;
 }

@@ -9,14 +9,10 @@
 #include "CrossSectionalData.hpp"
 
 
-typedef GenericClient VisualScopeClient;
-
-const char* COMMANDPORT_1 = "S,ROASTER,Clave123*,5,";
-const char* COMMANDPORT_2 = "MCA";
-const char* COMMANDPORT_3 = "IN,230,160,1500,2000,200,600,200";
-
 BOOST_AUTO_TEST_CASE(given_COMMANDPORT_1_when_EVENTSERIAL_S_then_SET_SSID_PASS_CHANNEL)
 {
+    const char* COMMANDPORT_1 = "S,ROASTER,Clave123*,5,";
+
     SerialPort serialport(115200);
     CrossSectionalDataEEPROM applicationdata;
     SerialPortTestAccess serialportTestAccess;
@@ -60,12 +56,14 @@ BOOST_AUTO_TEST_CASE(given_COMMANDPORT_1_when_EVENTSERIAL_S_then_SET_SSID_PASS_C
 
 BOOST_AUTO_TEST_CASE(given_COMMANDPORT_1_when_EVENTSERIAL_MCA_then_SEND_STARTROASTING)
 {
+    const char* COMMANDPORT_2 = "MCA";
+
     SerialPort serialport(115200);
     CrossSectionalDataEEPROM applicationdata;
     SerialPortTestAccess serialportTestAccess;
 
     VisualScopeMessage visualScopeMsg;
-    VisualScopeClient visualScopeClient(&visualScopeMsg);
+    GenericClient visualScopeClient(&visualScopeMsg);
 
     bool callbackCalled = false;
 
@@ -91,6 +89,8 @@ BOOST_AUTO_TEST_CASE(given_COMMANDPORT_1_when_EVENTSERIAL_MCA_then_SEND_STARTROA
 
 BOOST_AUTO_TEST_CASE(given_COMMANDPORT_1_when_EVENTSERIAL_IN_then_SET_APPLICATION_DATA)
 {
+    const char* COMMANDPORT_3 = "IN,230,160,1500,2000,200,600,200";
+
     SerialPort serialport(115200);
     CrossSectionalData applicationdata;
     SerialPortTestAccess serialportTestAccess;
