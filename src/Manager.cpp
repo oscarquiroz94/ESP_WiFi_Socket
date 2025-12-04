@@ -69,10 +69,12 @@ void Manager::send_data()
         sendVersionAmount++;
     }
 
-    if (beat.is_alert() && !heartbeatonce)
+    if (beat.is_alert() && not heartbeatonce)
     {
         ESPadapter::serial_print("HEARBEAT-DEAD");
         ESPadapter::serial_print('\0');
+        ESPadapter::retardo(50);
+        beat.set_alert(false);
         heartbeatonce = true;
     }
         
@@ -285,6 +287,12 @@ void Manager::registerVisualScope()
         audioCrackClient.sendEvent(webSocket, &audioMsg);
 
         beat.set_status(Heartbeat::online);
+
+        ESPadapter::serial_print("ALIVE");
+        ESPadapter::serial_print('\0');
+        ESPadapter::retardo(50);
+        heartbeatonce = false;
+        beat.set_alert(false);
     });
 
     visualScopeClient.addFunctionToMainCommand("setControlParams", [&](uint8_t num, JsonDocument& doc) {
@@ -314,22 +322,21 @@ void Manager::registerVisualScope()
         ESPadapter::serial_print("SODROP");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
-        beat.set_step(Heartbeat::other);
+        beat.set_step(Heartbeat::endroasting);
     });
 
     visualScopeClient.addFunctionToMainCommand("ready", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("SREADY");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
-        heartbeatonce = false;
+        beat.set_step(Heartbeat::ready);
     });
 
     visualScopeClient.addFunctionToMainCommand("noready", [&](uint8_t num, JsonDocument& doc) {
         ESPadapter::serial_print("SNOREA");
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
-        beat.set_step(Heartbeat::other);
-        heartbeatonce = false;
+        beat.set_step(Heartbeat::noready);
     });
 
     visualScopeClient.addFunctionToMainCommand("identify", [](uint8_t num, JsonDocument& doc) {
