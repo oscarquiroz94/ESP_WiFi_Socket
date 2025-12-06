@@ -5,7 +5,7 @@ void WebsocketClientHandler::registerWebsocketClient
     (IGeneralClient& client)
 {
     m_idCounter++;
-    websocketClients.push_back(&client);
+    m_websocketClients.push_back(&client);
 
     ESPadapter::debug_print("Client registered: ");
     ESPadapter::debug_println(client.getName().c_str());
@@ -14,15 +14,15 @@ void WebsocketClientHandler::registerWebsocketClient
 void WebsocketClientHandler::unregisterWebsocketClient
     (IGeneralClient& client)
 {
-    auto it = std::find(websocketClients.begin(), websocketClients.end(), &client);
-    if (it != websocketClients.end())
+    auto it = std::find(m_websocketClients.begin(), m_websocketClients.end(), &client);
+    if (it != m_websocketClients.end())
     {
         ESPadapter::debug_print("Client unregistered: ");
         ESPadapter::debug_print(client.getName().c_str());
         ESPadapter::debug_print(" id: ");
         ESPadapter::debug_println(client.getId());
         m_idCounter--;
-        websocketClients.erase(it);
+        m_websocketClients.erase(it);
     }
     else
     {
@@ -35,10 +35,22 @@ void WebsocketClientHandler::unregisterWebsocketClient
 
 void WebsocketClientHandler::doForeachClient(std::function<void(IGeneralClient*)> func) 
 { 
-    for (auto &client : websocketClients)
+    for (auto &client : m_websocketClients)
     {
-        func(client);
+        if (nullptr != client)
+            func(client);
     }
+}
+
+std::string WebsocketClientHandler::getClientNames()
+{
+    std::string names = "";
+    for (auto& client : m_websocketClients)
+    {
+        if (nullptr != client)
+            names += client->getName() + " - ";
+    }
+    return names;
 }
 
 void WebsocketClientHandler::onWebSocketEvent
@@ -52,7 +64,7 @@ void WebsocketClientHandler::onWebSocketEvent
         case WStype_DISCONNECTED:
         {
             // Eliminar id del cliente
-            for (auto& client : websocketClients)
+            for (auto& client : m_websocketClients)
             {
                 if (nullptr != client)
                     client->unsetId(num);
@@ -65,7 +77,7 @@ void WebsocketClientHandler::onWebSocketEvent
         case WStype_CONNECTED:
         {
             ESPadapter::debug_print("New client connected: ");
-            IPAddress ip = webSocket.remoteIP(num);
+            IPAddress ip = m_webSocket.remoteIP(num);
             ESPadapter::debug_print(ip.toString());
             ESPadapter::debug_print(" id: ");
             ESPadapter::debug_println(num);
@@ -80,21 +92,21 @@ void WebsocketClientHandler::onWebSocketEvent
             ESPadapter::debug_print(": ");
             ESPadapter::debug_println(payloadconst);
 
-            if (websocketClients.empty()) 
+            if (m_websocketClients.empty()) 
             {
                 ESPadapter::debug_println("No clients registered to handle messages.");
                 return;
             }
 
             // Registrar id del cliente segun el device del mensaje
-            for (auto& client : websocketClients)
+            for (auto& client : m_websocketClients)
             {
                 if (nullptr != client)
                     client->setId(num, payloadconst);
             }
 
             // Procesar evento solo para el cliente correspondiente
-            for (auto& client : websocketClients)
+            for (auto& client : m_websocketClients)
             {
                 if (nullptr != client && client->getId() == num)
                 {

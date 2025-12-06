@@ -7,24 +7,29 @@ class CredentialMessage : public IOutputMessage
 {
     public: 
         CredentialMessage(const CrossSectionalDataEEPROM &data)
-            : _data(data) {}
+            : m_data(data) {}
 
         void send(WebSocketsServer& ws, int8_t id) override
         {
-            std::string output;
             JsonDocument outdoc;
-
-            outdoc["deviceid"] = id;
+            std::string output;
             outdoc["command"] = "newcredentials";
-            outdoc["parameters"]["ssid"] = _data.ssidSocket;
-            outdoc["parameters"]["pass"] = _data.passSocket;
-            outdoc["parameters"]["channel"] = _data.canalwifi;
+            outdoc["parameters"]["ssid"] = m_data.ssidSocket;
+            outdoc["parameters"]["pass"] = m_data.passSocket;
+            outdoc["parameters"]["channel"] = m_data.canalwifi;
+
             serializeJson(outdoc, output);
+
+            ESPadapter::debug_print("Credential message to client: ");
+            ESPadapter::debug_print(id);
+            ESPadapter::debug_print(" output: ");
+            ESPadapter::debug_println(output.c_str());
+
             ws.sendTXT(id, output);
         }
     
         private:
-            const CrossSectionalDataEEPROM& _data;
+            const CrossSectionalDataEEPROM& m_data;
 
 };
 

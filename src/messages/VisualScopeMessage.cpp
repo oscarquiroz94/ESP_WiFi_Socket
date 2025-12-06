@@ -37,8 +37,11 @@ void VisualScopeMessageStartRoasting::send(WebSocketsServer& ws, int8_t id)
     outdoc["pushMessage"] = "startRoasting";
     serializeJson(outdoc, output);
 
-    ESPadapter::debug_print("VisualScopeMessageStartRoasting: ");
+    ESPadapter::debug_print("Sent visualscope message: ");
     ESPadapter::debug_print(output.c_str());
+    ESPadapter::debug_print(" id ");
+    ESPadapter::debug_println(id);
+
     ws.sendTXT(id, output);
 }
 
@@ -50,8 +53,11 @@ void VisualScopeMessageEndRoasting::send(WebSocketsServer& ws, int8_t id)
     outdoc["pushMessage"] = "endRoasting";
     serializeJson(outdoc, output);
 
-    ESPadapter::debug_print("VisualScopeMessageEndRoasting: ");
+    ESPadapter::debug_print("Sent visualscope message: ");
     ESPadapter::debug_print(output.c_str());
+    ESPadapter::debug_print(" id ");
+    ESPadapter::debug_println(id);
+
     ws.sendTXT(id, output);
 }
 
@@ -64,8 +70,11 @@ void VisualScopeMessageFirstCrack::send(WebSocketsServer& ws, int8_t id)
     outdoc["data"]["event"] = "firstCrackBeginningEvent";
     serializeJson(outdoc, output);
 
-    ESPadapter::debug_print("VisualScopeMessageFirstCrack: ");
+    ESPadapter::debug_print("Sent visualscope message: ");
     ESPadapter::debug_print(output.c_str());
+    ESPadapter::debug_print(" id ");
+    ESPadapter::debug_println(id);
+
     ws.sendTXT(id, output);
 }
 
@@ -84,7 +93,10 @@ void VisualScopeMessageOperatives::send(WebSocketsServer& ws, int8_t id)
     outdoc["data"]["delta"] = m_deltaETBT;
     serializeJson(outdoc, output);
 
-    ESPadapter::debug_print("VisualScopeMessageOperatives: ");
+    ESPadapter::debug_print("Sent visualscope message: ");
     ESPadapter::debug_print(output.c_str());
+    ESPadapter::debug_print(" id ");
+    ESPadapter::debug_println(id);
+
     ws.sendTXT(id, output);
 }

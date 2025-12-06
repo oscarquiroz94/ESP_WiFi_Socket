@@ -8,7 +8,7 @@
 class WebsocketClientHandler
 {
     public:
-        WebsocketClientHandler(WebSocketsServer& ws) : webSocket(ws) {}
+        WebsocketClientHandler(WebSocketsServer& ws) : m_webSocket(ws) {}
 
         void registerWebsocketClient(IGeneralClient& client);
         void unregisterWebsocketClient(IGeneralClient& client);
@@ -19,8 +19,10 @@ class WebsocketClientHandler
         
         uint8_t getClientCount() {return m_idCounter;}
 
+        std::string getClientNames();
+
     private:
-        uint8_t m_idCounter;
-        WebSocketsServer& webSocket;
-        std::vector<IGeneralClient*> websocketClients;   
+        uint8_t                      m_idCounter;
+        WebSocketsServer&            m_webSocket;
+        std::vector<IGeneralClient*> m_websocketClients;   
 };

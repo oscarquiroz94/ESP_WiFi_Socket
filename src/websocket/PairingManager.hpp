@@ -37,7 +37,7 @@ class PairingManager
         GenericClient     genericClient;
         WebsocketClientHandler& clientHandler;
 
-        uint32_t maxTimeSearch = 1 * 60L * 1000L; // 60 seconds
+        uint32_t maxTimeSearch = 1 * 40L * 1000L; // 40 seconds
 
         void registerGenericClient(CrossSectionalDataEEPROM& data);
 

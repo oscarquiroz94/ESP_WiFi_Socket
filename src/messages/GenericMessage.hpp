@@ -24,15 +24,7 @@ class GenericMessage : public IClientMessage
     private:
         bool isValid(JsonDocument& doc) override
         {
-            bool valid = doc["command"].is<std::string>() &&
-                         doc["device"].is<std::string>();
-            if (!valid)
-            {
-                ESPadapter::debug_println("GenericMessage: Document invalid or missing required fields");
-                // Print document for debugging
-                //serializeJson(doc, Serial);
-            }
-                
-            return valid;
+            return doc["command"].is<std::string>() &&
+                   doc["device"].is<std::string>();
         }
 };

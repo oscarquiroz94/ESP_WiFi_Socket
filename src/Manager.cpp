@@ -100,6 +100,9 @@ void Manager::registerSerialPortHandler()
 
         CredentialNotification::notifyOnChange(m_webSocket, m_clientHandler, newdata, m_eepromdata);
 
+        ESPadapter::retardo(2000);
+        ESPadapter::debug_println("Restart to new user credential...");
+
         bool sucess = WebsocketManager::turnOnWebSocket(m_webSocket, newdata);
         
         if (sucess) 
@@ -195,12 +198,17 @@ void Manager::registerSerialPortHandler()
 
         m_clientHandler.unregisterWebsocketClient(m_visualScopeClient);
         m_clientHandler.unregisterWebsocketClient(m_audioCrackClient);
+
         ESPadapter::debug_print("WBS clients: ");
         ESPadapter::debug_println(m_clientHandler.getClientCount());
+        ESPadapter::debug_print("WBS client names: ");
+        ESPadapter::debug_println(m_clientHandler.getClientNames().c_str());
         m_peer.executePairing(m_eepromdata);
         registerWebSocketHandler();
         ESPadapter::debug_print("WBS clients: ");
         ESPadapter::debug_println(m_clientHandler.getClientCount());
+        ESPadapter::debug_print("WBS client names: ");
+        ESPadapter::debug_println(m_clientHandler.getClientNames().c_str());
     });
 
     //------------- Debug purposes ----------------
@@ -257,6 +265,10 @@ void Manager::registerSerialPortHandler()
             client->sendEvent(m_webSocket, &msg);
         });
     });
+
+    m_serialport.addFunctionToMainCommand("CONNECT", [&](const char* comand){
+        WebsocketManager::turnOnWebSocket(m_webSocket, m_eepromdata);
+    });
 }
 
 void Manager::registerWebSocketHandler()
@@ -271,34 +283,33 @@ void Manager::registerVisualScope()
     ESPadapter::debug_println("Registering VisualScope client...");
 
     m_visualScopeClient.setName("visualscope");
-    m_clientHandler.registerWebsocketClient(m_visualScopeClient);
 
     m_visualScopeClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
 
         //! No funciona, why ?
-        // VisualScopeMessageOperatives scopeMsg;
-        // scopeMsg.m_id = static_cast<int8_t>(doc["id"]);
-        // scopeMsg.m_tempET = m_applicationdata.tempET;
-        // scopeMsg.m_tempBT = m_applicationdata.tempBT;
-        // scopeMsg.m_ror = m_applicationdata.RoR;
-        // scopeMsg.m_porcentQuem = m_applicationdata.porcentQuem;
-        // scopeMsg.m_porcentSopl = m_applicationdata.porcentSopl;
-        // scopeMsg.m_porcentTamb = m_applicationdata.porcentTamb;
-        // scopeMsg.m_deltaETBT = m_applicationdata.deltaETBT;
-        // m_visualScopeClient.sendEvent(m_webSocket, &scopeMsg);
+        VisualScopeMessageOperatives scopeMsg;
+        scopeMsg.m_id = static_cast<int8_t>(doc["id"]);
+        scopeMsg.m_tempET = m_applicationdata.tempET;
+        scopeMsg.m_tempBT = m_applicationdata.tempBT;
+        scopeMsg.m_ror = m_applicationdata.RoR;
+        scopeMsg.m_porcentQuem = m_applicationdata.porcentQuem;
+        scopeMsg.m_porcentSopl = m_applicationdata.porcentSopl;
+        scopeMsg.m_porcentTamb = m_applicationdata.porcentTamb;
+        scopeMsg.m_deltaETBT = m_applicationdata.deltaETBT;
+        m_visualScopeClient.sendEvent(m_webSocket, &scopeMsg);
 
-        std::string output;
-        JsonDocument outdoc;
-        outdoc["id"] = doc["id"];
-        outdoc["data"]["aire"] = m_applicationdata.tempET;
-        outdoc["data"]["grano"] = m_applicationdata.tempBT;
-        outdoc["data"]["ror"] = m_applicationdata.RoR;
-        outdoc["data"]["quemador"] = m_applicationdata.porcentQuem;
-        outdoc["data"]["soplador"] = m_applicationdata.porcentSopl;
-        outdoc["data"]["tambor"] = m_applicationdata.porcentTamb;
-        outdoc["data"]["delta"] = m_applicationdata.deltaETBT;
-        serializeJson(outdoc, output);
-        m_webSocket.sendTXT(num, output);
+        // std::string output;
+        // JsonDocument outdoc;
+        // outdoc["id"] = doc["id"];
+        // outdoc["data"]["aire"] = m_applicationdata.tempET;
+        // outdoc["data"]["grano"] = m_applicationdata.tempBT;
+        // outdoc["data"]["ror"] = m_applicationdata.RoR;
+        // outdoc["data"]["quemador"] = m_applicationdata.porcentQuem;
+        // outdoc["data"]["soplador"] = m_applicationdata.porcentSopl;
+        // outdoc["data"]["tambor"] = m_applicationdata.porcentTamb;
+        // outdoc["data"]["delta"] = m_applicationdata.deltaETBT;
+        // serializeJson(outdoc, output);
+        // m_webSocket.sendTXT(num, output);
 
         AudioCrackMessageOperatives audioMsg;
         audioMsg.m_beanTemperature = m_applicationdata.tempBT;
@@ -413,6 +424,8 @@ void Manager::registerVisualScope()
         ESPadapter::serial_print('\0');
         ESPadapter::retardo(50);
     });
+
+    m_clientHandler.registerWebsocketClient(m_visualScopeClient);
 }
 
 void Manager::registerAudioCrack()
@@ -420,7 +433,6 @@ void Manager::registerAudioCrack()
     ESPadapter::debug_println("Registering AudioCrack client...");
     
     m_audioCrackClient.setName("audiocrack");
-    m_clientHandler.registerWebsocketClient(m_audioCrackClient);
 
     m_audioCrackClient.addFunctionToMainCommand("getinitial", [&](uint8_t num, JsonDocument& doc) {
         // Send initial data to audiocrack device
@@ -448,4 +460,6 @@ void Manager::registerAudioCrack()
     m_audioCrackClient.addFunctionToMainCommand("firstcrack", [&](uint8_t num, JsonDocument& doc) {
         // Audiocrack device notification for first crack event
     });
+
+    m_clientHandler.registerWebsocketClient(m_audioCrackClient);
 }

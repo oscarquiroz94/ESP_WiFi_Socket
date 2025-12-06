@@ -24,16 +24,16 @@ class GenericClient : public IGeneralClient
 
         void unsetId(uint8_t num) override;
 
-        void setName(const std::string& newname) override {name = newname;}
-        std::string getName() const override {return name;}
+        void setName(const std::string& newname) override {m_name = newname;}
+        std::string getName() const override {return m_name;}
 
         void sendEvent(WebSocketsServer &ws, IOutputMessage* msg) override;
 
         ~GenericClient() = default;
 
     private:
-        int8_t m_id {-1};
-        std::string name {""};
+        int8_t          m_id {-1};
+        std::string     m_name {""};
         IClientMessage* message = nullptr;
         std::map<std::string, std::function<void(uint8_t num, JsonDocument& doc)>> map2func;
 };

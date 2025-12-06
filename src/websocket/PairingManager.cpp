@@ -36,14 +36,16 @@ bool PairingManager::setupDefaultCredentials()
 void PairingManager::registerGenericClient
     (CrossSectionalDataEEPROM& data)
 {
-    clientHandler.registerWebsocketClient(genericClient);
     genericClient.setName("generic");
 
     // {
     //     “command”: “attach”,
-    //     “devicen” :“audiocrack”,
+    //     “device” :“audiocrack”,
     // }
     genericClient.addFunctionToMainCommand("attach", [&](uint8_t num, JsonDocument& doc) {
+
+        ESPadapter::debug_println("PairingManager: attach command received");
+
         uint8_t idClient = genericClient.getId();
 
         std::string name = doc["device"];
@@ -67,10 +69,13 @@ void PairingManager::registerGenericClient
             ESPadapter::debug_print("Peer client registered: ");
             ESPadapter::debug_println(name.c_str());
 
+            ESPadapter::debug_print("Sending credentials to that client");
             serializeJson(outdoc, output);
             webSocket.sendTXT(idClient, output);
         }
     });
+
+    clientHandler.registerWebsocketClient(genericClient);
 }
 
 // This function can not be tested due websocket.loop() has not native implementation
@@ -82,7 +87,7 @@ void PairingManager::searchingLoopForClients()
         clientHandler.onWebSocketEvent(num, type, payload, length);
     });
 
-    ESPadapter::debug_println("PairingManager: buscando...");
+    ESPadapter::debug_println("PairingManager: buscando clientes...");
     while (!t_search.tiempo(maxTimeSearch))
     {
         webSocket.loop();
@@ -90,7 +95,7 @@ void PairingManager::searchingLoopForClients()
     }
         
     clientHandler.unregisterWebsocketClient(genericClient);
-    ESPadapter::debug_println("PairingManager: fin busqueda");
+    ESPadapter::debug_println("******** PairingManager: fin busqueda **********");
 
 }
 

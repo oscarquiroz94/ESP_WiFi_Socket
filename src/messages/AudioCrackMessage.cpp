@@ -48,8 +48,10 @@ void AudioCrackMessageStartRoasting::send(WebSocketsServer& ws, int8_t id)
     serializeJson(outdoc, output);
     ws.sendTXT(id, output);
 
-    ESPadapter::debug_print("AudioCrackMessageStartRoasting: ");
+    ESPadapter::debug_print("Sent audiocrack message: ");
     ESPadapter::debug_print(output.c_str());
+    ESPadapter::debug_print(" id ");
+    ESPadapter::debug_println(id);
 }
 
 void AudioCrackMessageEndRoasting::send(WebSocketsServer& ws, int8_t id)
@@ -61,8 +63,10 @@ void AudioCrackMessageEndRoasting::send(WebSocketsServer& ws, int8_t id)
     serializeJson(outdoc, output);
     ws.sendTXT(id, output);
 
-    ESPadapter::debug_print("AudioCrackMessageEndRoasting: ");
+    ESPadapter::debug_print("Sent audiocrack message: ");
     ESPadapter::debug_print(output.c_str());
+    ESPadapter::debug_print(" id ");
+    ESPadapter::debug_println(id);
 }
 
 void AudioCrackMessageFirstCrack::send(WebSocketsServer& ws, int8_t id)
@@ -74,8 +78,10 @@ void AudioCrackMessageFirstCrack::send(WebSocketsServer& ws, int8_t id)
     serializeJson(outdoc, output);
     ws.sendTXT(id, output);
 
-    ESPadapter::debug_print("AudioCrackMessageFirstCrack: ");
+    ESPadapter::debug_print("Sent audiocrack message: ");
     ESPadapter::debug_print(output.c_str());
+    ESPadapter::debug_print(" id ");
+    ESPadapter::debug_println(id);
 }
 
 void AudioCrackMessageOperatives::send(WebSocketsServer& ws, int8_t id)
@@ -89,6 +95,8 @@ void AudioCrackMessageOperatives::send(WebSocketsServer& ws, int8_t id)
     serializeJson(outdoc, output);
     ws.sendTXT(id, output);
 
-    ESPadapter::debug_print("AudioCrackMessageOperatives: ");
+    ESPadapter::debug_print("Sent audiocrack message: ");
     ESPadapter::debug_print(output.c_str());
+    ESPadapter::debug_print(" id ");
+    ESPadapter::debug_println(id);
 }
