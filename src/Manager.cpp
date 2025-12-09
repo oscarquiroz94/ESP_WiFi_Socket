@@ -286,34 +286,29 @@ void Manager::registerVisualScope()
 
     m_visualScopeClient.addFunctionToMainCommand("getData", [&](uint8_t num, JsonDocument& doc) {
 
-        //! No funciona, why ?
         VisualScopeMessageOperatives scopeMsg;
-        scopeMsg.m_id = static_cast<int8_t>(doc["id"]);
-        scopeMsg.m_tempET = m_applicationdata.tempET;
-        scopeMsg.m_tempBT = m_applicationdata.tempBT;
-        scopeMsg.m_ror = m_applicationdata.RoR;
+        scopeMsg.m_id = doc["id"].as<uint32_t>();
+        // scopeMsg.m_tempET = m_applicationdata.tempET;
+        // scopeMsg.m_tempBT = m_applicationdata.tempBT;
+        // scopeMsg.m_ror = m_applicationdata.RoR;
+        // scopeMsg.m_porcentQuem = m_applicationdata.porcentQuem;
+        // scopeMsg.m_porcentSopl = m_applicationdata.porcentSopl;
+        // scopeMsg.m_porcentTamb = m_applicationdata.porcentTamb;
+        // scopeMsg.m_deltaETBT = m_applicationdata.deltaETBT;
+        scopeMsg.m_tempET = 208;
+        scopeMsg.m_tempBT = 256;
+        scopeMsg.m_ror = 105;
         scopeMsg.m_porcentQuem = m_applicationdata.porcentQuem;
         scopeMsg.m_porcentSopl = m_applicationdata.porcentSopl;
         scopeMsg.m_porcentTamb = m_applicationdata.porcentTamb;
         scopeMsg.m_deltaETBT = m_applicationdata.deltaETBT;
         m_visualScopeClient.sendEvent(m_webSocket, &scopeMsg);
 
-        // std::string output;
-        // JsonDocument outdoc;
-        // outdoc["id"] = doc["id"];
-        // outdoc["data"]["aire"] = m_applicationdata.tempET;
-        // outdoc["data"]["grano"] = m_applicationdata.tempBT;
-        // outdoc["data"]["ror"] = m_applicationdata.RoR;
-        // outdoc["data"]["quemador"] = m_applicationdata.porcentQuem;
-        // outdoc["data"]["soplador"] = m_applicationdata.porcentSopl;
-        // outdoc["data"]["tambor"] = m_applicationdata.porcentTamb;
-        // outdoc["data"]["delta"] = m_applicationdata.deltaETBT;
-        // serializeJson(outdoc, output);
-        // m_webSocket.sendTXT(num, output);
-
         AudioCrackMessageOperatives audioMsg;
-        audioMsg.m_beanTemperature = m_applicationdata.tempBT;
-        audioMsg.m_rateOfRise = m_applicationdata.RoR;
+        // audioMsg.m_beanTemperature = m_applicationdata.tempBT;
+        // audioMsg.m_rateOfRise = m_applicationdata.RoR;
+        audioMsg.m_beanTemperature = 256;
+        audioMsg.m_rateOfRise = 105;
         m_audioCrackClient.sendEvent(m_webSocket, &audioMsg);
 
         m_beat.set_status(Heartbeat::online);
@@ -345,7 +340,7 @@ void Manager::registerVisualScope()
     m_visualScopeClient.addFunctionToMainCommand("endRoasting", [&](uint8_t num, JsonDocument& doc) {
         
         AudioCrackMessageEndRoasting dropMessage;
-        dropMessage.send(m_webSocket, num);
+        m_audioCrackClient.sendEvent(m_webSocket, &dropMessage);
 
         ESPadapter::serial_print("SODROP");
         ESPadapter::serial_print('\0');
@@ -393,9 +388,9 @@ void Manager::registerVisualScope()
     });
 
     m_visualScopeClient.addFunctionToMainCommand("fcstart", [&](uint8_t num, JsonDocument& doc) {
-        
+    
         AudioCrackMessageFirstCrack firstCrackMsg;
-        firstCrackMsg.send(m_webSocket, num);
+        m_audioCrackClient.sendEvent(m_webSocket, &firstCrackMsg);
         
         ESPadapter::serial_print("FCSTART");
         ESPadapter::serial_print('\0');
@@ -405,7 +400,7 @@ void Manager::registerVisualScope()
     m_visualScopeClient.addFunctionToMainCommand("oncharge", [&](uint8_t num, JsonDocument& doc) {
         
         AudioCrackMessageStartRoasting startMessage;
-        startMessage.send(m_webSocket, num);
+        m_audioCrackClient.sendEvent(m_webSocket, &startMessage);
         
         ESPadapter::serial_print("ONCHARGE");
         ESPadapter::serial_print('\0');

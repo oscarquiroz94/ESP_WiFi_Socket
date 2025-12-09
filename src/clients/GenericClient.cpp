@@ -30,14 +30,15 @@ void GenericClient::setId(uint8_t num, const char* payload)
     JsonDocument doc;
     if (!message->getDocument(doc, payload)) return;
 
-    //! Caso artisan
-    if (doc["command"] == "ready")
-        m_name = "visualscope";
-
     if (doc["command"] == "identify")
         m_name = doc["device"].as<std::string>();
 
     if (doc["device"] == m_name) 
+        m_id = num;
+
+    //! Caso especial visualscope cuando ya estaba conectado
+    //! y no puede enviar "device"
+    if (m_id == -1 && doc["roasterID"].is<int>())
         m_id = num;
 
     ESPadapter::debug_print("Client ");

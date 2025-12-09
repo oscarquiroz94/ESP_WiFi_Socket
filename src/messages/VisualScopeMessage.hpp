@@ -40,7 +40,7 @@ class VisualScopeMessageOperatives : public IOutputMessage
     public:
         void send(WebSocketsServer& ws, int8_t id) override;
 
-        int8_t m_id;
+        uint32_t m_id;
         int16_t m_tempET;
         int16_t m_tempBT;
         int16_t m_ror;

@@ -36,7 +36,7 @@ std::string AudioCrackMessage::getMainCommand(JsonDocument& doc)
 
 bool AudioCrackMessage::isValid(JsonDocument& doc)
 {
-    return doc["device"].is<std::string>() || doc["command"].is<std::string>();
+    return doc["device"].is<std::string>() && doc["command"].is<std::string>();
 }
 
 void AudioCrackMessageStartRoasting::send(WebSocketsServer& ws, int8_t id)

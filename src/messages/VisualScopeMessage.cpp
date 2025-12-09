@@ -17,16 +17,8 @@ std::string VisualScopeMessage::getMainCommand(JsonDocument& doc)
 
 bool VisualScopeMessage::isValid(JsonDocument& doc)
 {
-    bool isvalid = false;
-    if (doc["roasterID"].is<int8_t>()) 
-    {
-        this->id = doc["roasterID"];
-        isvalid = true;
-    }
-    else if (!doc["roasterID"].is<int8_t>() && this->id == -1) 
-        isvalid = false;
-
-    return isvalid;
+    return doc["command"].is<std::string>() &&
+           doc["roasterID"].is<int>();
 }
 
 void VisualScopeMessageStartRoasting::send(WebSocketsServer& ws, int8_t id)
@@ -83,7 +75,7 @@ void VisualScopeMessageOperatives::send(WebSocketsServer& ws, int8_t id)
     std::string output;
     JsonDocument outdoc;
     
-    outdoc["id"] = static_cast<uint8_t>(m_id);
+    outdoc["id"] = m_id;
     outdoc["data"]["aire"] = m_tempET;
     outdoc["data"]["grano"] = m_tempBT;
     outdoc["data"]["ror"] = m_ror;
