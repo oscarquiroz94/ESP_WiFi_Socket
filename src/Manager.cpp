@@ -288,16 +288,9 @@ void Manager::registerVisualScope()
 
         VisualScopeMessageOperatives scopeMsg;
         scopeMsg.m_id = doc["id"].as<uint32_t>();
-        // scopeMsg.m_tempET = m_applicationdata.tempET;
-        // scopeMsg.m_tempBT = m_applicationdata.tempBT;
-        // scopeMsg.m_ror = m_applicationdata.RoR;
-        // scopeMsg.m_porcentQuem = m_applicationdata.porcentQuem;
-        // scopeMsg.m_porcentSopl = m_applicationdata.porcentSopl;
-        // scopeMsg.m_porcentTamb = m_applicationdata.porcentTamb;
-        // scopeMsg.m_deltaETBT = m_applicationdata.deltaETBT;
-        scopeMsg.m_tempET = 208;
-        scopeMsg.m_tempBT = 256;
-        scopeMsg.m_ror = 105;
+        scopeMsg.m_tempET = m_applicationdata.tempET;
+        scopeMsg.m_tempBT = m_applicationdata.tempBT;
+        scopeMsg.m_ror = m_applicationdata.RoR;
         scopeMsg.m_porcentQuem = m_applicationdata.porcentQuem;
         scopeMsg.m_porcentSopl = m_applicationdata.porcentSopl;
         scopeMsg.m_porcentTamb = m_applicationdata.porcentTamb;
@@ -305,10 +298,8 @@ void Manager::registerVisualScope()
         m_visualScopeClient.sendEvent(m_webSocket, &scopeMsg);
 
         AudioCrackMessageOperatives audioMsg;
-        // audioMsg.m_beanTemperature = m_applicationdata.tempBT;
-        // audioMsg.m_rateOfRise = m_applicationdata.RoR;
-        audioMsg.m_beanTemperature = 256;
-        audioMsg.m_rateOfRise = 105;
+        audioMsg.m_beanTemperature = m_applicationdata.tempBT;
+        audioMsg.m_rateOfRise = m_applicationdata.RoR;
         m_audioCrackClient.sendEvent(m_webSocket, &audioMsg);
 
         m_beat.set_status(Heartbeat::online);
